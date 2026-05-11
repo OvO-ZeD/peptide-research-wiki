@@ -1,0 +1,360 @@
+var vialModel = document.getElementById("vial_model");
+var vialLabel = document.getElementById("vial_label");
+var isDragging = false;
+var startX = 0;
+var startY = 0;
+var rotY = -18;
+var rotX = 10;
+var currentTrials = [];
+var lastData = null;
+
+function applyVialTransform() {
+  vialModel.style.transform = "rotateX(" + rotX + "deg) rotateY(" + rotY + "deg)";
+}
+
+function beginDrag(event) {
+  isDragging = true;
+  startX = event.clientX;
+  startY = event.clientY;
+}
+
+function dragMove(event) {
+  if (!isDragging) {
+    return;
+  }
+  var dx = event.clientX - startX;
+  var dy = event.clientY - startY;
+  rotY += dx * 0.4;
+  rotX -= dy * 0.25;
+  if (rotX > 35) {
+    rotX = 35;
+  }
+  if (rotX < -35) {
+    rotX = -35;
+  }
+  startX = event.clientX;
+  startY = event.clientY;
+  applyVialTransform();
+}
+
+function endDrag() {
+  isDragging = false;
+}
+
+function touchToMouse(touchEvent) {
+  var touch = touchEvent.touches[0] || touchEvent.changedTouches[0];
+  return { clientX: touch.clientX, clientY: touch.clientY };
+}
+
+function attachVialControls() {
+  var vialScene = document.getElementById("vial_scene");
+  vialScene.addEventListener("mousedown", beginDrag);
+  window.addEventListener("mousemove", dragMove);
+  window.addEventListener("mouseup", endDrag);
+  vialScene.addEventListener("touchstart", function(e) {
+    var pt = touchToMouse(e);
+    beginDrag(pt);
+  });
+  window.addEventListener("touchmove", function(e) {
+    if (!isDragging) {
+      return;
+    }
+    var pt = touchToMouse(e);
+    dragMove(pt);
+  });
+  window.addEventListener("touchend", endDrag);
+  applyVialTransform();
+}
+
+function listToItems(items) {
+  if (!items || items.length === 0) {
+    return "<li>No entries available.</li>";
+  }
+  var out = "";
+  for (var i = 0; i < items.length; i++) {
+    out += "<li>" + items[i] + "</li>";
+  }
+  return out;
+}
+
+function confidenceForSource(label) {
+  var lower = label.toLowerCase();
+  if (lower.indexOf("clinicaltrials") >= 0 || lower.indexOf("pubmed") >= 0 || lower.indexOf("fda") >= 0) {
+    return "high";
+  }
+  if (lower.indexOf("nih") >= 0) {
+    return "medium";
+  }
+  return "context";
+}
+
+function renderTrials(trials) {
+  var filter = document.getElementById("trial_filter").value;
+  var scoped = [];
+  for (var i = 0; i < trials.length; i++) {
+    if (filter === "ALL" || trials[i].status === filter) {
+      scoped.push(trials[i]);
+    }
+  }
+  var trialsHtml = "<h3>Clinical Trials</h3>";
+  if (scoped.length > 0) {
+    for (var j = 0; j < scoped.length; j++) {
+      var trial = scoped[j];
+      trialsHtml += "<div class=\"trial-card\">" +
+        "<p><strong>" + trial.title + "</strong></p>" +
+        "<p><strong>Trial ID:</strong> " + trial.nct_id + "</p>" +
+        "<p><strong>Status:</strong> " + trial.status + "</p>" +
+        "<p><strong>Summary:</strong> " + trial.lay_summary + "</p>" +
+        "<p><strong>Methods:</strong> " + trial.methods + "</p>" +
+        "<p><a href=\"" + trial.link + "\" target=\"_blank\" rel=\"noopener noreferrer\">Open trial source</a></p>" +
+        "</div>";
+    }
+  } else {
+    trialsHtml += "<p>No clinical trials match the selected status filter.</p>";
+  }
+  document.getElementById("trials_section").innerHTML = trialsHtml;
+}
+
+function applyTrialFilter() {
+  renderTrials(currentTrials || []);
+}
+
+function renderCompare(compareData) {
+  var compareSection = document.getElementById("compare_section");
+  if (!compareData) {
+    compareSection.innerHTML = "";
+    return;
+  }
+  var html = "<h3>Compare Peptide</h3>" +
+    "<div class=\"trial-card\">" +
+    "<p><strong>" + compareData.peptide_name + "</strong></p>" +
+    "<p><strong>Medical definition:</strong> " + compareData.medical_definition + "</p>" +
+    "<p><strong>Top method profile:</strong> " + compareData.methods + "</p>" +
+    "<p><strong>Trials:</strong> " + (compareData.clinical_trials ? compareData.clinical_trials.length : 0) + " | <strong>PubMed:</strong> " + (compareData.pubmed_articles ? compareData.pubmed_articles.length : 0) + "</p>" +
+    "</div>";
+  compareSection.innerHTML = html;
+}
+
+function renderEvidenceClaims(claims) {
+  var evidenceSection = document.getElementById("evidence_section");
+  if (!claims || claims.length === 0) {
+    evidenceSection.innerHTML = "";
+    return;
+  }
+  var html = "<h3>Evidence Claims</h3>";
+  for (var i = 0; i < claims.length; i++) {
+    var claim = claims[i];
+    var badgeClass = claim.confidence === "HIGH" ? "badge-high" : (claim.confidence === "MEDIUM" ? "badge-medium" : "badge-context");
+    html += "<div class=\"paper-card\">" +
+      "<p><span class=\"confidence-badge " + badgeClass + "\">" + claim.confidence + "</span> " + claim.claim + "</p>" +
+      "<p><a href=\"" + claim.source_url + "\" target=\"_blank\" rel=\"noopener noreferrer\">" + claim.source_label + " source</a></p>" +
+      "</div>";
+  }
+  evidenceSection.innerHTML = html;
+}
+
+function renderTimeline(timeline) {
+  var timelineSection = document.getElementById("timeline_section");
+  if (!timeline) {
+    timelineSection.innerHTML = "";
+    return;
+  }
+  var statuses = ["COMPLETED", "RECRUITING", "ACTIVE_NOT_RECRUITING", "OTHER"];
+  var max = 1;
+  for (var i = 0; i < statuses.length; i++) {
+    var v = timeline[statuses[i]] || 0;
+    if (v > max) {
+      max = v;
+    }
+  }
+  var html = "<h3>Trial Status Timeline</h3><div class=\"timeline-bars\">";
+  for (var j = 0; j < statuses.length; j++) {
+    var s = statuses[j];
+    var count = timeline[s] || 0;
+    var width = Math.round((count / max) * 100);
+    html += "<div class=\"timeline-row\"><span>" + s + "</span><div class=\"timeline-track\"><div class=\"timeline-fill\" style=\"width:" + width + "%\"></div></div><strong>" + count + "</strong></div>";
+  }
+  html += "</div>";
+  timelineSection.innerHTML = html;
+}
+
+function renderFreshness(lastUpdated) {
+  var freshness = document.getElementById("freshness_info");
+  if (!lastUpdated) {
+    freshness.innerText = "";
+    return;
+  }
+  freshness.innerText = "Last synced (UTC): " + lastUpdated;
+}
+
+function toggleTheme() {
+  document.body.classList.toggle("theme-dark");
+}
+
+function setDensity(mode) {
+  document.body.classList.remove("density-compact", "density-clinical", "density-deep");
+  document.body.classList.add("density-" + mode);
+}
+
+function getWatchlist() {
+  var raw = localStorage.getItem("peptide_watchlist") || "[]";
+  try {
+    return JSON.parse(raw);
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveWatchlist(items) {
+  localStorage.setItem("peptide_watchlist", JSON.stringify(items));
+}
+
+function renderWatchlist() {
+  var section = document.getElementById("watchlist_section");
+  var list = getWatchlist();
+  if (list.length === 0) {
+    section.innerHTML = "<h3>Saved Peptides</h3><p>No saved peptides yet.</p>";
+    return;
+  }
+  var html = "<h3>Saved Peptides</h3><ul>";
+  for (var i = 0; i < list.length; i++) {
+    html += "<li><button class=\"linkish\" onclick=\"quickSearch('" + list[i] + "')\">" + list[i] + "</button></li>";
+  }
+  html += "</ul>";
+  section.innerHTML = html;
+}
+
+function saveCurrentPeptide() {
+  if (!lastData || !lastData.peptide_name) {
+    return;
+  }
+  var list = getWatchlist();
+  if (list.indexOf(lastData.peptide_name) === -1) {
+    list.push(lastData.peptide_name);
+    saveWatchlist(list);
+    renderWatchlist();
+  }
+}
+
+function quickSearch(name) {
+  document.getElementById("search_term").value = name;
+  searchPeptide();
+}
+
+function searchPeptide() {
+  var searchTerm = document.getElementById("search_term").value.trim();
+  var statusMessage = document.getElementById("status_message");
+  var aliasInfo = document.getElementById("alias_info");
+  var peptideName = document.getElementById("peptide_name");
+  var medicalDefinition = document.getElementById("medical_definition");
+  var research = document.getElementById("research");
+  var methods = document.getElementById("methods");
+  var benefitsList = document.getElementById("benefits_list");
+  var consList = document.getElementById("cons_list");
+  var trialsSection = document.getElementById("trials_section");
+  var pubmedSection = document.getElementById("pubmed_section");
+  var sourcesSection = document.getElementById("sources_section");
+  var compareTerm = document.getElementById("compare_term").value.trim();
+
+  if (!searchTerm) {
+    statusMessage.innerText = "Please type a peptide name first.";
+    return;
+  }
+
+  statusMessage.innerText = "Searching trusted sources...";
+  aliasInfo.innerText = "";
+  peptideName.innerText = "";
+  medicalDefinition.innerText = "";
+  research.innerText = "";
+  methods.innerText = "";
+  benefitsList.innerHTML = "";
+  consList.innerHTML = "";
+  trialsSection.innerHTML = "";
+  pubmedSection.innerHTML = "";
+  sourcesSection.innerHTML = "";
+
+  fetch("/search?term=" + encodeURIComponent(searchTerm))
+    .then(function(response) {
+      return response.json().then(function(data) {
+        return { ok: response.ok, data: data };
+      });
+    })
+    .then(function(result) {
+      if (!result.ok || result.data.error) {
+        statusMessage.innerText = result.data.error || "No information found.";
+        return;
+      }
+
+      var data = result.data;
+      lastData = data;
+      statusMessage.innerText = "";
+      aliasInfo.innerText = "Search: " + data.search_input + "  •  Normalized: " + data.normalized_term;
+      peptideName.innerText = data.peptide_name;
+      vialLabel.innerText = data.peptide_name.toUpperCase().slice(0, 14);
+      medicalDefinition.innerText = data.medical_definition;
+      research.innerText = data.plain_summary;
+      methods.innerText = data.methods;
+      benefitsList.innerHTML = listToItems(data.benefits);
+      consList.innerHTML = listToItems(data.cons);
+      currentTrials = data.clinical_trials || [];
+      renderTrials(currentTrials);
+      renderEvidenceClaims(data.evidence_claims || []);
+      renderTimeline(data.trial_timeline || null);
+      renderFreshness(data.last_updated_utc || "");
+
+      var pubmedHtml = "<h3>PubMed Literature</h3>";
+      if (data.pubmed_articles && data.pubmed_articles.length > 0) {
+        pubmedHtml += "<div class=\"paper-list\">";
+        for (var p = 0; p < data.pubmed_articles.length; p++) {
+          var paper = data.pubmed_articles[p];
+          pubmedHtml += "<div class=\"paper-card\">" +
+            "<p><strong>" + paper.title + "</strong></p>" +
+            "<p>PMID: " + paper.pmid + " | " + paper.source + " | " + paper.pubdate + "</p>" +
+            "<p><a href=\"" + paper.link + "\" target=\"_blank\" rel=\"noopener noreferrer\">Open PubMed record</a></p>" +
+            "</div>";
+        }
+        pubmedHtml += "</div>";
+      } else {
+        pubmedHtml += "<p>No PubMed records were found for this term.</p>";
+      }
+      pubmedSection.innerHTML = pubmedHtml;
+
+      var sourcesHtml = "<h3>Sources</h3><ul>";
+      if (data.sources && data.sources.length > 0) {
+        for (var j = 0; j < data.sources.length; j++) {
+          var src = data.sources[j];
+          var conf = confidenceForSource(src.label);
+          sourcesHtml += "<li><span class=\"confidence-badge badge-" + conf + "\">" + conf.toUpperCase() + "</span> <a href=\"" + src.url + "\" target=\"_blank\" rel=\"noopener noreferrer\">" + src.label + "</a></li>";
+        }
+      }
+      sourcesHtml += "</ul>";
+      sourcesSection.innerHTML = sourcesHtml;
+
+      if (compareTerm) {
+        fetch("/search?term=" + encodeURIComponent(compareTerm))
+          .then(function(response) {
+            return response.json().then(function(data2) {
+              return { ok: response.ok, data: data2 };
+            });
+          })
+          .then(function(compareResult) {
+            if (!compareResult.ok || compareResult.data.error) {
+              renderCompare(null);
+              return;
+            }
+            renderCompare(compareResult.data);
+          })
+          .catch(function() {
+            renderCompare(null);
+          });
+      } else {
+        renderCompare(null);
+      }
+    })
+    .catch(function() {
+      statusMessage.innerText = "Unable to fetch data right now. Please try again.";
+    });
+}
+
+attachVialControls();
+renderWatchlist();

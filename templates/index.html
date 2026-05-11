@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Peptide Database</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page">
+    <div class="top-controls panel">
+      <button id="theme_toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
+      <div class="density-group">
+        <button onclick="setDensity('compact')">Compact</button>
+        <button onclick="setDensity('clinical')">Clinical</button>
+        <button onclick="setDensity('deep')">Deep</button>
+      </div>
+      <button onclick="saveCurrentPeptide()">Save Peptide</button>
+    </div>
+    <h1>Peptide Research Wiki</h1>
+    <p class="subtitle">Search a peptide and get public research, trial details, plain-language summaries, methods, and source links.</p>
+
+    <div id="search" class="panel">
+      <label for="search_term">Search Peptide</label>
+      <div class="search-row">
+        <input type="text" id="search_term" name="search_term" placeholder="e.g., retatrutide, semaglutide, bpc-157">
+        <button onclick="searchPeptide()">Search</button>
+      </div>
+      <div class="search-row second-row">
+        <input type="text" id="compare_term" name="compare_term" placeholder="Compare with (optional): e.g., tesa">
+        <select id="trial_filter" onchange="applyTrialFilter()">
+          <option value="ALL">All trial statuses</option>
+          <option value="COMPLETED">Completed</option>
+          <option value="RECRUITING">Recruiting</option>
+          <option value="ACTIVE_NOT_RECRUITING">Active not recruiting</option>
+        </select>
+      </div>
+      <p id="status_message"></p>
+    </div>
+
+    <div id="peptide_info" class="panel">
+      <h2>Peptide Information</h2>
+      <p id="freshness_info"></p>
+      <div class="profile-top">
+        <div class="vial-wrap">
+          <div id="vial_scene">
+            <div id="vial_model">
+              <div class="vial-cap"></div>
+              <div class="vial-body">
+                <span id="vial_label">PEPTIDE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="identity-wrap">
+          <p id="alias_info"></p>
+          <p id="peptide_name"></p>
+        </div>
+      </div>
+      <details open>
+        <summary>Medical Definition</summary>
+        <p id="medical_definition"></p>
+      </details>
+      <details open>
+        <summary>Plain-Language Summary</summary>
+        <p id="research"></p>
+      </details>
+      <details open>
+        <summary>Methods</summary>
+        <p id="methods"></p>
+      </details>
+      <details open>
+        <summary>Benefits</summary>
+        <ul id="benefits_list"></ul>
+      </details>
+      <details open>
+        <summary>Cons and Risks</summary>
+        <ul id="cons_list"></ul>
+      </details>
+      <div id="evidence_section"></div>
+      <div id="timeline_section"></div>
+      <div id="trials_section"></div>
+      <div id="pubmed_section"></div>
+      <div id="sources_section"></div>
+      <div id="compare_section"></div>
+      <div id="watchlist_section"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
