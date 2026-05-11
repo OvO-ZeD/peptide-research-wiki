@@ -18,6 +18,33 @@ ALIASES = {
     "cjc": "cjc-1295",
 }
 
+SNAPSHOT_LIBRARY = {
+    "tesamorelin": {
+        "what": "Investigated for reducing excess visceral abdominal fat and improving metabolic markers in selected populations.",
+        "how": "Acts as a growth hormone-releasing hormone analog that stimulates endogenous GH and IGF-1 signaling, which is associated with lipid metabolism changes.",
+    },
+    "retatrutide": {
+        "what": "Investigated for weight reduction and glycemic improvement in obesity and type 2 diabetes clinical programs.",
+        "how": "Designed as a multi-receptor peptide agonist targeting glucagon, GLP-1, and GIP pathways, which can influence appetite, energy balance, and glucose control.",
+    },
+    "semaglutide": {
+        "what": "Used or investigated for glycemic control and weight management depending on indication.",
+        "how": "Acts as a GLP-1 receptor agonist that supports glucose-dependent insulin activity and appetite regulation.",
+    },
+    "tirzepatide": {
+        "what": "Used or investigated for glycemic improvement and weight reduction in metabolic disease care.",
+        "how": "Acts as a dual GIP and GLP-1 receptor agonist, affecting insulin response, satiety signaling, and metabolic regulation.",
+    },
+    "bpc-157": {
+        "what": "Primarily discussed in experimental contexts with interest in tissue-repair and inflammation pathways.",
+        "how": "Mechanistic claims are still investigational; current human evidence is limited compared with regulated therapeutics.",
+    },
+    "cjc-1295": {
+        "what": "Investigated in growth-hormone-axis research contexts.",
+        "how": "Acts as a growth hormone-releasing hormone analog intended to extend GH pathway stimulation over time.",
+    },
+}
+
 
 def normalize_term(term):
     key = term.strip().lower()
@@ -31,6 +58,15 @@ def fetch_json(url, headers=None):
             return json.loads(response.read().decode("utf-8"))
     except (URLError, HTTPError, TimeoutError, json.JSONDecodeError):
         return None
+
+
+def source_status(wiki, trials, pubmed, fda_data):
+    return {
+        "wikipedia": bool(wiki and wiki.get("summary")),
+        "clinicaltrials": bool(trials),
+        "pubmed": bool(pubmed),
+        "openfda": bool(fda_data),
+    }
 
 
 def fetch_wikipedia_summary(term):
@@ -241,6 +277,40 @@ def build_evidence_claims(trials, pubmed, fda_data):
         )
     return claims
 
+
+def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary):
+    base = SNAPSHOT_LIBRARY.get(term, {})
+    what_it_does = base.get("what")
+    how_it_works = base.get("how")
+
+    if not what_it_does:
+        if trials:
+            top = trials[0]
+            what_it_does = (
+                f"Under clinical investigation with human-study signals, including trial {top.get('nct_id', 'N/A')} "
+                f"currently listed as {top.get('status', 'Not specified').replace('_', ' ').title()}."
+            )
+        elif fda_data:
+            what_it_does = "Linked to publicly indexed regulatory labeling context, with therapeutic use and safety text available."
+        else:
+            what_it_does = "Public biomedical sources indicate scientific interest, but high-quality clinical characterization may be limited."
+
+    if not how_it_works:
+        if trials:
+            methods = trials[0].get("methods", "")
+            how_it_works = f"Current mechanism context is derived from trial design metadata: {methods}"
+        else:
+            how_it_works = f"Mechanism details are not consistently established in available public records. Context summary: {wiki_summary}"
+
+    evidence_points = int(bool(trials)) + int(bool(pubmed)) + int(bool(fda_data))
+    evidence_strength = "HIGH" if evidence_points >= 2 else "MODERATE" if evidence_points == 1 else "LIMITED"
+
+    return {
+        "what_it_does": what_it_does,
+        "how_it_works": how_it_works,
+        "evidence_strength": evidence_strength,
+    }
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -266,6 +336,10 @@ def search():
     benefits, cons = build_benefits_and_cons(trials, fda_data)
     timeline = build_timeline(trials)
     claims = build_evidence_claims(trials, pubmed, fda_data)
+    snapshot = build_clinical_snapshot(term, trials, pubmed, fda_data, wiki["summary"])
+    source_ok = source_status(wiki, trials, pubmed, fda_data)
+    healthy_sources = sum(1 for ok in source_ok.values() if ok)
+    reliability = "HIGH" if healthy_sources >= 3 else ("MEDIUM" if healthy_sources >= 2 else "LOW")
 
     method_block = trials[0]["methods"] if trials else "No trial method details available."
 
@@ -283,6 +357,10 @@ def search():
         "pubmed_articles": pubmed,
         "trial_timeline": timeline,
         "evidence_claims": claims,
+        "clinical_snapshot": snapshot,
+        "source_status": source_ok,
+        "reliability": reliability,
+        "partial_data": healthy_sources < 4,
         "last_updated_utc": datetime.now(timezone.utc).isoformat(),
         "sources": [
             {"label": "Wikipedia", "url": wiki["url"]},

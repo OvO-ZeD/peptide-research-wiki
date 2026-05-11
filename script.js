@@ -7,6 +7,65 @@ var rotY = -18;
 var rotX = 10;
 var currentTrials = [];
 var lastData = null;
+var searching = false;
+
+function escapeHtml(text) {
+  return String(text || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function humanizeStatus(status) {
+  var map = {
+    COMPLETED: "Completed",
+    RECRUITING: "Recruiting",
+    ACTIVE_NOT_RECRUITING: "Active, not recruiting",
+    NOT_YET_RECRUITING: "Not yet recruiting",
+    TERMINATED: "Terminated",
+    WITHDRAWN: "Withdrawn",
+    SUSPENDED: "Suspended"
+  };
+  return map[status] || (status || "Not specified");
+}
+
+function humanizeMethods(methods) {
+  if (!methods) {
+    return "No method details available.";
+  }
+  return methods
+    .replace(/PHASE(\d+)/g, "Phase $1")
+    .replace(/BASIC_SCIENCE/g, "Basic science")
+    .replace(/ACTIVE_NOT_RECRUITING/g, "Active, not recruiting")
+    .replace(/RANDOMIZED/g, "Randomized")
+    .replace(/Not specified/g, "Not specified");
+}
+
+function compactSummary(text, maxLen) {
+  var clean = (text || "").trim();
+  if (clean.length <= maxLen) {
+    return { short: clean, full: "", truncated: false };
+  }
+  var shortText = clean.slice(0, maxLen);
+  var cut = shortText.lastIndexOf(" ");
+  if (cut > 80) {
+    shortText = shortText.slice(0, cut);
+  }
+  return { short: shortText + "...", full: clean, truncated: true };
+}
+
+function cleanRiskLine(text) {
+  var value = (text || "").trim();
+  if (!value) {
+    return "";
+  }
+  if (value.toLowerCase().indexOf("for external use only") >= 0) {
+    return "Some label safety notes may not be peptide-specific and should be interpreted carefully.";
+  }
+  return value;
+}
 
 function applyVialTransform() {
   vialModel.style.transform = "rotateX(" + rotX + "deg) rotateY(" + rotY + "deg)";
@@ -63,7 +122,20 @@ function attachVialControls() {
     dragMove(pt);
   });
   window.addEventListener("touchend", endDrag);
+  vialScene.addEventListener("mouseleave", endDrag);
   applyVialTransform();
+}
+
+function attachBackgroundParallax() {
+  var particles = document.getElementById("bg_particles");
+  if (!particles) {
+    return;
+  }
+  window.addEventListener("mousemove", function(e) {
+    var x = (e.clientX / window.innerWidth - 0.5) * 8;
+    var y = (e.clientY / window.innerHeight - 0.5) * 8;
+    particles.style.transform = "translate(" + x.toFixed(2) + "px," + y.toFixed(2) + "px)";
+  });
 }
 
 function listToItems(items) {
@@ -72,7 +144,13 @@ function listToItems(items) {
   }
   var out = "";
   for (var i = 0; i < items.length; i++) {
-    out += "<li>" + items[i] + "</li>";
+    var cleaned = cleanRiskLine(items[i]);
+    if (cleaned) {
+      out += "<li>" + escapeHtml(cleaned) + "</li>";
+    }
+  }
+  if (!out) {
+    return "<li>No entries available.</li>";
   }
   return out;
 }
@@ -100,13 +178,16 @@ function renderTrials(trials) {
   if (scoped.length > 0) {
     for (var j = 0; j < scoped.length; j++) {
       var trial = scoped[j];
+      var compact = compactSummary(trial.lay_summary, 320);
+      var statusText = humanizeStatus(trial.status);
+      var methodsText = humanizeMethods(trial.methods);
       trialsHtml += "<div class=\"trial-card\">" +
-        "<p><strong>" + trial.title + "</strong></p>" +
-        "<p><strong>Trial ID:</strong> " + trial.nct_id + "</p>" +
-        "<p><strong>Status:</strong> " + trial.status + "</p>" +
-        "<p><strong>Summary:</strong> " + trial.lay_summary + "</p>" +
-        "<p><strong>Methods:</strong> " + trial.methods + "</p>" +
-        "<p><a href=\"" + trial.link + "\" target=\"_blank\" rel=\"noopener noreferrer\">Open trial source</a></p>" +
+        "<p><strong>" + escapeHtml(trial.title) + "</strong></p>" +
+        "<p><strong>Trial ID:</strong> " + escapeHtml(trial.nct_id) + "</p>" +
+        "<p><strong>Status:</strong> " + escapeHtml(statusText) + "</p>" +
+        "<p><strong>Summary:</strong> " + escapeHtml(compact.short) + "</p>" +
+        (compact.truncated ? "<details><summary>Show full summary</summary><p>" + escapeHtml(compact.full) + "</p></details>" : "") +
+        "<p><strong>Methods:</strong> " + escapeHtml(methodsText) + "</p>" +
         "</div>";
     }
   } else {
@@ -187,6 +268,72 @@ function renderFreshness(lastUpdated) {
   freshness.innerText = "Last synced (UTC): " + lastUpdated;
 }
 
+function renderQuickSummary(data) {
+  var section = document.getElementById("quick_summary");
+  if (!section) {
+    return;
+  }
+  var trialCount = data.clinical_trials ? data.clinical_trials.length : 0;
+  var pubmedCount = data.pubmed_articles ? data.pubmed_articles.length : 0;
+  var reliability = data.reliability || "LOW";
+  var quick = "<div class=\"quick-pill\"><span>Peptide</span><strong>" + escapeHtml(data.peptide_name || "N/A") + "</strong></div>" +
+    "<div class=\"quick-pill\"><span>Trials</span><strong>" + trialCount + "</strong></div>" +
+    "<div class=\"quick-pill\"><span>PubMed</span><strong>" + pubmedCount + "</strong></div>" +
+    "<div class=\"quick-pill\"><span>Reliability</span><strong>" + escapeHtml(reliability) + "</strong></div>";
+  section.innerHTML = quick;
+}
+
+function renderClinicalSnapshot(data) {
+  var section = document.getElementById("clinical_snapshot");
+  if (!section) {
+    return;
+  }
+  var shot = data.clinical_snapshot || {};
+  var what = shot.what_it_does || "Clinical effect summary is limited from available sources.";
+  var how = shot.how_it_works || "Mechanism summary is limited from available sources.";
+  var evidence = shot.evidence_strength || "LIMITED";
+  section.innerHTML =
+    "<h3>Clinical Snapshot</h3>" +
+    "<div class=\"snapshot-grid\">" +
+    "<div class=\"snapshot-card\"><span>What it does</span><p>" + escapeHtml(what) + "</p></div>" +
+    "<div class=\"snapshot-card\"><span>How it works</span><p>" + escapeHtml(how) + "</p></div>" +
+    "<div class=\"snapshot-card\"><span>Evidence strength</span><p>" + escapeHtml(evidence) + "</p></div>" +
+    "</div>";
+}
+
+function setTab(tabName) {
+  var tabs = ["overview", "trials", "sources"];
+  for (var i = 0; i < tabs.length; i++) {
+    var name = tabs[i];
+    var btn = document.getElementById("tab_" + name);
+    var content = document.getElementById("tab_content_" + name);
+    if (name === tabName) {
+      btn.classList.add("active");
+      content.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+      content.classList.remove("active");
+    }
+  }
+}
+
+function setSearchLoading(isLoading) {
+  var btn = document.getElementById("search_btn");
+  if (!btn) {
+    return;
+  }
+  searching = isLoading;
+  btn.disabled = isLoading;
+  btn.innerText = isLoading ? "Searching..." : "Search";
+}
+
+function renderReliability(data) {
+  var aliasInfo = document.getElementById("alias_info");
+  var reliability = data.reliability || "LOW";
+  var partial = data.partial_data ? "Partial source response" : "All core sources responded";
+  aliasInfo.innerText = "Search: " + data.search_input + "  •  Normalized: " + data.normalized_term + "  •  Reliability: " + reliability + "  •  " + partial;
+}
+
 function toggleTheme() {
   document.body.classList.toggle("theme-dark");
 }
@@ -242,6 +389,9 @@ function quickSearch(name) {
 }
 
 function searchPeptide() {
+  if (searching) {
+    return;
+  }
   var searchTerm = document.getElementById("search_term").value.trim();
   var statusMessage = document.getElementById("status_message");
   var aliasInfo = document.getElementById("alias_info");
@@ -261,6 +411,7 @@ function searchPeptide() {
     return;
   }
 
+  setSearchLoading(true);
   statusMessage.innerText = "Searching trusted sources...";
   aliasInfo.innerText = "";
   peptideName.innerText = "";
@@ -282,20 +433,23 @@ function searchPeptide() {
     .then(function(result) {
       if (!result.ok || result.data.error) {
         statusMessage.innerText = result.data.error || "No information found.";
+        setSearchLoading(false);
         return;
       }
 
       var data = result.data;
       lastData = data;
       statusMessage.innerText = "";
-      aliasInfo.innerText = "Search: " + data.search_input + "  •  Normalized: " + data.normalized_term;
+      renderReliability(data);
       peptideName.innerText = data.peptide_name;
       vialLabel.innerText = data.peptide_name.toUpperCase().slice(0, 14);
       medicalDefinition.innerText = data.medical_definition;
       research.innerText = data.plain_summary;
-      methods.innerText = data.methods;
+      methods.innerText = humanizeMethods(data.methods);
       benefitsList.innerHTML = listToItems(data.benefits);
       consList.innerHTML = listToItems(data.cons);
+      renderClinicalSnapshot(data);
+      renderQuickSummary(data);
       currentTrials = data.clinical_trials || [];
       renderTrials(currentTrials);
       renderEvidenceClaims(data.evidence_claims || []);
@@ -319,7 +473,7 @@ function searchPeptide() {
       }
       pubmedSection.innerHTML = pubmedHtml;
 
-      var sourcesHtml = "<h3>Sources</h3><ul>";
+      var sourcesHtml = "<h3>Sources and Citations</h3><ul>";
       if (data.sources && data.sources.length > 0) {
         for (var j = 0; j < data.sources.length; j++) {
           var src = data.sources[j];
@@ -327,8 +481,18 @@ function searchPeptide() {
           sourcesHtml += "<li><span class=\"confidence-badge badge-" + conf + "\">" + conf.toUpperCase() + "</span> <a href=\"" + src.url + "\" target=\"_blank\" rel=\"noopener noreferrer\">" + src.label + "</a></li>";
         }
       }
+      if (data.clinical_trials && data.clinical_trials.length > 0) {
+        sourcesHtml += "</ul><h3>Clinical Trial Citations</h3><ul>";
+        for (var t = 0; t < data.clinical_trials.length; t++) {
+          var ct = data.clinical_trials[t];
+          sourcesHtml += "<li><a href=\"" + ct.link + "\" target=\"_blank\" rel=\"noopener noreferrer\">" + escapeHtml(ct.nct_id + " — " + ct.title) + "</a></li>";
+        }
+      }
       sourcesHtml += "</ul>";
       sourcesSection.innerHTML = sourcesHtml;
+
+      var overview = document.getElementById("tab_content_overview");
+      overview.innerHTML = "<div class=\"trial-card\"><p><strong>Overview</strong></p><p>Use the tabs below to switch between summarized trial research and complete source citations.</p></div>";
 
       if (compareTerm) {
         fetch("/search?term=" + encodeURIComponent(compareTerm))
@@ -346,15 +510,34 @@ function searchPeptide() {
           })
           .catch(function() {
             renderCompare(null);
+          })
+          .finally(function() {
+            setSearchLoading(false);
           });
       } else {
         renderCompare(null);
+        setSearchLoading(false);
       }
     })
     .catch(function() {
       statusMessage.innerText = "Unable to fetch data right now. Please try again.";
+      setSearchLoading(false);
     });
 }
 
+document.getElementById("search_term").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    searchPeptide();
+  }
+});
+
+document.getElementById("compare_term").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") {
+    searchPeptide();
+  }
+});
+
 attachVialControls();
+attachBackgroundParallax();
 renderWatchlist();
+setTab("overview");
