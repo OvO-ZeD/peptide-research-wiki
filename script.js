@@ -236,6 +236,25 @@ function renderEvidenceClaims(claims) {
   evidenceSection.innerHTML = html;
 }
 
+function renderEvidenceScore(data) {
+  var evidenceSection = document.getElementById("evidence_section");
+  if (!evidenceSection) {
+    return;
+  }
+  var score = (data && data.evidence_score) || null;
+  if (!score) {
+    return;
+  }
+  var tierClass = score.tier === "HIGH" ? "badge-high" : (score.tier === "MEDIUM" ? "badge-medium" : "badge-context");
+  var breakdown = score.breakdown || {};
+  var html = "<h3>Evidence Strength</h3>" +
+    "<div class=\"paper-card\">" +
+    "<p><span class=\"confidence-badge " + tierClass + "\">" + escapeHtml(score.tier) + "</span> Evidence score: <strong>" + escapeHtml(String(score.score || 0)) + "/100</strong></p>" +
+    "<p>Trials: " + escapeHtml(String(breakdown.trials || 0)) + " • PubMed: " + escapeHtml(String(breakdown.pubmed || 0)) + " • FDA: " + escapeHtml(String(breakdown.fda || 0)) + " • Encyclopedia: " + escapeHtml(String(breakdown.encyclopedia || 0)) + "</p>" +
+    "</div>";
+  evidenceSection.innerHTML = html + evidenceSection.innerHTML;
+}
+
 function renderTimeline(timeline) {
   var timelineSection = document.getElementById("timeline_section");
   if (!timeline) {
@@ -478,17 +497,20 @@ function searchPeptide() {
       currentTrials = data.clinical_trials || [];
       renderTrials(currentTrials);
       renderEvidenceClaims(data.evidence_claims || []);
+      renderEvidenceScore(data);
       renderTimeline(data.trial_timeline || null);
       renderFreshness(data.last_updated_utc || "");
 
       var pubmedHtml = "<h3>PubMed Literature</h3>";
-      if (data.pubmed_articles && data.pubmed_articles.length > 0) {
+      var topPapers = data.top_pubmed_articles || data.pubmed_articles || [];
+      if (topPapers && topPapers.length > 0) {
+        pubmedHtml += "<p><strong>Top strongest papers</strong> ranked by trial wording + recency signals.</p>";
         pubmedHtml += "<div class=\"paper-list\">";
-        for (var p = 0; p < data.pubmed_articles.length; p++) {
-          var paper = data.pubmed_articles[p];
+        for (var p = 0; p < topPapers.length; p++) {
+          var paper = topPapers[p];
           pubmedHtml += "<div class=\"paper-card\">" +
             "<p><strong>" + paper.title + "</strong></p>" +
-            "<p>PMID: " + paper.pmid + " | " + paper.source + " | " + paper.pubdate + "</p>" +
+            "<p>PMID: " + paper.pmid + " | " + paper.source + " | " + paper.pubdate + (paper.strength ? " | Strength: " + paper.strength + "/100" : "") + "</p>" +
             "<p><a href=\"" + paper.link + "\" target=\"_blank\" rel=\"noopener noreferrer\">Open PubMed record</a></p>" +
             "</div>";
         }

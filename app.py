@@ -5,6 +5,7 @@ from urllib.error import URLError, HTTPError
 import json
 from datetime import datetime, timezone
 import os
+import re
 
 app = Flask(__name__, static_url_path="", static_folder=".")
 
@@ -108,7 +109,7 @@ def fetch_wikipedia_summary(term):
 
 
 def fetch_clinical_trials(term):
-    endpoint = f"https://clinicaltrials.gov/api/v2/studies?query.term={quote(term)}&pageSize=6"
+    endpoint = f"https://clinicaltrials.gov/api/v2/studies?query.term={quote(term)}&pageSize=20"
     data = fetch_json(endpoint)
     if not data:
         return []
@@ -160,7 +161,8 @@ def fetch_clinical_trials(term):
 
 
 def fetch_pubmed(term):
-    search_url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=5&term={quote(term)}[Title/Abstract]"
+    query = f"({term}[Title/Abstract]) OR ({term}[MeSH Terms]) OR ({term}[All Fields])"
+    search_url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=12&sort=relevance&term={quote(query)}"
     search_data = fetch_json(search_url)
     if not search_data:
         return []
@@ -180,10 +182,77 @@ def fetch_pubmed(term):
                 "title": record.get("title", "Untitled"),
                 "pubdate": record.get("pubdate", "Unknown"),
                 "source": record.get("source", "PubMed"),
+                "authors": record.get("authors", []),
                 "link": f"https://pubmed.ncbi.nlm.nih.gov/{pmid}/",
             }
         )
     return papers
+
+
+def parse_year(pubdate):
+    if not pubdate:
+        return None
+    match = re.search(r"(19|20)\d{2}", str(pubdate))
+    if not match:
+        return None
+    return int(match.group(0))
+
+
+def paper_strength(title, pubdate):
+    score = 20
+    t = (title or "").lower()
+    if any(k in t for k in ["randomized", "double-blind", "placebo", "controlled", "phase 3", "phase iii"]):
+        score += 28
+    elif any(k in t for k in ["phase 2", "phase ii", "clinical trial"]):
+        score += 20
+    elif any(k in t for k in ["meta-analysis", "systematic review"]):
+        score += 24
+    elif any(k in t for k in ["case report", "protocol", "letter"]):
+        score -= 8
+    year = parse_year(pubdate)
+    current_year = datetime.now(timezone.utc).year
+    if year:
+        age = current_year - year
+        if age <= 2:
+            score += 18
+        elif age <= 5:
+            score += 12
+        elif age <= 10:
+            score += 6
+    return max(0, min(100, score))
+
+
+def rank_pubmed(papers):
+    ranked = []
+    for paper in papers:
+        strength = paper_strength(paper.get("title"), paper.get("pubdate"))
+        copy = dict(paper)
+        copy["strength"] = strength
+        ranked.append(copy)
+    ranked.sort(key=lambda p: p.get("strength", 0), reverse=True)
+    return ranked
+
+
+def build_evidence_score(trials, pubmed, fda_data, wiki):
+    trial_points = min(45, len(trials) * 4)
+    completed_trials = sum(1 for t in trials if (t.get("status") or "") == "COMPLETED")
+    trial_points += min(20, completed_trials * 3)
+    top_paper = pubmed[0].get("strength", 0) if pubmed else 0
+    pubmed_points = min(25, int(top_paper * 0.25))
+    fda_points = 10 if fda_data else 0
+    wiki_points = 5 if wiki and wiki.get("summary") else 0
+    total = min(100, trial_points + pubmed_points + fda_points + wiki_points)
+    tier = "HIGH" if total >= 75 else "MEDIUM" if total >= 45 else "LOW"
+    return {
+        "score": total,
+        "tier": tier,
+        "breakdown": {
+            "trials": trial_points,
+            "pubmed": pubmed_points,
+            "fda": fda_points,
+            "encyclopedia": wiki_points,
+        },
+    }
 
 
 def fetch_openfda(term):
@@ -365,7 +434,7 @@ def search():
     term = normalize_term(raw_term)
     wiki = fetch_wikipedia_summary(term)
     trials = fetch_clinical_trials(term)
-    pubmed = fetch_pubmed(term)
+    pubmed = rank_pubmed(fetch_pubmed(term))
     fda_data = fetch_openfda(term)
     medical_definition = build_medical_definition(wiki["title"], trials, fda_data, wiki["summary"])
     plain_summary = build_plain_summary(wiki["summary"], trials)
@@ -373,6 +442,7 @@ def search():
     timeline = build_timeline(trials)
     claims = build_evidence_claims(trials, pubmed, fda_data)
     snapshot = build_clinical_snapshot(term, trials, pubmed, fda_data, wiki["summary"])
+    evidence_score = build_evidence_score(trials, pubmed, fda_data, wiki)
     source_ok = source_status(wiki, trials, pubmed, fda_data)
     healthy_sources = sum(1 for ok in source_ok.values() if ok)
     reliability = "HIGH" if healthy_sources >= 3 else ("MEDIUM" if healthy_sources >= 2 else "LOW")
@@ -391,8 +461,10 @@ def search():
         "cons": cons,
         "clinical_trials": trials,
         "pubmed_articles": pubmed,
+        "top_pubmed_articles": pubmed[:5],
         "trial_timeline": timeline,
         "evidence_claims": claims,
+        "evidence_score": evidence_score,
         "clinical_snapshot": snapshot,
         "source_status": source_ok,
         "reliability": reliability,
