@@ -462,9 +462,7 @@ function openStackModal(index) {
     var pathways = (m.pathways || []).map(function(p) { return "<span class=\"tier-mini\">" + escapeHtml(p) + "</span>"; }).join(" ");
     return "<div class=\"stack-deep-card\">" +
       "<h4>" + escapeHtml((m.peptide || "").toUpperCase()) + "</h4>" +
-      "<p><strong>What it does:</strong> " + escapeHtml(m.what_it_does || "") + "</p>" +
-      "<p><strong>How it does it:</strong> " + escapeHtml(m.how_it_does_it || "") + "</p>" +
-      "<p><strong>Why it does it:</strong> " + escapeHtml(m.why_it_does_it || "") + "</p>" +
+      "<p><strong>Mechanistic role:</strong> " + escapeHtml(m.what_it_does || "") + "</p>" +
       "<p><strong>Targets:</strong> " + targets + "</p>" +
       "<p><strong>Pathways:</strong> " + pathways + "</p>" +
       "</div>";
@@ -503,6 +501,9 @@ function openStackModal(index) {
   var ghAxisWarning = (deep.risk_flags || []).indexOf("gh_axis") >= 0
     ? "<div class=\"stack-risk-banner\"><strong>GH-axis caution:</strong> This stack includes growth-hormone-axis signaling components. Overuse or prolonged aggressive exposure can increase concern for insulin resistance trajectory, glycemic dysregulation, and theoretical pro-growth/tumor-signaling risk in predisposed contexts.</div>"
     : "";
+  var coreNarrative = "<p><strong>What it does:</strong> " + escapeHtml(deep.what_it_does || "") + "</p>" +
+    "<p><strong>How it does it:</strong> " + escapeHtml(deep.how_it_does_it || "") + "</p>" +
+    "<p><strong>Why it does what it does:</strong> " + escapeHtml(deep.why_it_does_it || "") + "</p>";
   var content = "<h2>" + escapeHtml(stackLabel) + "</h2>" +
     "<p><span class=\"confidence-badge " + badgeClass + "\">" + escapeHtml(row.evidence_tier) + "</span> Score: <strong>" + escapeHtml(String(row.score || 0)) + "/100</strong></p>" +
     "<p><strong>Goal:</strong> " + escapeHtml(row.goal_label || stackData.goal_label || "") + "</p>" +
@@ -511,11 +512,8 @@ function openStackModal(index) {
     "<p><strong>Phase note:</strong> " + escapeHtml(row.phase_note || "") + "</p>" +
     (row.community_signal && row.community_signal.present ? "<p><strong>Community signal:</strong> " + escapeHtml(row.community_signal.classification) + " — " + escapeHtml(row.community_signal.note || "") + "</p>" : "") +
     "<div class=\"stack-evidence-panel\"><p><strong>Peptide-level supporting evidence</strong></p>" + evidenceRows + "</div>" +
-    "<div class=\"stack-deep-section\"><h3>What it does</h3><p>" + escapeHtml(deep.what_it_does || "") + "</p></div>" +
-    "<div class=\"stack-deep-section\"><h3>How it does it</h3><p>" + escapeHtml(deep.how_it_does_it || "") + "</p></div>" +
-    "<div class=\"stack-deep-section\"><h3>Why it does what it does</h3><p>" + escapeHtml(deep.why_it_does_it || "") + "</p></div>" +
-    "<div class=\"stack-deep-section\"><h3>Pathways and target mapping</h3>" + mechanismRows + "</div>" +
-    "<div class=\"stack-deep-section\"><h3>Synergistic interaction analysis</h3>" + synergyRows + "</div>" +
+    "<div class=\"stack-deep-section\"><h3>Core mechanism narrative</h3>" + coreNarrative + "</div>" +
+    "<div class=\"stack-deep-section\"><h3>Integrated pathway and synergy analysis</h3>" + mechanismRows + synergyRows + "</div>" +
     "<div class=\"stack-deep-section\"><h3>Neuroplasticity angle</h3>" + neuroRows + "</div>" +
     ghAxisWarning +
     "<div class=\"stack-deep-section\"><h3>Risk profile and abuse concerns</h3>" + riskRows + "</div>" +
