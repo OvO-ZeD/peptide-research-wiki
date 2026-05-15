@@ -8,6 +8,8 @@ var rotX = 10;
 var currentTrials = [];
 var lastData = null;
 var searching = false;
+var orderCatalog = [];
+var currentMode = "research";
 
 function escapeHtml(text) {
   return String(text || "")
@@ -289,14 +291,18 @@ function renderClinicalSnapshot(data) {
     return;
   }
   var shot = data.clinical_snapshot || {};
-  var what = shot.what_it_does || "Clinical effect summary is limited from available sources.";
-  var how = shot.how_it_works || "Mechanism summary is limited from available sources.";
+  var what = shot.primary_effect || "Clinical effect summary is limited from available sources.";
+  var how = shot.mechanism_pathway || "Mechanism summary is limited from available sources.";
+  var outcomes = shot.expected_body_outcomes || "Expected body outcomes are limited from available sources.";
+  var context = shot.clinical_context || "Clinical context is limited from available sources.";
   var evidence = shot.evidence_strength || "LIMITED";
   section.innerHTML =
     "<h3>Clinical Snapshot</h3>" +
     "<div class=\"snapshot-grid\">" +
     "<div class=\"snapshot-card\"><span>What it does</span><p>" + escapeHtml(what) + "</p></div>" +
     "<div class=\"snapshot-card\"><span>How it works</span><p>" + escapeHtml(how) + "</p></div>" +
+    "<div class=\"snapshot-card\"><span>Expected body outcomes</span><p>" + escapeHtml(outcomes) + "</p></div>" +
+    "<div class=\"snapshot-card\"><span>Clinical context</span><p>" + escapeHtml(context) + "</p></div>" +
     "<div class=\"snapshot-card\"><span>Evidence strength</span><p>" + escapeHtml(evidence) + "</p></div>" +
     "</div>";
 }
@@ -336,6 +342,25 @@ function renderReliability(data) {
 
 function toggleTheme() {
   document.body.classList.toggle("theme-dark");
+}
+
+function setMode(mode) {
+  currentMode = mode;
+  var researchBtn = document.getElementById("mode_research");
+  var orderBtn = document.getElementById("mode_order");
+  var researchMode = document.getElementById("research_mode");
+  var orderMode = document.getElementById("order_mode");
+  if (mode === "order") {
+    orderBtn.classList.add("active");
+    researchBtn.classList.remove("active");
+    orderMode.classList.remove("mode-hidden");
+    researchMode.classList.add("mode-hidden");
+  } else {
+    researchBtn.classList.add("active");
+    orderBtn.classList.remove("active");
+    researchMode.classList.remove("mode-hidden");
+    orderMode.classList.add("mode-hidden");
+  }
 }
 
 function setDensity(mode) {
@@ -525,6 +550,131 @@ function searchPeptide() {
     });
 }
 
+function getOrderSelections() {
+  var selections = [];
+  for (var i = 0; i < orderCatalog.length; i++) {
+    var item = orderCatalog[i];
+    var input = document.getElementById("qty_" + item.id);
+    var qty = parseInt((input && input.value) || "0", 10);
+    if (qty > 0) {
+      selections.push({ id: item.id, qty: qty, name: item.name, variant: item.variant, price: item.price });
+    }
+  }
+  return selections;
+}
+
+function renderOrderTotal() {
+  var totalEl = document.getElementById("order_total");
+  var selected = getOrderSelections();
+  var total = 0;
+  for (var i = 0; i < selected.length; i++) {
+    total += selected[i].qty * selected[i].price;
+  }
+  totalEl.innerHTML = "<strong>Total:</strong> $" + total.toFixed(2) + " USD";
+}
+
+function renderOrderCatalog(items) {
+  orderCatalog = items || [];
+  var root = document.getElementById("order_catalog");
+  if (!orderCatalog.length) {
+    root.innerHTML = "<p>No products available right now.</p>";
+    return;
+  }
+  var html = "<div class=\"order-grid\">";
+  for (var i = 0; i < orderCatalog.length; i++) {
+    var item = orderCatalog[i];
+    var disabled = item.in_stock ? "" : " disabled";
+    html += "<div class=\"order-vial-card\">" +
+      "<div class=\"order-vial-name\">" + escapeHtml(item.name) + "</div>" +
+      "<div class=\"order-vial-variant\">" + escapeHtml(item.variant) + "</div>" +
+      "<div class=\"order-vial-graphic\">" +
+      "<div class=\"order-vial-cap\"></div>" +
+      "<div class=\"order-vial-body\"><span>VIAL</span></div>" +
+      "</div>" +
+      "<div class=\"qty-stepper\">" +
+      "<button type=\"button\" class=\"qty-btn\" onclick=\"adjustQty('" + escapeHtml(item.id) + "', -1)\"" + disabled + ">−</button>" +
+      "<input class=\"qty-input\" id=\"qty_" + escapeHtml(item.id) + "\" type=\"number\" min=\"0\" step=\"1\" value=\"0\" oninput=\"renderOrderTotal()\"" + disabled + ">" +
+      "<button type=\"button\" class=\"qty-btn\" onclick=\"adjustQty('" + escapeHtml(item.id) + "', 1)\"" + disabled + ">+</button>" +
+      "</div>" +
+      "<div class=\"order-vial-price\">$" + Number(item.price).toFixed(2) + " " + escapeHtml(item.currency || "USD") + "</div>" +
+      "</div>";
+  }
+  html += "</div>";
+  root.innerHTML = html;
+  renderOrderTotal();
+}
+
+function adjustQty(itemId, delta) {
+  var input = document.getElementById("qty_" + itemId);
+  if (!input || input.disabled) {
+    return;
+  }
+  var current = parseInt(input.value || "0", 10);
+  if (isNaN(current)) {
+    current = 0;
+  }
+  var next = current + delta;
+  if (next < 0) {
+    next = 0;
+  }
+  input.value = String(next);
+  renderOrderTotal();
+}
+
+function loadCatalog() {
+  fetch("/catalog")
+    .then(function(response) {
+      return response.json();
+    })
+    .then(function(data) {
+      renderOrderCatalog(data.items || []);
+    })
+    .catch(function() {
+      document.getElementById("order_catalog").innerHTML = "<p>Unable to load catalog right now.</p>";
+    });
+}
+
+function submitOrderRequest() {
+  var status = document.getElementById("order_status");
+  var customerName = document.getElementById("order_customer_name").value.trim();
+  var contact = document.getElementById("order_contact").value.trim();
+  var notes = document.getElementById("order_notes").value.trim();
+  var items = getOrderSelections().map(function(it) {
+    return { id: it.id, qty: it.qty };
+  });
+
+  if (!customerName || !contact) {
+    status.innerText = "Please add your name and contact.";
+    return;
+  }
+  if (!items.length) {
+    status.innerText = "Please select at least one peptide quantity.";
+    return;
+  }
+
+  status.innerText = "Submitting order request...";
+  fetch("/order-request", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ customer_name: customerName, contact: contact, notes: notes, items: items })
+  })
+    .then(function(response) {
+      return response.json().then(function(data) {
+        return { ok: response.ok, data: data };
+      });
+    })
+    .then(function(result) {
+      if (!result.ok || !result.data.ok) {
+        status.innerText = (result.data && result.data.error) ? result.data.error : "Order request failed.";
+        return;
+      }
+      status.innerText = "Order request submitted successfully. We will contact you soon.";
+    })
+    .catch(function() {
+      status.innerText = "Unable to submit request right now.";
+    });
+}
+
 document.getElementById("search_term").addEventListener("keydown", function(e) {
   if (e.key === "Enter") {
     searchPeptide();
@@ -541,3 +691,5 @@ attachVialControls();
 attachBackgroundParallax();
 renderWatchlist();
 setTab("overview");
+setMode("research");
+loadCatalog();

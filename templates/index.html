@@ -7,7 +7,12 @@
 </head>
 <body class="theme-dark density-clinical">
   <div class="bg-particles" id="bg_particles"></div>
-  <div class="page">
+  <div class="app-shell">
+    <aside class="side-nav panel">
+      <button id="mode_research" class="mode-btn active" onclick="setMode('research')">Research</button>
+      <button id="mode_order" class="mode-btn" onclick="setMode('order')">Order</button>
+    </aside>
+    <div class="page">
     <div class="top-controls panel">
       <button id="theme_toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
       <div class="density-group">
@@ -20,6 +25,7 @@
     <h1>Peptide Research Wiki</h1>
     <p class="subtitle">Search a peptide and get public research, trial details, plain-language summaries, methods, and source links.</p>
 
+    <div id="research_mode">
     <div id="search" class="panel">
       <label for="search_term">Search Peptide</label>
       <div class="search-row">
@@ -98,6 +104,22 @@
       </div>
       <div id="compare_section"></div>
       <div id="watchlist_section"></div>
+    </div>
+    </div>
+
+    <div id="order_mode" class="panel mode-hidden">
+      <h2>Order Peptides</h2>
+      <p class="subtitle">Select products, set quantity, and submit a free order request.</p>
+      <div id="order_catalog"></div>
+      <div class="order-form">
+        <input id="order_customer_name" type="text" placeholder="Your name">
+        <input id="order_contact" type="text" placeholder="Contact info (email/phone/telegram)">
+        <textarea id="order_notes" placeholder="Order notes (optional)"></textarea>
+        <div id="order_total"></div>
+        <button id="order_submit_btn" onclick="submitOrderRequest()">Submit Order Request</button>
+        <p id="order_status"></p>
+      </div>
+    </div>
     </div>
   </div>
 

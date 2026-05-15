@@ -20,30 +20,51 @@ ALIASES = {
 
 SNAPSHOT_LIBRARY = {
     "tesamorelin": {
-        "what": "Investigated for reducing excess visceral abdominal fat and improving metabolic markers in selected populations.",
-        "how": "Acts as a growth hormone-releasing hormone analog that stimulates endogenous GH and IGF-1 signaling, which is associated with lipid metabolism changes.",
+        "primary_effect": "Primarily investigated to reduce excess visceral abdominal fat and improve selected metabolic markers in specific clinical populations.",
+        "mechanism_pathway": "Mimics growth hormone-releasing hormone signaling and increases endogenous GH with downstream IGF-1 activity, a pathway associated with lipid mobilization and visceral fat metabolism.",
+        "expected_body_outcomes": "May reduce central abdominal fat burden and support improvements in metabolic risk signals in studied groups.",
+        "clinical_context": "Most established in HIV-associated lipodystrophy studies and related metabolic research settings.",
     },
     "retatrutide": {
-        "what": "Investigated for weight reduction and glycemic improvement in obesity and type 2 diabetes clinical programs.",
-        "how": "Designed as a multi-receptor peptide agonist targeting glucagon, GLP-1, and GIP pathways, which can influence appetite, energy balance, and glucose control.",
+        "primary_effect": "Investigated for clinically meaningful body-weight reduction and glycemic improvement in obesity and type 2 diabetes programs.",
+        "mechanism_pathway": "Acts as a multi-receptor agonist across glucagon, GLP-1, and GIP pathways, influencing appetite signaling, energy expenditure balance, gastric dynamics, and glucose regulation.",
+        "expected_body_outcomes": "Can be associated with reduced calorie intake, improved metabolic control, and substantial fat-mass reduction in responsive trial populations.",
+        "clinical_context": "Large interventional programs are ongoing to define long-term efficacy and safety across metabolic phenotypes.",
     },
     "semaglutide": {
-        "what": "Used or investigated for glycemic control and weight management depending on indication.",
-        "how": "Acts as a GLP-1 receptor agonist that supports glucose-dependent insulin activity and appetite regulation.",
+        "primary_effect": "Used for glycemic control and weight management depending on indication and formulation.",
+        "mechanism_pathway": "GLP-1 receptor agonism supports glucose-dependent insulin signaling, lowers glucagon tone, delays gastric emptying, and enhances satiety signaling.",
+        "expected_body_outcomes": "Often linked with improved glucose metrics and progressive weight reduction through appetite and intake modulation.",
+        "clinical_context": "Supported by large randomized trial programs in diabetes, obesity, and cardiometabolic outcomes.",
     },
     "tirzepatide": {
-        "what": "Used or investigated for glycemic improvement and weight reduction in metabolic disease care.",
-        "how": "Acts as a dual GIP and GLP-1 receptor agonist, affecting insulin response, satiety signaling, and metabolic regulation.",
+        "primary_effect": "Used or investigated for strong glycemic improvement and weight reduction in metabolic disease care.",
+        "mechanism_pathway": "Dual GIP and GLP-1 receptor agonism modulates insulin dynamics, satiety pathways, and postprandial metabolic responses.",
+        "expected_body_outcomes": "Can lead to significant HbA1c reduction and body-weight decline in eligible patient populations.",
+        "clinical_context": "Evidence base includes major phase programs in type 2 diabetes and obesity-related metabolic disease.",
     },
     "bpc-157": {
-        "what": "Primarily discussed in experimental contexts with interest in tissue-repair and inflammation pathways.",
-        "how": "Mechanistic claims are still investigational; current human evidence is limited compared with regulated therapeutics.",
+        "primary_effect": "Discussed mainly in experimental contexts for tissue-repair and inflammation-related hypotheses.",
+        "mechanism_pathway": "Proposed pathways are still investigational and not fully established in rigorous human therapeutic frameworks.",
+        "expected_body_outcomes": "Potential effects remain uncertain in high-quality human evidence contexts.",
+        "clinical_context": "Human interventional evidence is comparatively limited versus approved metabolic therapeutics.",
     },
     "cjc-1295": {
-        "what": "Investigated in growth-hormone-axis research contexts.",
-        "how": "Acts as a growth hormone-releasing hormone analog intended to extend GH pathway stimulation over time.",
+        "primary_effect": "Investigated in growth-hormone-axis research and endocrine signaling contexts.",
+        "mechanism_pathway": "Acts as a growth hormone-releasing hormone analog designed to prolong GH-axis stimulation.",
+        "expected_body_outcomes": "May increase GH/IGF-1 signaling activity, with downstream effects dependent on dose, population, and treatment context.",
+        "clinical_context": "Evidence remains more limited than established approved therapies and requires careful contextual interpretation.",
     },
 }
+
+ORDER_CATALOG = [
+    {"id": "tesamorelin-5mg", "name": "Tesamorelin", "variant": "5mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
+    {"id": "retatrutide-10mg", "name": "Retatrutide", "variant": "10mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
+    {"id": "semaglutide-5mg", "name": "Semaglutide", "variant": "5mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
+    {"id": "tirzepatide-10mg", "name": "Tirzepatide", "variant": "10mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
+    {"id": "cjc1295-5mg", "name": "CJC-1295", "variant": "5mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
+    {"id": "bpc157-5mg", "name": "BPC-157", "variant": "5mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
+]
 
 
 def normalize_term(term):
@@ -280,34 +301,44 @@ def build_evidence_claims(trials, pubmed, fda_data):
 
 def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary):
     base = SNAPSHOT_LIBRARY.get(term, {})
-    what_it_does = base.get("what")
-    how_it_works = base.get("how")
+    primary_effect = base.get("primary_effect")
+    mechanism_pathway = base.get("mechanism_pathway")
+    expected_body_outcomes = base.get("expected_body_outcomes")
+    clinical_context = base.get("clinical_context")
 
-    if not what_it_does:
+    if not primary_effect:
         if trials:
             top = trials[0]
-            what_it_does = (
+            primary_effect = (
                 f"Under clinical investigation with human-study signals, including trial {top.get('nct_id', 'N/A')} "
                 f"currently listed as {top.get('status', 'Not specified').replace('_', ' ').title()}."
             )
         elif fda_data:
-            what_it_does = "Linked to publicly indexed regulatory labeling context, with therapeutic use and safety text available."
+            primary_effect = "Linked to publicly indexed regulatory labeling context, with therapeutic use and safety text available."
         else:
-            what_it_does = "Public biomedical sources indicate scientific interest, but high-quality clinical characterization may be limited."
+            primary_effect = "Public biomedical sources indicate scientific interest, but high-quality clinical characterization may be limited."
 
-    if not how_it_works:
+    if not mechanism_pathway:
         if trials:
             methods = trials[0].get("methods", "")
-            how_it_works = f"Current mechanism context is derived from trial design metadata: {methods}"
+            mechanism_pathway = f"Current mechanism context is inferred from trial design metadata: {methods}"
         else:
-            how_it_works = f"Mechanism details are not consistently established in available public records. Context summary: {wiki_summary}"
+            mechanism_pathway = f"Mechanism details are not consistently established in available public records. Context summary: {wiki_summary}"
+
+    if not expected_body_outcomes:
+        expected_body_outcomes = "Body-level outcomes depend on indication, patient profile, dosing strategy, and duration of exposure in controlled studies."
+
+    if not clinical_context:
+        clinical_context = "Interpretation should be anchored to trial population, study design quality, and regulatory status."
 
     evidence_points = int(bool(trials)) + int(bool(pubmed)) + int(bool(fda_data))
     evidence_strength = "HIGH" if evidence_points >= 2 else "MODERATE" if evidence_points == 1 else "LIMITED"
 
     return {
-        "what_it_does": what_it_does,
-        "how_it_works": how_it_works,
+        "primary_effect": primary_effect,
+        "mechanism_pathway": mechanism_pathway,
+        "expected_body_outcomes": expected_body_outcomes,
+        "clinical_context": clinical_context,
         "evidence_strength": evidence_strength,
     }
 
@@ -319,6 +350,11 @@ def index():
 @app.route('/healthz')
 def healthz():
     return jsonify({"status": "ok"}), 200
+
+
+@app.route('/catalog')
+def catalog():
+    return jsonify({"items": ORDER_CATALOG}), 200
 
 @app.route('/search')
 def search():
@@ -370,6 +406,62 @@ def search():
         ],
     }
     return jsonify(response)
+
+
+@app.route('/order-request', methods=['POST'])
+def order_request():
+    payload = request.get_json(silent=True) or {}
+    customer_name = (payload.get("customer_name") or "").strip()
+    contact = (payload.get("contact") or "").strip()
+    items = payload.get("items") or []
+    notes = (payload.get("notes") or "").strip()
+
+    if not customer_name or not contact:
+        return jsonify({"error": "Customer name and contact are required."}), 400
+    if not isinstance(items, list) or len(items) == 0:
+        return jsonify({"error": "At least one item is required."}), 400
+
+    catalog_index = {item["id"]: item for item in ORDER_CATALOG}
+    normalized_items = []
+    total = 0.0
+
+    for row in items:
+        item_id = row.get("id")
+        qty = int(row.get("qty") or 0)
+        if qty <= 0 or item_id not in catalog_index:
+            continue
+        base = catalog_index[item_id]
+        line_total = qty * float(base["price"])
+        total += line_total
+        normalized_items.append(
+            {
+                "id": base["id"],
+                "name": base["name"],
+                "variant": base["variant"],
+                "qty": qty,
+                "unit_price": base["price"],
+                "line_total": round(line_total, 2),
+            }
+        )
+
+    if len(normalized_items) == 0:
+        return jsonify({"error": "No valid order items were submitted."}), 400
+
+    order_record = {
+        "submitted_at_utc": datetime.now(timezone.utc).isoformat(),
+        "customer_name": customer_name,
+        "contact": contact,
+        "notes": notes,
+        "items": normalized_items,
+        "total": round(total, 2),
+        "currency": "USD",
+        "status": "REQUEST_RECEIVED",
+    }
+
+    with open("order_requests.jsonl", "a", encoding="utf-8") as f:
+        f.write(json.dumps(order_record) + "\n")
+
+    return jsonify({"ok": True, "order": order_record}), 200
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", "8000"))
