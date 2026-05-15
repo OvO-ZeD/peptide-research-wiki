@@ -210,6 +210,17 @@ body {
   gap: 10px;
 }
 
+.order-disclaimer {
+  margin: 12px 0 14px;
+  border: 1px solid #3f5e90;
+  border-radius: 10px;
+  background: rgba(15, 28, 54, 0.72);
+  color: #cfe0ff;
+  padding: 10px 12px;
+  line-height: 1.5;
+  font-size: 13px;
+}
+
 .order-form input,
 .order-form textarea {
   padding: 11px 12px;
