@@ -10,6 +10,7 @@ var lastData = null;
 var searching = false;
 var orderCatalog = [];
 var currentMode = "research";
+var stackData = null;
 
 function escapeHtml(text) {
   return String(text || "")
@@ -367,19 +368,96 @@ function setMode(mode) {
   currentMode = mode;
   var researchBtn = document.getElementById("mode_research");
   var orderBtn = document.getElementById("mode_order");
+  var stackBtn = document.getElementById("mode_stack");
   var researchMode = document.getElementById("research_mode");
   var orderMode = document.getElementById("order_mode");
+  var stackMode = document.getElementById("stack_mode");
   if (mode === "order") {
     orderBtn.classList.add("active");
     researchBtn.classList.remove("active");
+    stackBtn.classList.remove("active");
     orderMode.classList.remove("mode-hidden");
     researchMode.classList.add("mode-hidden");
+    stackMode.classList.add("mode-hidden");
+  } else if (mode === "stack") {
+    stackBtn.classList.add("active");
+    researchBtn.classList.remove("active");
+    orderBtn.classList.remove("active");
+    stackMode.classList.remove("mode-hidden");
+    researchMode.classList.add("mode-hidden");
+    orderMode.classList.add("mode-hidden");
   } else {
     researchBtn.classList.add("active");
     orderBtn.classList.remove("active");
+    stackBtn.classList.remove("active");
     researchMode.classList.remove("mode-hidden");
     orderMode.classList.add("mode-hidden");
+    stackMode.classList.add("mode-hidden");
   }
+}
+
+function renderStackResults(data) {
+  stackData = data;
+  var root = document.getElementById("stack_results");
+  if (!data || !data.recommendations || !data.recommendations.length) {
+    root.innerHTML = "<p>No stack recommendations found for this goal/priority.</p>";
+    return;
+  }
+  var html = "";
+  for (var i = 0; i < data.recommendations.length; i++) {
+    var row = data.recommendations[i];
+    var badgeClass = row.evidence_tier === "HIGH" ? "badge-high" : (row.evidence_tier === "MEDIUM" ? "badge-medium" : "badge-context");
+    var stackLabel = (row.stack || []).map(function(x) { return x.toUpperCase(); }).join(" + ");
+    var rationale = row.rationale && row.rationale.length ? row.rationale.map(function(r) { return "<li>" + escapeHtml(r) + "</li>"; }).join("") : "<li>Limited direct overlap signals.</li>";
+    var tierTags = (row.tier_tags || []).map(function(t) {
+      return "<span class=\"tier-chip\">" + escapeHtml(t.peptide) + " (" + escapeHtml(t.tier) + ")</span>";
+    }).join(" ");
+    html += "<div class=\"stack-card\">" +
+      "<p><strong>" + escapeHtml(stackLabel) + "</strong></p>" +
+      "<p><span class=\"confidence-badge " + badgeClass + "\">" + escapeHtml(row.evidence_tier) + "</span> Score: <strong>" + escapeHtml(String(row.score || 0)) + "/100</strong></p>" +
+      "<p><strong>Objective rationale</strong></p><ul>" + rationale + "</ul>" +
+      "<p><strong>Evidence tier tags:</strong> " + tierTags + "</p>" +
+      "<p><strong>Phase note:</strong> " + escapeHtml(row.phase_note || "") + "</p>" +
+      (row.community_signal && row.community_signal.present ? "<p><strong>Community signal:</strong> " + escapeHtml(row.community_signal.classification) + " — " + escapeHtml(row.community_signal.note || "") + "</p>" : "") +
+      "<p><a href=\"https://clinicaltrials.gov/\" target=\"_blank\" rel=\"noopener noreferrer\">ClinicalTrials.gov</a> • <a href=\"https://pubmed.ncbi.nlm.nih.gov/\" target=\"_blank\" rel=\"noopener noreferrer\">PubMed</a></p>" +
+      "</div>";
+  }
+  root.innerHTML = html;
+}
+
+function loadStackRecommendations() {
+  var goalEl = document.getElementById("stack_goal");
+  var priorityEl = document.getElementById("stack_priority");
+  var status = document.getElementById("stack_status");
+  var btn = document.getElementById("stack_btn");
+  var goal = goalEl.value;
+  var priority = priorityEl.value;
+  btn.disabled = true;
+  btn.innerText = "Generating...";
+  status.innerText = "Building evidence-ranked stack suggestions...";
+  fetch("/stack-recommend?goal=" + encodeURIComponent(goal) + "&priority=" + encodeURIComponent(priority))
+    .then(function(response) {
+      return response.json().then(function(data) {
+        return { ok: response.ok, data: data };
+      });
+    })
+    .then(function(result) {
+      if (!result.ok || result.data.error) {
+        status.innerText = result.data.error || "Unable to generate stack right now.";
+        document.getElementById("stack_results").innerHTML = "";
+        return;
+      }
+      status.innerText = "Goal: " + result.data.goal_label + " • Priority: " + result.data.priority;
+      renderStackResults(result.data);
+    })
+    .catch(function() {
+      status.innerText = "Unable to load stack recommendations right now.";
+      document.getElementById("stack_results").innerHTML = "";
+    })
+    .finally(function() {
+      btn.disabled = false;
+      btn.innerText = "Generate Stack";
+    });
 }
 
 function setDensity(mode) {
@@ -715,3 +793,4 @@ renderWatchlist();
 setTab("overview");
 setMode("research");
 loadCatalog();
+loadStackRecommendations();

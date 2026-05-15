@@ -11,6 +11,7 @@
     <aside class="side-nav panel">
       <button id="mode_research" class="mode-btn active" onclick="setMode('research')">Research</button>
       <button id="mode_order" class="mode-btn" onclick="setMode('order')">Order</button>
+      <button id="mode_stack" class="mode-btn" onclick="setMode('stack')">Stack</button>
     </aside>
     <div class="page">
     <div class="top-controls panel">
@@ -122,6 +123,34 @@
         <button id="order_submit_btn" onclick="submitOrderRequest()">Submit Order Request</button>
         <p id="order_status"></p>
       </div>
+    </div>
+
+    <div id="stack_mode" class="panel mode-hidden">
+      <h2>Stack Recommendations</h2>
+      <p class="subtitle">Goal-based research stack suggestions ranked by evidence quality and objective alignment.</p>
+      <div class="stack-controls">
+        <select id="stack_goal">
+          <option value="fat_loss">Fat Loss</option>
+          <option value="lean_mass">Lean Mass Support</option>
+          <option value="focus_calm">Focus / Calm</option>
+        </select>
+        <select id="stack_priority">
+          <option value="retatrutide">Retatrutide</option>
+          <option value="tesamorelin">Tesamorelin</option>
+          <option value="ipamorelin">Ipamorelin</option>
+          <option value="mots-c">MOTS-c</option>
+          <option value="semaglutide">Semaglutide</option>
+          <option value="tirzepatide">Tirzepatide</option>
+          <option value="semax">Semax</option>
+          <option value="selank">Selank</option>
+        </select>
+        <button id="stack_btn" onclick="loadStackRecommendations()">Generate Stack</button>
+      </div>
+      <div class="stack-disclaimer">
+        <strong>Research Notice:</strong> Educational research context only. Not medical advice. Community protocol signals are labeled anecdotal and should be weighed below controlled trial evidence.
+      </div>
+      <div id="stack_status"></div>
+      <div id="stack_results"></div>
     </div>
     </div>
   </div>

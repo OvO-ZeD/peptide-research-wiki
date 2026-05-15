@@ -67,6 +67,89 @@ ORDER_CATALOG = [
     {"id": "bpc157-5mg", "name": "BPC-157", "variant": "5mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
 ]
 
+STACK_KNOWLEDGE = {
+    "retatrutide": {
+        "effects": ["fat_loss", "glycemic_support", "appetite_modulation"],
+        "tier": "A",
+        "summary": "Multi-receptor incretin agonist with strong obesity and metabolic trial signals.",
+    },
+    "tesamorelin": {
+        "effects": ["visceral_fat", "gh_axis", "body_composition"],
+        "tier": "A",
+        "summary": "GHRH analog with established data in visceral fat-focused populations.",
+    },
+    "ipamorelin": {
+        "effects": ["gh_axis", "recovery", "lean_mass_support"],
+        "tier": "C",
+        "summary": "GH-axis support signal is mostly mechanistic and smaller-study weighted.",
+    },
+    "mots-c": {
+        "effects": ["metabolic_flexibility", "exercise_tolerance", "fat_loss_support"],
+        "tier": "C",
+        "summary": "Early-stage metabolic signaling peptide with limited human evidence depth.",
+    },
+    "semaglutide": {
+        "effects": ["fat_loss", "glycemic_support", "appetite_modulation"],
+        "tier": "A",
+        "summary": "GLP-1 agonist with extensive high-quality obesity and diabetes evidence.",
+    },
+    "tirzepatide": {
+        "effects": ["fat_loss", "glycemic_support", "appetite_modulation"],
+        "tier": "A",
+        "summary": "Dual GIP/GLP-1 agonist with strong outcomes in weight and glycemic endpoints.",
+    },
+    "cjc-1295": {
+        "effects": ["gh_axis", "recovery", "lean_mass_support"],
+        "tier": "C",
+        "summary": "Long-acting GHRH analog context with limited high-quality human outcomes.",
+    },
+    "bpc-157": {
+        "effects": ["recovery", "inflammation_hypothesis"],
+        "tier": "D",
+        "summary": "Evidence is mostly preclinical or anecdotal and should be treated as uncertain.",
+    },
+    "semax": {
+        "effects": ["focus", "stress_response"],
+        "tier": "C",
+        "summary": "Neurocognitive-related signals are present but broad clinical evidence is limited.",
+    },
+    "selank": {
+        "effects": ["calm", "anxiety_support", "focus"],
+        "tier": "C",
+        "summary": "Anxiolytic/focus hypotheses exist with limited large-trial evidence depth.",
+    },
+}
+
+GOAL_BLUEPRINTS = {
+    "fat_loss": {
+        "label": "Fat Loss",
+        "primary_targets": ["fat_loss", "appetite_modulation", "visceral_fat", "glycemic_support"],
+        "optional_support": ["gh_axis", "metabolic_flexibility"],
+        "default_priority": ["retatrutide", "tesamorelin"],
+        "phase_note": "Research scenario: prioritize core metabolic/weight peptide first, then consider adjunct support signals in later phase if rationale remains strong.",
+    },
+    "lean_mass": {
+        "label": "Lean Mass Support",
+        "primary_targets": ["lean_mass_support", "gh_axis", "recovery"],
+        "optional_support": ["glycemic_support"],
+        "default_priority": ["tesamorelin", "ipamorelin"],
+        "phase_note": "Research scenario: start with strongest GH-axis signal, then evaluate additive recovery-related candidates where evidence supports complementarity.",
+    },
+    "focus_calm": {
+        "label": "Focus / Calm",
+        "primary_targets": ["focus", "calm", "stress_response", "anxiety_support"],
+        "optional_support": [],
+        "default_priority": ["semax", "selank"],
+        "phase_note": "Research scenario: prioritize cognitive/anxiolytic objective alignment and avoid over-stacking when evidence certainty is limited.",
+    },
+}
+
+COMMUNITY_NOTES = {
+    "retatrutide+tesamorelin": "Community discussions often pair incretin-based fat-loss signals with GH-axis body-composition goals; this is anecdotal and must be validated against trial evidence.",
+    "retatrutide+tesamorelin+ipamorelin": "Forum protocols sometimes phase GH-axis adjuncts after initial response period; evidence quality is lower than controlled trials.",
+    "semax+selank": "Community reports commonly describe focus/calm pairing; classify as anecdotal unless stronger controlled evidence is available.",
+}
+
 
 def normalize_term(term):
     key = term.strip().lower()
@@ -253,6 +336,79 @@ def build_evidence_score(trials, pubmed, fda_data, wiki):
             "encyclopedia": wiki_points,
         },
     }
+
+
+def tier_points(tier):
+    return {"A": 24, "B": 18, "C": 10, "D": 4}.get(tier, 2)
+
+
+def build_stack_candidates(goal_key, priority_peptide):
+    goal = GOAL_BLUEPRINTS.get(goal_key)
+    if not goal:
+        return []
+    priority = normalize_term(priority_peptide or "")
+    known_priority = priority if priority in STACK_KNOWLEDGE else None
+    candidates = []
+    base_pool = [
+        ["retatrutide", "tesamorelin"],
+        ["retatrutide", "tesamorelin", "ipamorelin"],
+        ["retatrutide", "tesamorelin", "mots-c"],
+        ["semaglutide", "tesamorelin"],
+        ["tirzepatide", "tesamorelin"],
+        ["tesamorelin", "ipamorelin"],
+        ["semax", "selank"],
+    ]
+    for stack in base_pool:
+        if known_priority and known_priority not in stack:
+            continue
+        score = 0
+        reasons = []
+        tier_tags = []
+        for pep in stack:
+            meta = STACK_KNOWLEDGE.get(pep)
+            if not meta:
+                continue
+            tier = meta.get("tier", "D")
+            tier_tags.append({"peptide": pep, "tier": tier})
+            score += tier_points(tier)
+            effects = set(meta.get("effects", []))
+            overlaps = [x for x in goal.get("primary_targets", []) if x in effects]
+            if overlaps:
+                score += len(overlaps) * 7
+                reasons.append(f"{pep} aligns with {', '.join(overlaps)}")
+            optional = [x for x in goal.get("optional_support", []) if x in effects]
+            if optional:
+                score += len(optional) * 3
+        unique_stack = list(dict.fromkeys(stack))
+        if len(unique_stack) >= 2:
+            score += 5
+        stack_key = "+".join(unique_stack)
+        community_note = COMMUNITY_NOTES.get(stack_key)
+        evidence_tier = "HIGH" if score >= 70 else "MEDIUM" if score >= 50 else "LIMITED"
+        candidates.append(
+            {
+                "goal": goal_key,
+                "goal_label": goal.get("label"),
+                "priority_peptide": known_priority,
+                "stack": unique_stack,
+                "score": min(100, score),
+                "evidence_tier": evidence_tier,
+                "rationale": reasons[:5],
+                "phase_note": goal.get("phase_note"),
+                "tier_tags": tier_tags,
+                "community_signal": {
+                    "present": bool(community_note),
+                    "note": community_note,
+                    "classification": "ANECDOTAL" if community_note else "NONE",
+                },
+                "sources": [
+                    {"label": "ClinicalTrials.gov", "url": "https://clinicaltrials.gov/"},
+                    {"label": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/"},
+                ],
+            }
+        )
+    candidates.sort(key=lambda x: x.get("score", 0), reverse=True)
+    return candidates[:5]
 
 
 def fetch_openfda(term):
@@ -534,6 +690,33 @@ def order_request():
         f.write(json.dumps(order_record) + "\n")
 
     return jsonify({"ok": True, "order": order_record}), 200
+
+
+@app.route('/stack-recommend')
+def stack_recommend():
+    goal = (request.args.get("goal") or "fat_loss").strip().lower()
+    priority = (request.args.get("priority") or "retatrutide").strip().lower()
+    if goal not in GOAL_BLUEPRINTS:
+        return jsonify({"error": "Unsupported goal."}), 400
+    candidates = build_stack_candidates(goal, priority)
+    return jsonify(
+        {
+            "goal": goal,
+            "goal_label": GOAL_BLUEPRINTS[goal]["label"],
+            "priority": normalize_term(priority),
+            "recommendations": candidates,
+            "policy": {
+                "research_only": True,
+                "medical_note": "Educational research context only. Not medical advice.",
+                "evidence_tiers": {
+                    "A": "Human trial-heavy",
+                    "B": "Observational/review-weighted",
+                    "C": "Mechanistic or limited human evidence",
+                    "D": "Mostly anecdotal/preclinical",
+                },
+            },
+        }
+    ), 200
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", "8000"))
