@@ -420,6 +420,156 @@ def build_peptide_evidence(pep):
     }
 
 
+def describe_effect(effect):
+    labels = {
+        "fat_loss": "fat-mass reduction pressure",
+        "glycemic_support": "glucose-control and insulin-signaling support",
+        "appetite_modulation": "central appetite modulation",
+        "visceral_fat": "visceral adiposity targeting",
+        "gh_axis": "growth-hormone and IGF-1 axis signaling",
+        "body_composition": "body-composition repartitioning",
+        "lean_mass_support": "lean-mass retention and support",
+        "recovery": "recovery and tissue-repair support",
+        "metabolic_flexibility": "substrate-use and metabolic flexibility",
+        "focus": "attentional focus signaling",
+        "stress_response": "stress-response regulation",
+        "calm": "calm/anxiolytic signaling",
+        "anxiety_support": "anxiety-load reduction support",
+        "tanning_support": "melanocortin-linked pigmentation signaling",
+        "uv_response": "UV-response adaptation",
+        "skin_quality": "skin remodeling support",
+        "healing_support": "healing cascade support",
+        "connective_tissue_support": "connective tissue remodeling support",
+        "fat_loss_support": "adjunct fat-loss signaling",
+        "sleep_support": "sleep architecture support",
+        "mitochondrial_support": "mitochondrial energetic support",
+        "exercise_tolerance": "exercise tolerance signaling",
+        "inflammation_hypothesis": "inflammation-related exploratory signaling",
+    }
+    return labels.get(effect, effect.replace("_", " "))
+
+
+def build_stack_deep_research(goal, unique_stack):
+    pathways = []
+    mechanism_map = []
+    synergy_analysis = []
+    neuroplasticity_notes = []
+    risk_profile = []
+    evidence_gaps = []
+    risk_flags = []
+
+    for pep in unique_stack:
+        meta = STACK_KNOWLEDGE.get(pep, {})
+        effects = meta.get("effects", [])
+        tier = meta.get("tier", "D")
+        pathways.append(
+            {
+                "peptide": pep,
+                "targets": [describe_effect(e) for e in effects],
+                "pathway_focus": [e for e in effects],
+            }
+        )
+        mechanism_map.append(
+            {
+                "peptide": pep,
+                "what_it_does": meta.get("summary", "No summary available."),
+                "how_it_does_it": "Primary action is inferred from effect-cluster alignment and current evidence tier.",
+                "why_it_does_it": "Expected outcomes are driven by receptor-level or signaling-pathway modulation represented by the mapped effect set.",
+                "targets": [describe_effect(e) for e in effects],
+                "pathways": effects,
+                "evidence_tier": tier,
+            }
+        )
+        if "focus" in effects or "stress_response" in effects or "calm" in effects or "sleep_support" in effects:
+            neuroplasticity_notes.append(
+                {
+                    "peptide": pep,
+                    "note": "Neurocognitive and stress-regulation hypotheses may involve synaptic signaling adaptation and neurotrophic-pathway interaction, but certainty is limited by trial depth.",
+                    "confidence": "LIMITED" if tier in ["C", "D"] else "MODERATE",
+                }
+            )
+        if "gh_axis" in effects:
+            risk_flags.append("gh_axis")
+            risk_profile.append(
+                {
+                    "peptide": pep,
+                    "risk_type": "GH-axis caution",
+                    "detail": "Excessive or prolonged GH/IGF-1 pathway stimulation can increase concern for insulin resistance trajectory, glucose dysregulation, and growth signaling load in susceptible individuals.",
+                    "severity": "ELEVATED",
+                }
+            )
+            risk_profile.append(
+                {
+                    "peptide": pep,
+                    "risk_type": "Predisposition concerns",
+                    "detail": "In predisposed contexts, intensified anabolic signaling may raise concern about pro-growth environments, including theoretical tumor-growth signal amplification pathways.",
+                    "severity": "ELEVATED",
+                }
+            )
+        if tier in ["C", "D"]:
+            evidence_gaps.append(
+                {
+                    "peptide": pep,
+                    "gap": "Needs stronger randomized human outcome data and longer-horizon safety characterization.",
+                }
+            )
+
+    for i in range(len(unique_stack)):
+        for j in range(i + 1, len(unique_stack)):
+            left = unique_stack[i]
+            right = unique_stack[j]
+            left_meta = STACK_KNOWLEDGE.get(left, {})
+            right_meta = STACK_KNOWLEDGE.get(right, {})
+            left_effects = set(left_meta.get("effects", []))
+            right_effects = set(right_meta.get("effects", []))
+            overlap = sorted(left_effects.intersection(right_effects))
+            left_unique = sorted(left_effects - right_effects)
+            right_unique = sorted(right_effects - left_effects)
+            synergy_analysis.append(
+                {
+                    "pair": [left, right],
+                    "why_complementary": "One component may broaden pathway coverage while the other deepens target intensity, creating a layered objective fit.",
+                    "shared_targets": [describe_effect(x) for x in overlap],
+                    "left_unique_targets": [describe_effect(x) for x in left_unique],
+                    "right_unique_targets": [describe_effect(x) for x in right_unique],
+                    "pathway_reasoning": "Overlap can reinforce core goal biology while non-overlap can extend support to adjacent physiological constraints.",
+                }
+            )
+
+    if not neuroplasticity_notes:
+        neuroplasticity_notes.append(
+            {
+                "peptide": "stack",
+                "note": "This stack is not primarily neuroplasticity-targeted, though systemic metabolic and stress-load changes can still indirectly affect brain plasticity context.",
+                "confidence": "LIMITED",
+            }
+        )
+
+    if not risk_profile:
+        risk_profile.append(
+            {
+                "peptide": "stack",
+                "risk_type": "General caution",
+                "detail": "Stacking increases complexity and confounding. Misuse can magnify adverse-response uncertainty and should be interpreted within controlled evidence limitations.",
+                "severity": "MODERATE",
+            }
+        )
+
+    return {
+        "goal_label": goal.get("label"),
+        "what_it_does": "Stack objective is to combine high-overlap primary target coverage with selective adjunct pathways to improve goal-aligned response probability.",
+        "how_it_does_it": "Mechanistically, each peptide contributes effect-cluster pressure across metabolic, endocrine, recovery, neurocognitive, or pigmentation pathways depending on composition.",
+        "why_it_does_it": "Complementary pathway coverage can reduce single-path dependence and support multi-node biology relevant to the selected goal.",
+        "mechanism_map": mechanism_map,
+        "pathway_targets": pathways,
+        "synergy_analysis": synergy_analysis,
+        "neuroplasticity_notes": neuroplasticity_notes,
+        "risk_profile": risk_profile,
+        "risk_flags": sorted(list(set(risk_flags))),
+        "evidence_gaps": evidence_gaps,
+    }
+
+
 def build_stack_candidates(goal_key, priority_peptide):
     goal = GOAL_BLUEPRINTS.get(goal_key)
     if not goal:
@@ -476,6 +626,7 @@ def build_stack_candidates(goal_key, priority_peptide):
             evidence_row["tier"] = meta.get("tier", "D")
             evidence_row["summary"] = meta.get("summary", "No summary available.")
             peptide_evidence.append(evidence_row)
+        deep_research = build_stack_deep_research(goal, unique_stack)
         candidates.append(
             {
                 "goal": goal_key,
@@ -493,6 +644,7 @@ def build_stack_candidates(goal_key, priority_peptide):
                     "classification": "ANECDOTAL" if community_note else "NONE",
                 },
                 "peptide_evidence": peptide_evidence,
+                "deep_research": deep_research,
                 "sources": [
                     {"label": "ClinicalTrials.gov", "url": "https://clinicaltrials.gov/"},
                     {"label": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/"},

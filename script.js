@@ -456,6 +456,53 @@ function openStackModal(index) {
       "<p><a href=\"" + escapeHtml(ev.clinicaltrials_url || "https://clinicaltrials.gov/") + "\" target=\"_blank\" rel=\"noopener noreferrer\">ClinicalTrials results</a> • <a href=\"" + escapeHtml(ev.pubmed_url || "https://pubmed.ncbi.nlm.nih.gov/") + "\" target=\"_blank\" rel=\"noopener noreferrer\">PubMed results</a></p>" +
     "</div>";
   }).join("");
+  var deep = row.deep_research || {};
+  var mechanismRows = (deep.mechanism_map || []).map(function(m) {
+    var targets = (m.targets || []).map(function(t) { return "<span class=\"tier-chip\">" + escapeHtml(t) + "</span>"; }).join(" ");
+    var pathways = (m.pathways || []).map(function(p) { return "<span class=\"tier-mini\">" + escapeHtml(p) + "</span>"; }).join(" ");
+    return "<div class=\"stack-deep-card\">" +
+      "<h4>" + escapeHtml((m.peptide || "").toUpperCase()) + "</h4>" +
+      "<p><strong>What it does:</strong> " + escapeHtml(m.what_it_does || "") + "</p>" +
+      "<p><strong>How it does it:</strong> " + escapeHtml(m.how_it_does_it || "") + "</p>" +
+      "<p><strong>Why it does it:</strong> " + escapeHtml(m.why_it_does_it || "") + "</p>" +
+      "<p><strong>Targets:</strong> " + targets + "</p>" +
+      "<p><strong>Pathways:</strong> " + pathways + "</p>" +
+      "</div>";
+  }).join("");
+  var synergyRows = (deep.synergy_analysis || []).map(function(s) {
+    var pair = (s.pair || []).map(function(p) { return String(p || "").toUpperCase(); }).join(" + ");
+    var shared = (s.shared_targets || []).join(", ");
+    var left = (s.left_unique_targets || []).join(", ");
+    var right = (s.right_unique_targets || []).join(", ");
+    return "<div class=\"stack-deep-card\">" +
+      "<h4>Synergy Pair: " + escapeHtml(pair) + "</h4>" +
+      "<p><strong>Why complementary:</strong> " + escapeHtml(s.why_complementary || "") + "</p>" +
+      "<p><strong>Shared targets:</strong> " + escapeHtml(shared || "None") + "</p>" +
+      "<p><strong>Unique contribution A:</strong> " + escapeHtml(left || "None") + "</p>" +
+      "<p><strong>Unique contribution B:</strong> " + escapeHtml(right || "None") + "</p>" +
+      "<p><strong>Pathway reasoning:</strong> " + escapeHtml(s.pathway_reasoning || "") + "</p>" +
+      "</div>";
+  }).join("");
+  var neuroRows = (deep.neuroplasticity_notes || []).map(function(n) {
+    return "<div class=\"stack-deep-card\">" +
+      "<h4>" + escapeHtml((n.peptide || "stack").toUpperCase()) + "</h4>" +
+      "<p>" + escapeHtml(n.note || "") + "</p>" +
+      "<p><strong>Confidence:</strong> " + escapeHtml(n.confidence || "LIMITED") + "</p>" +
+      "</div>";
+  }).join("");
+  var riskRows = (deep.risk_profile || []).map(function(r) {
+    return "<div class=\"stack-deep-card stack-risk-card\">" +
+      "<h4>" + escapeHtml((r.peptide || "stack").toUpperCase()) + " — " + escapeHtml(r.risk_type || "Risk") + "</h4>" +
+      "<p>" + escapeHtml(r.detail || "") + "</p>" +
+      "<p><strong>Severity:</strong> " + escapeHtml(r.severity || "MODERATE") + "</p>" +
+      "</div>";
+  }).join("");
+  var gapRows = (deep.evidence_gaps || []).map(function(g) {
+    return "<li><strong>" + escapeHtml((g.peptide || "stack").toUpperCase()) + ":</strong> " + escapeHtml(g.gap || "") + "</li>";
+  }).join("");
+  var ghAxisWarning = (deep.risk_flags || []).indexOf("gh_axis") >= 0
+    ? "<div class=\"stack-risk-banner\"><strong>GH-axis caution:</strong> This stack includes growth-hormone-axis signaling components. Overuse or prolonged aggressive exposure can increase concern for insulin resistance trajectory, glycemic dysregulation, and theoretical pro-growth/tumor-signaling risk in predisposed contexts.</div>"
+    : "";
   var content = "<h2>" + escapeHtml(stackLabel) + "</h2>" +
     "<p><span class=\"confidence-badge " + badgeClass + "\">" + escapeHtml(row.evidence_tier) + "</span> Score: <strong>" + escapeHtml(String(row.score || 0)) + "/100</strong></p>" +
     "<p><strong>Goal:</strong> " + escapeHtml(row.goal_label || stackData.goal_label || "") + "</p>" +
@@ -463,7 +510,16 @@ function openStackModal(index) {
     "<p><strong>Evidence tier tags:</strong> " + tierTags + "</p>" +
     "<p><strong>Phase note:</strong> " + escapeHtml(row.phase_note || "") + "</p>" +
     (row.community_signal && row.community_signal.present ? "<p><strong>Community signal:</strong> " + escapeHtml(row.community_signal.classification) + " — " + escapeHtml(row.community_signal.note || "") + "</p>" : "") +
-    "<div class=\"stack-evidence-panel\"><p><strong>Peptide-level supporting evidence</strong></p>" + evidenceRows + "</div>";
+    "<div class=\"stack-evidence-panel\"><p><strong>Peptide-level supporting evidence</strong></p>" + evidenceRows + "</div>" +
+    "<div class=\"stack-deep-section\"><h3>What it does</h3><p>" + escapeHtml(deep.what_it_does || "") + "</p></div>" +
+    "<div class=\"stack-deep-section\"><h3>How it does it</h3><p>" + escapeHtml(deep.how_it_does_it || "") + "</p></div>" +
+    "<div class=\"stack-deep-section\"><h3>Why it does what it does</h3><p>" + escapeHtml(deep.why_it_does_it || "") + "</p></div>" +
+    "<div class=\"stack-deep-section\"><h3>Pathways and target mapping</h3>" + mechanismRows + "</div>" +
+    "<div class=\"stack-deep-section\"><h3>Synergistic interaction analysis</h3>" + synergyRows + "</div>" +
+    "<div class=\"stack-deep-section\"><h3>Neuroplasticity angle</h3>" + neuroRows + "</div>" +
+    ghAxisWarning +
+    "<div class=\"stack-deep-section\"><h3>Risk profile and abuse concerns</h3>" + riskRows + "</div>" +
+    "<div class=\"stack-deep-section\"><h3>Evidence gaps</h3><ul>" + (gapRows || "<li>No major evidence gaps captured.</li>") + "</ul></div>";
   document.getElementById("stack_modal_content").innerHTML = content;
   document.getElementById("stack_modal").classList.remove("mode-hidden");
 }
