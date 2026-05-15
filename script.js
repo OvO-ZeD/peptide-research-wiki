@@ -11,6 +11,7 @@ var searching = false;
 var orderCatalog = [];
 var currentMode = "research";
 var stackData = null;
+var selectedStackIndex = -1;
 
 function escapeHtml(text) {
   return String(text || "")
@@ -412,17 +413,65 @@ function renderStackResults(data) {
     var tierTags = (row.tier_tags || []).map(function(t) {
       return "<span class=\"tier-chip\">" + escapeHtml(t.peptide) + " (" + escapeHtml(t.tier) + ")</span>";
     }).join(" ");
+    var evidenceRows = (row.peptide_evidence || []).map(function(ev) {
+      return "<div class=\"stack-evidence-row\">" +
+        "<p><strong>" + escapeHtml(ev.peptide || "") + "</strong> <span class=\"tier-mini\">Tier " + escapeHtml(ev.tier || "D") + "</span></p>" +
+        "<p>" + escapeHtml(ev.summary || "") + "</p>" +
+        "<p><a href=\"" + escapeHtml(ev.clinicaltrials_url || "https://clinicaltrials.gov/") + "\" target=\"_blank\" rel=\"noopener noreferrer\">ClinicalTrials results</a> • <a href=\"" + escapeHtml(ev.pubmed_url || "https://pubmed.ncbi.nlm.nih.gov/") + "\" target=\"_blank\" rel=\"noopener noreferrer\">PubMed results</a></p>" +
+      "</div>";
+    }).join("");
     html += "<div class=\"stack-card\">" +
-      "<p><strong>" + escapeHtml(stackLabel) + "</strong></p>" +
-      "<p><span class=\"confidence-badge " + badgeClass + "\">" + escapeHtml(row.evidence_tier) + "</span> Score: <strong>" + escapeHtml(String(row.score || 0)) + "/100</strong></p>" +
+      "<details class=\"stack-expand\">" +
+      "<summary><span class=\"stack-title\">" + escapeHtml(stackLabel) + "</span><span class=\"stack-summary-meta\"><span class=\"confidence-badge " + badgeClass + "\">" + escapeHtml(row.evidence_tier) + "</span> Score: <strong>" + escapeHtml(String(row.score || 0)) + "/100</strong></span></summary>" +
+      "<div class=\"stack-expanded-content\">" +
       "<p><strong>Objective rationale</strong></p><ul>" + rationale + "</ul>" +
       "<p><strong>Evidence tier tags:</strong> " + tierTags + "</p>" +
       "<p><strong>Phase note:</strong> " + escapeHtml(row.phase_note || "") + "</p>" +
       (row.community_signal && row.community_signal.present ? "<p><strong>Community signal:</strong> " + escapeHtml(row.community_signal.classification) + " — " + escapeHtml(row.community_signal.note || "") + "</p>" : "") +
+      "<div class=\"stack-evidence-panel\"><p><strong>Peptide-level supporting evidence</strong></p>" + evidenceRows + "</div>" +
+      "<button class=\"stack-open-modal\" onclick=\"openStackModal(" + i + ")\">Open Full Research View</button>" +
       "<p><a href=\"https://clinicaltrials.gov/\" target=\"_blank\" rel=\"noopener noreferrer\">ClinicalTrials.gov</a> • <a href=\"https://pubmed.ncbi.nlm.nih.gov/\" target=\"_blank\" rel=\"noopener noreferrer\">PubMed</a></p>" +
+      "</div></details>" +
       "</div>";
   }
   root.innerHTML = html;
+}
+
+function openStackModal(index) {
+  if (!stackData || !stackData.recommendations || index < 0 || index >= stackData.recommendations.length) {
+    return;
+  }
+  selectedStackIndex = index;
+  var row = stackData.recommendations[index];
+  var stackLabel = (row.stack || []).map(function(x) { return x.toUpperCase(); }).join(" + ");
+  var badgeClass = row.evidence_tier === "HIGH" ? "badge-high" : (row.evidence_tier === "MEDIUM" ? "badge-medium" : "badge-context");
+  var rationale = row.rationale && row.rationale.length ? row.rationale.map(function(r) { return "<li>" + escapeHtml(r) + "</li>"; }).join("") : "<li>Limited direct overlap signals.</li>";
+  var tierTags = (row.tier_tags || []).map(function(t) {
+    return "<span class=\"tier-chip\">" + escapeHtml(t.peptide) + " (" + escapeHtml(t.tier) + ")</span>";
+  }).join(" ");
+  var evidenceRows = (row.peptide_evidence || []).map(function(ev) {
+    return "<div class=\"stack-evidence-row\">" +
+      "<p><strong>" + escapeHtml(ev.peptide || "") + "</strong> <span class=\"tier-mini\">Tier " + escapeHtml(ev.tier || "D") + "</span></p>" +
+      "<p>" + escapeHtml(ev.summary || "") + "</p>" +
+      "<p><a href=\"" + escapeHtml(ev.clinicaltrials_url || "https://clinicaltrials.gov/") + "\" target=\"_blank\" rel=\"noopener noreferrer\">ClinicalTrials results</a> • <a href=\"" + escapeHtml(ev.pubmed_url || "https://pubmed.ncbi.nlm.nih.gov/") + "\" target=\"_blank\" rel=\"noopener noreferrer\">PubMed results</a></p>" +
+    "</div>";
+  }).join("");
+  var content = "<h2>" + escapeHtml(stackLabel) + "</h2>" +
+    "<p><span class=\"confidence-badge " + badgeClass + "\">" + escapeHtml(row.evidence_tier) + "</span> Score: <strong>" + escapeHtml(String(row.score || 0)) + "/100</strong></p>" +
+    "<p><strong>Goal:</strong> " + escapeHtml(row.goal_label || stackData.goal_label || "") + "</p>" +
+    "<p><strong>Objective rationale</strong></p><ul>" + rationale + "</ul>" +
+    "<p><strong>Evidence tier tags:</strong> " + tierTags + "</p>" +
+    "<p><strong>Phase note:</strong> " + escapeHtml(row.phase_note || "") + "</p>" +
+    (row.community_signal && row.community_signal.present ? "<p><strong>Community signal:</strong> " + escapeHtml(row.community_signal.classification) + " — " + escapeHtml(row.community_signal.note || "") + "</p>" : "") +
+    "<div class=\"stack-evidence-panel\"><p><strong>Peptide-level supporting evidence</strong></p>" + evidenceRows + "</div>";
+  document.getElementById("stack_modal_content").innerHTML = content;
+  document.getElementById("stack_modal").classList.remove("mode-hidden");
+}
+
+function closeStackModal() {
+  selectedStackIndex = -1;
+  document.getElementById("stack_modal").classList.add("mode-hidden");
+  document.getElementById("stack_modal_content").innerHTML = "";
 }
 
 function loadStackRecommendations() {

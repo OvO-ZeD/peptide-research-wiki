@@ -273,6 +273,112 @@ body {
   margin: 6px 0;
 }
 
+.stack-expand summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.stack-expand summary::-webkit-details-marker {
+  display: none;
+}
+
+.stack-title {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  color: #e8f1ff;
+}
+
+.stack-summary-meta {
+  color: #d6e6ff;
+  font-size: 16px;
+}
+
+.stack-expanded-content {
+  margin-top: 12px;
+  border-top: 1px solid #2f456e;
+  padding-top: 12px;
+}
+
+.stack-evidence-panel {
+  margin-top: 12px;
+  border: 1px solid #35507d;
+  border-radius: 12px;
+  padding: 10px;
+  background: rgba(8, 15, 30, 0.68);
+}
+
+.stack-evidence-row {
+  border: 1px solid #2c4268;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 8px;
+  background: rgba(10, 19, 36, 0.8);
+}
+
+.stack-evidence-row p {
+  margin: 6px 0;
+}
+
+.tier-mini {
+  display: inline-block;
+  margin-left: 8px;
+  border: 1px solid #3e5783;
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 11px;
+  color: #bcd5ff;
+  background: #132241;
+}
+
+.stack-open-modal {
+  margin-top: 10px;
+  border: 1px solid #4968a1;
+  border-radius: 10px;
+  padding: 9px 12px;
+  color: #e8f2ff;
+  background: linear-gradient(135deg, #1d4ed8, #6d28d9);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.stack-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.stack-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.72);
+}
+
+.stack-modal-dialog {
+  position: relative;
+  width: min(960px, calc(100vw - 32px));
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+  margin: 20px auto;
+  z-index: 41;
+}
+
+.stack-modal-close {
+  position: sticky;
+  top: 0;
+  float: right;
+  border: 1px solid #3d5685;
+  border-radius: 10px;
+  padding: 8px 12px;
+  background: #122242;
+  color: #dbe7ff;
+  cursor: pointer;
+}
+
 .tier-chip {
   display: inline-block;
   margin: 4px 6px 0 0;
@@ -840,6 +946,15 @@ summary {
 
   .stack-controls {
     grid-template-columns: 1fr;
+  }
+
+  .stack-expand summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stack-title {
+    font-size: 22px;
   }
 
   #search button {

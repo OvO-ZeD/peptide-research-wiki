@@ -133,6 +133,11 @@
           <option value="fat_loss">Fat Loss</option>
           <option value="lean_mass">Lean Mass Support</option>
           <option value="focus_calm">Focus / Calm</option>
+          <option value="tanning">Tanning / UV Response</option>
+          <option value="recovery_healing">Recovery / Healing Support</option>
+          <option value="sleep_stress">Sleep / Stress Regulation</option>
+          <option value="endurance_performance">Endurance / Performance</option>
+          <option value="metabolic_health">Metabolic Health</option>
         </select>
         <select id="stack_priority">
           <option value="retatrutide">Retatrutide</option>
@@ -143,6 +148,12 @@
           <option value="tirzepatide">Tirzepatide</option>
           <option value="semax">Semax</option>
           <option value="selank">Selank</option>
+          <option value="melanotan-2">Melanotan-2</option>
+          <option value="ghk-cu">GHK-Cu</option>
+          <option value="tb-500">TB-500</option>
+          <option value="aod-9604">AOD-9604</option>
+          <option value="dsip">DSIP</option>
+          <option value="ss-31">SS-31</option>
         </select>
         <button id="stack_btn" onclick="loadStackRecommendations()">Generate Stack</button>
       </div>
@@ -151,6 +162,14 @@
       </div>
       <div id="stack_status"></div>
       <div id="stack_results"></div>
+    </div>
+
+    <div id="stack_modal" class="stack-modal mode-hidden">
+      <div class="stack-modal-backdrop" onclick="closeStackModal()"></div>
+      <div class="stack-modal-dialog panel">
+        <button id="stack_modal_close" class="stack-modal-close" onclick="closeStackModal()">Close</button>
+        <div id="stack_modal_content"></div>
+      </div>
     </div>
     </div>
   </div>

@@ -118,6 +118,36 @@ STACK_KNOWLEDGE = {
         "tier": "C",
         "summary": "Anxiolytic/focus hypotheses exist with limited large-trial evidence depth.",
     },
+    "melanotan-2": {
+        "effects": ["tanning_support", "uv_response"],
+        "tier": "D",
+        "summary": "Primarily discussed in aesthetic tanning contexts with limited controlled human evidence depth.",
+    },
+    "ghk-cu": {
+        "effects": ["skin_quality", "recovery", "healing_support"],
+        "tier": "C",
+        "summary": "Skin and repair related signals are mostly early-stage or mixed-evidence in human settings.",
+    },
+    "tb-500": {
+        "effects": ["recovery", "healing_support", "connective_tissue_support"],
+        "tier": "D",
+        "summary": "Often discussed for repair/recovery protocols, but controlled human evidence remains limited.",
+    },
+    "aod-9604": {
+        "effects": ["fat_loss_support", "metabolic_flexibility"],
+        "tier": "C",
+        "summary": "Fat-metabolism focused peptide with narrower and less mature human evidence than incretin agents.",
+    },
+    "dsip": {
+        "effects": ["sleep_support", "stress_response"],
+        "tier": "D",
+        "summary": "Sleep-focused discussions are common, though high-quality contemporary clinical evidence is limited.",
+    },
+    "ss-31": {
+        "effects": ["mitochondrial_support", "exercise_tolerance", "recovery"],
+        "tier": "C",
+        "summary": "Mitochondrial-targeted candidate with translational potential and evolving human evidence.",
+    },
 }
 
 GOAL_BLUEPRINTS = {
@@ -142,12 +172,51 @@ GOAL_BLUEPRINTS = {
         "default_priority": ["semax", "selank"],
         "phase_note": "Research scenario: prioritize cognitive/anxiolytic objective alignment and avoid over-stacking when evidence certainty is limited.",
     },
+    "tanning": {
+        "label": "Tanning / UV Response",
+        "primary_targets": ["tanning_support", "uv_response", "skin_quality"],
+        "optional_support": ["recovery"],
+        "default_priority": ["melanotan-2", "ghk-cu"],
+        "phase_note": "Research scenario: center on pigmentation-focused signal first, then consider skin-repair support as secondary context.",
+    },
+    "recovery_healing": {
+        "label": "Recovery / Healing Support",
+        "primary_targets": ["recovery", "healing_support", "connective_tissue_support"],
+        "optional_support": ["gh_axis", "inflammation_hypothesis"],
+        "default_priority": ["ghk-cu", "tb-500"],
+        "phase_note": "Research scenario: prioritize direct recovery/healing signal candidates and treat broader inflammation claims as lower-certainty adjuncts.",
+    },
+    "sleep_stress": {
+        "label": "Sleep / Stress Regulation",
+        "primary_targets": ["sleep_support", "stress_response", "calm"],
+        "optional_support": ["anxiety_support"],
+        "default_priority": ["dsip", "selank"],
+        "phase_note": "Research scenario: limit stack complexity and prioritize clear sleep or stress endpoints over broad mixed-goal combinations.",
+    },
+    "endurance_performance": {
+        "label": "Endurance / Performance",
+        "primary_targets": ["exercise_tolerance", "mitochondrial_support", "metabolic_flexibility"],
+        "optional_support": ["recovery", "lean_mass_support"],
+        "default_priority": ["ss-31", "mots-c"],
+        "phase_note": "Research scenario: prioritize exercise and mitochondrial objective fit, then test recovery adjuncts if rationale remains coherent.",
+    },
+    "metabolic_health": {
+        "label": "Metabolic Health",
+        "primary_targets": ["glycemic_support", "appetite_modulation", "metabolic_flexibility"],
+        "optional_support": ["visceral_fat", "fat_loss_support"],
+        "default_priority": ["retatrutide", "semaglutide"],
+        "phase_note": "Research scenario: prioritize strongest glycemic and appetite evidence first, then evaluate narrower metabolic adjuncts.",
+    },
 }
 
 COMMUNITY_NOTES = {
     "retatrutide+tesamorelin": "Community discussions often pair incretin-based fat-loss signals with GH-axis body-composition goals; this is anecdotal and must be validated against trial evidence.",
     "retatrutide+tesamorelin+ipamorelin": "Forum protocols sometimes phase GH-axis adjuncts after initial response period; evidence quality is lower than controlled trials.",
     "semax+selank": "Community reports commonly describe focus/calm pairing; classify as anecdotal unless stronger controlled evidence is available.",
+    "melanotan-2+ghk-cu": "Community discussions often pair tanning-focused protocols with skin-quality support peptides; this remains anecdotal.",
+    "ghk-cu+tb-500": "Repair-focused communities frequently combine these as a recovery protocol, with limited controlled clinical validation.",
+    "dsip+selank": "Sleep and calm pairings are discussed in anecdotal protocol threads and should be weighted below trial-grade evidence.",
+    "ss-31+mots-c": "Performance communities may combine mitochondrial and metabolic flexibility signals; controlled comparative evidence is limited.",
 }
 
 
@@ -342,6 +411,15 @@ def tier_points(tier):
     return {"A": 24, "B": 18, "C": 10, "D": 4}.get(tier, 2)
 
 
+def build_peptide_evidence(pep):
+    term = quote(pep)
+    return {
+        "peptide": pep,
+        "clinicaltrials_url": f"https://clinicaltrials.gov/search?term={term}",
+        "pubmed_url": f"https://pubmed.ncbi.nlm.nih.gov/?term={term}",
+    }
+
+
 def build_stack_candidates(goal_key, priority_peptide):
     goal = GOAL_BLUEPRINTS.get(goal_key)
     if not goal:
@@ -357,6 +435,12 @@ def build_stack_candidates(goal_key, priority_peptide):
         ["tirzepatide", "tesamorelin"],
         ["tesamorelin", "ipamorelin"],
         ["semax", "selank"],
+        ["melanotan-2", "ghk-cu"],
+        ["ghk-cu", "tb-500"],
+        ["dsip", "selank"],
+        ["ss-31", "mots-c"],
+        ["semaglutide", "aod-9604"],
+        ["tirzepatide", "mots-c", "ss-31"],
     ]
     for stack in base_pool:
         if known_priority and known_priority not in stack:
@@ -385,6 +469,13 @@ def build_stack_candidates(goal_key, priority_peptide):
         stack_key = "+".join(unique_stack)
         community_note = COMMUNITY_NOTES.get(stack_key)
         evidence_tier = "HIGH" if score >= 70 else "MEDIUM" if score >= 50 else "LIMITED"
+        peptide_evidence = []
+        for pep in unique_stack:
+            meta = STACK_KNOWLEDGE.get(pep, {})
+            evidence_row = build_peptide_evidence(pep)
+            evidence_row["tier"] = meta.get("tier", "D")
+            evidence_row["summary"] = meta.get("summary", "No summary available.")
+            peptide_evidence.append(evidence_row)
         candidates.append(
             {
                 "goal": goal_key,
@@ -401,6 +492,7 @@ def build_stack_candidates(goal_key, priority_peptide):
                     "note": community_note,
                     "classification": "ANECDOTAL" if community_note else "NONE",
                 },
+                "peptide_evidence": peptide_evidence,
                 "sources": [
                     {"label": "ClinicalTrials.gov", "url": "https://clinicaltrials.gov/"},
                     {"label": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/"},
