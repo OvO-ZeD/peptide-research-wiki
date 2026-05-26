@@ -1,10 +1,14 @@
 {
   "name": "Peptide Research Wiki",
-  "short_name": "Research Wiki",
+  "short_name": "Peptide DB",
+  "description": "Search peptides and get evidence-backed research, clinical trials, PubMed articles, and stack recommendations.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0b1224",
-  "theme_color": "#0b1224",
+  "orientation": "portrait",
+  "background_color": "#08080a",
+  "theme_color": "#0e0e12",
+  "categories": ["medical", "research", "education"],
   "icons": [
     {
       "src": "icon-192.svg",
@@ -14,7 +18,9 @@
     {
       "src": "icon-512.svg",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "splash_pages": null
 }

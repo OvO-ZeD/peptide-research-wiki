@@ -86,6 +86,10 @@ body::before {
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
   padding: 24px 0 48px;
+  padding-top: env(safe-area-inset-top, 24px);
+  padding-bottom: env(safe-area-inset-bottom, 48px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
 }
 
 /* ─── Nav Bar ─── */

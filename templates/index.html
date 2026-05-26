@@ -10,6 +10,8 @@
   <title>Peptide Research Wiki</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-512.svg">
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.svg">
 </head>
 <body>
   <canvas id="particles"></canvas>
@@ -64,5 +66,10 @@
 
   <div id="tilt-elements" aria-hidden="true"></div>
   <script src="script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
+  </script>
 </body>
 </html>
