@@ -88,6 +88,41 @@ body::before {
   padding: 24px 0 48px;
 }
 
+/* ─── Nav Bar ─── */
+.nav-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding: 4px;
+  background: var(--surface-1);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xl);
+}
+
+.nav-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  color: var(--ink-subtle);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+  text-decoration: none;
+}
+
+.nav-btn:hover { color: var(--ink); background: var(--surface-2); }
+
+.nav-btn.active {
+  background: var(--primary-soft);
+  color: var(--primary);
+  box-shadow: 0 0 20px rgba(217,56,56,0.08);
+}
+
 /* ─── Hero ─── */
 .hero {
   display: flex;
@@ -327,7 +362,7 @@ body::before {
 /* ─── Results ─── */
 .results {
   display: grid;
-  gap: 16px;
+  gap: 10px;
   animation: fadeSlide 0.6s ease-out;
 }
 
@@ -355,6 +390,24 @@ body::before {
   transition: all var(--transition);
   transform-style: preserve-3d;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(217, 56, 56, 0.02);
+}
+
+/* Compact style for bottom panels (non-overview) */
+.panel-compact {
+  padding: 14px;
+}
+
+.panel-compact h2 {
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+}
+
+.panel-compact .snapshot-item {
+  padding: 10px 12px;
+}
+
+.panel-compact .snapshot-item p {
+  font-size: 0.8rem;
 }
 
 .panel:hover {
@@ -491,8 +544,8 @@ body::before {
 }
 
 .trial-item {
-  padding: 16px;
-  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
   background: var(--surface-2);
   border: 1px solid var(--hairline);
   transition: all var(--transition);
@@ -505,27 +558,27 @@ body::before {
 }
 
 .trial-item h3 {
-  margin: 0 0 4px;
-  font-size: 0.9rem;
+  margin: 0 0 2px;
+  font-size: 0.82rem;
   font-weight: 600;
 }
 
 .trial-item .meta {
-  margin: 0 0 8px;
-  font-size: 0.78rem;
+  margin: 0 0 4px;
+  font-size: 0.72rem;
   color: var(--ink-subtle);
 }
 
 .trial-item p {
-  margin: 0 0 8px;
-  font-size: 0.85rem;
+  margin: 0 0 4px;
+  font-size: 0.78rem;
   color: var(--ink-muted);
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 .trial-item a {
   color: var(--primary);
-  font-size: 0.82rem;
+  font-size: 0.75rem;
   font-weight: 500;
   text-decoration: none;
   transition: color var(--transition);
@@ -542,17 +595,17 @@ body::before {
   margin: 0;
   list-style: none;
   display: grid;
-  gap: 8px;
+  gap: 5px;
 }
 
 .article-list li {
-  padding: 14px 16px;
-  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
   background: var(--surface-2);
   border: 1px solid var(--hairline);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   transition: all var(--transition);
 }
 
@@ -563,7 +616,7 @@ body::before {
 
 .article-list a {
   color: var(--primary);
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   font-weight: 500;
   text-decoration: none;
   transition: color var(--transition);
@@ -575,24 +628,24 @@ body::before {
 }
 
 .article-list span {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: var(--ink-tertiary);
 }
 
 /* ─── PDB Structures ─── */
 .pdb-list {
   display: grid;
-  gap: 8px;
+  gap: 5px;
 }
 
 .pdb-item {
   display: block;
-  padding: 14px 16px;
-  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
   background: var(--surface-2);
   border: 1px solid var(--hairline);
   color: var(--ink-muted);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   text-decoration: none;
   transition: all var(--transition);
 }
@@ -600,12 +653,12 @@ body::before {
 .pdb-item strong {
   display: block;
   color: var(--primary);
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .pdb-item span {
   display: block;
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   color: var(--ink-tertiary);
 }
 
@@ -618,18 +671,18 @@ body::before {
 /* ─── Sources ─── */
 .source-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 5px;
 }
 
 .source-link {
   display: block;
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
   background: var(--surface-2);
   border: 1px solid var(--hairline);
   color: var(--ink-muted);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 500;
   text-decoration: none;
   transition: all var(--transition);

@@ -122,8 +122,8 @@ function escapeHtml(v) {
   });
 }
 
-function makePanel(title, content) {
-  return '<section class="panel"><h2>' + escapeHtml(title) + '</h2>' + content + '</section>';
+function makePanel(title, content, extraClass) {
+  return '<section class="panel' + (extraClass ? ' ' + extraClass : '') + '"><h2>' + escapeHtml(title) + '</h2>' + content + '</section>';
 }
 
 /* ─── Renderers ─── */
@@ -237,27 +237,27 @@ function buildResponse(response, title) {
 
   // PDB structures
   if (response.pdb_structures && response.pdb_structures.length) {
-    html += makePanel('Protein Structures (PDB)', renderPdb(response.pdb_structures));
+    html += makePanel('Protein Structures (PDB)', renderPdb(response.pdb_structures), 'panel-compact');
   }
 
   // UniProt
   if (response.uniprot) {
-    html += makePanel('UniProt Data', renderUniprot(response.uniprot));
+    html += makePanel('UniProt Data', renderUniprot(response.uniprot), 'panel-compact');
   }
 
   // Clinical Trials
   if (response.clinical_trials && response.clinical_trials.length) {
-    html += makePanel('Clinical Trials', renderTrials(response.clinical_trials));
+    html += makePanel('Clinical Trials', renderTrials(response.clinical_trials), 'panel-compact');
   }
 
   // PubMed
   if (response.top_pubmed_articles || response.pubmed_articles) {
-    html += makePanel('PubMed Articles', renderArticles(response.top_pubmed_articles || response.pubmed_articles));
+    html += makePanel('PubMed Articles', renderArticles(response.top_pubmed_articles || response.pubmed_articles), 'panel-compact');
   }
 
   // Sources
   if (response.sources && response.sources.length) {
-    html += makePanel('Sources', renderSources(response.sources));
+    html += makePanel('Sources', renderSources(response.sources), 'panel-compact');
   }
 
   return html;

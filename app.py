@@ -425,6 +425,856 @@ STACK_KNOWLEDGE = {
     },
 }
 
+STACK_PROTOCOLS = {
+    "tesamorelin+ipamorelin": {
+        "name": "Tesamorelin + Ipamorelin",
+        "goal": "Fat loss with muscle preservation",
+        "cycle_weeks": 16,
+        "off_weeks": 4,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-6",
+                "protocol": "Tesamorelin 2mg subQ daily (evening preferred, empty stomach). Ipamorelin not yet introduced — allow tesamorelin to establish GH-axis priming.",
+                "dosing_details": "Tesamorelin 2mg — reconstitute with 1mL bacteriostatic water, draw to 10-unit mark on insulin syringe. Inject subcutaneously in abdomen, 2 inches from belly button. Rotate sites.",
+                "timing": "Evening, just before bed or at least 2 hours after last meal (to avoid glucose interference with GH pulse).",
+            },
+            {
+                "phase": 2,
+                "weeks": "7-16",
+                "protocol": "Tesamorelin 2mg subQ daily + Ipamorelin 200-300mcg subQ daily. Administer both in same syringe (tested and found compatible). Continue evening dosing on empty stomach.",
+                "dosing_details": "Draw 0.5mL (2mg tesamorelin) + 0.2mL (200mcg ipamorelin) into same insulin syringe for single injection. Total volume ~0.7mL. Rotate injection sites across abdomen.",
+                "timing": "Same evening window, empty stomach (no food 2h before, 15min after).",
+            },
+        ],
+        "post_cycle": "4 weeks off completely to reset receptor sensitivity and allow natural GH axis to normalize. No GH secretagogues during off-period.",
+        "sources": [
+            "Clinical trials show tesamorelin 2mg daily reduces visceral fat by ~15-20% over 26 weeks in HIV populations.",
+            "Ipamorelin 200-300mcg produces reliable GH pulse with minimal cortisol or prolactin elevation.",
+            "Combination GHRH+GHRP produces synergistic GH pulse — 2-3x larger than either alone.",
+        ],
+        "evidence_summary": "Tesamorelin has Phase 3 data for visceral fat reduction. Ipamorelin has Phase 1/2 data for GH pulse stimulation. The combination is common in research protocols but lacks dedicated randomized controlled trials as a fixed combination.",
+    },
+    "retatrutide": {
+        "name": "Retatrutide (Monotherapy)",
+        "goal": "Weight loss, glycemic control",
+        "cycle_weeks": 48,
+        "off_weeks": 0,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "Retatrutide 2mg subQ once weekly. Dose escalation phase — low starting dose to assess tolerance.",
+                "dosing_details": "Inject subcutaneously once weekly. Rotate sites (abdomen, thigh, upper arm).",
+                "timing": "Same day each week, any time of day. Can be taken with or without food.",
+            },
+            {
+                "phase": 2,
+                "weeks": "5-8",
+                "protocol": "Retatrutide 4mg subQ once weekly. Step-up dose per trial protocols.",
+                "dosing_details": "Double the dose. Continue weekly subQ injection.",
+                "timing": "Same weekly schedule.",
+            },
+            {
+                "phase": 3,
+                "weeks": "9-48",
+                "protocol": "Retatrutide 6-8mg (or max tolerated dose) subQ once weekly. Maintenance phase. Dose adjustments based on tolerance and response.",
+                "dosing_details": "Titrate up to 8mg weekly as tolerated. Most clinical data uses 4-8mg range.",
+                "timing": "Same weekly schedule.",
+            },
+        ],
+        "post_cycle": "No required off-cycle — retatrutide is designed for continuous use. If discontinuing, taper dose over 2-4 weeks to minimize appetite rebound.",
+        "sources": [
+            "Phase 2 trial: 24-week retatrutide produced up to 17.1% weight loss at 8mg dose.",
+            "Triple agonism (GLP-1/GIP/glucagon) distinguishes it from dual-agonist tirzepatide.",
+        ],
+        "evidence_summary": "Retatrutide is in Phase 3 trials with strong Phase 2 data showing superior weight loss to existing incretin therapies. Not yet FDA approved.",
+    },
+    "retatrutide+tesamorelin+ipamorelin": {
+        "name": "Retatrutide + Tesamorelin + Ipamorelin",
+        "goal": "Maximum fat loss with muscle preservation",
+        "cycle_weeks": 16,
+        "off_weeks": 4,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "Retatrutide 2mg weekly + Tesamorelin 2mg daily. Start with incretin + GHRH to establish metabolic and GH-axis priming before adding GHRP.",
+                "dosing_details": "Retatrutide weekly subQ. Tesamorelin 2mg subQ daily in evening. Separate injection sites.",
+                "timing": "Retatrutide any time. Tesamorelin evening empty stomach.",
+            },
+            {
+                "phase": 2,
+                "weeks": "5-8",
+                "protocol": "Retatrutide 4mg weekly + Tesamorelin 2mg daily + Ipamorelin 200mcg daily. Introduce GHRP after GHRH is established for synergistic GH pulse.",
+                "dosing_details": "Tesamorelin + Ipamorelin can be mixed in same syringe. Retatrutide in separate injection.",
+                "timing": "Tesamorelin+Ipamorelin together in evening empty stomach. Retatrutide on separate day.",
+            },
+            {
+                "phase": 3,
+                "weeks": "9-16",
+                "protocol": "Retatrutide 6-8mg weekly + Tesamorelin 2mg daily + Ipamorelin 200-300mcg daily. Full dose triple protocol.",
+                "dosing_details": "Maintain all three. Monitor appetite, glucose, and tolerance closely.",
+                "timing": "Same timing as phase 2.",
+            },
+        ],
+        "post_cycle": "4 weeks off GH-axis peptides (tesamorelin, ipamorelin). Retatrutide can continue as maintenance if desired.",
+        "sources": [
+            "Triple agonist Phase 2 data shows significant weight loss.",
+            "GHRH+GHRP synergy established in GH literature.",
+        ],
+        "evidence_summary": "This is an advanced research protocol combining FDA-reviewed and investigational peptides. Each component has evidence individually; the triple combination lacks dedicated trials.",
+    },
+    "semaglutide+tirzepatide": {
+        "name": "Semaglutide + Tirzepatide",
+        "goal": "Weight loss",
+        "cycle_weeks": 0,
+        "off_weeks": 0,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "All",
+                "protocol": "Medical guidance: These are FDA-approved medications. Do NOT combine without physician supervision. Choose one agent and follow prescribed titration. Semaglutide start 0.25mg weekly, titrate to 2.4mg (Wegovy). Tirzepatide start 2.5mg weekly, titrate to 15mg (Zepbound).",
+                "dosing_details": "Follow approved prescribing information. Do not stack GLP-1/GIP agonists together unless under clinical trial conditions.",
+                "timing": "Once weekly injection per prescribing guidelines.",
+            },
+        ],
+        "post_cycle": "Taper off over 4 weeks to minimize appetite rebound and blood sugar fluctuations.",
+        "sources": ["FDA prescribing information for Ozempic/Wegovy and Mounjaro/Zepbound."],
+        "evidence_summary": "Both have extensive FDA-reviewed trial data. Combining them lacks safety data and is not recommended outside clinical trials.",
+    },
+    "cjc1295+ghrp2": {
+        "name": "CJC-1295 + GHRP-2",
+        "goal": "GH pulse amplification, recovery, body composition",
+        "cycle_weeks": 12,
+        "off_weeks": 4,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-12",
+                "protocol": "CJC-1295 (without DAC) 100mcg subQ + GHRP-2 200mcg subQ, 2-3x daily. Classic GHRH+GHRP synergy protocol. Morning and evening dosing captures natural GH pulse windows.",
+                "dosing_details": "Mix in same syringe. Morning dose upon waking (empty stomach, wait 20min before eating). Evening dose before bed (2h after last meal).",
+                "timing": "2x daily: upon waking + before bed. Optional 3rd dose pre-workout.",
+            },
+        ],
+        "post_cycle": "4 weeks off. Monitor for GH-axis desensitization with prolonged use.",
+        "sources": [
+            "GHRH+GHRP synergy established in Johnston et al. 2000 and subsequent GH research.",
+            "CJC-1295 with DAC studied in Phase 1 trials for GH deficiency.",
+        ],
+        "evidence_summary": "Well-characterized GH pulse synergy mechanism. Individual components studied in human trials. Long-term safety of repeated pulsing less established.",
+    },
+    "bpc157+tb500": {
+        "name": "BPC-157 + TB-500",
+        "goal": "Injury recovery, tendon/ligament healing",
+        "cycle_weeks": 6,
+        "off_weeks": 2,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-2",
+                "protocol": "BPC-157 250mcg 2x daily (morning/evening) subQ near injury site + TB-500 2.5mg 2x weekly subQ. Loading phase for faster onset.",
+                "dosing_details": "BPC-157: dose near injury site if accessible. TB-500: systemic, can inject abdomen or thigh.",
+                "timing": "BPC-157 morning + evening. TB-500 every 3-4 days.",
+            },
+            {
+                "phase": 2,
+                "weeks": "3-6",
+                "protocol": "BPC-157 250mcg 1x daily (maintenance) + TB-500 2.5mg 1x weekly. Reduce frequency once healing response established.",
+                "dosing_details": "Continue as above at reduced frequency.",
+                "timing": "BPC-157 daily evening. TB-500 once weekly.",
+            },
+        ],
+        "post_cycle": "2 weeks off minimum. Can repeat after 2-week break if needed.",
+        "sources": [
+            "BPC-157: preclinical studies show accelerated tendon/ligament healing in rat models.",
+            "TB-500: preclinical studies show increased angiogenesis and cell migration.",
+        ],
+        "evidence_summary": "Both have strong preclinical evidence but limited human trial data. Most evidence is from animal studies and anecdotal reports.",
+    },
+    "mk677+ipamorelin": {
+        "name": "MK-677 + Ipamorelin",
+        "goal": "GH-axis support, recovery, lean mass",
+        "cycle_weeks": 12,
+        "off_weeks": 4,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-12",
+                "protocol": "MK-677 10-25mg orally once daily (evening) + Ipamorelin 200-300mcg subQ daily (evening). Oral+injectable GH secretagogue combination for sustained GH pulse elevation.",
+                "dosing_details": "MK-677: oral capsule/tablet, take before bed. Ipamorelin: subQ injection in abdomen evening empty stomach.",
+                "timing": "Both in evening window. MK-677 before bed (may cause hunger — sleep through it). Ipamorelin 2h after last meal.",
+            },
+        ],
+        "post_cycle": "4 weeks off. MK-677 may cause insulin sensitivity changes — monitor glucose during cycle and off-period.",
+        "sources": [
+            "MK-677: human trials show increased IGF-1 in elderly and hip fracture patients.",
+            "Ipamorelin: Phase 1/2 data for post-op recovery.",
+        ],
+        "evidence_summary": "MK-677 has human trial data but is not FDA approved. Combination lacks controlled trials. Monitor glucose closely — MK-677 can reduce insulin sensitivity.",
+    },
+    "semax+selank": {
+        "name": "Semax + Selank",
+        "goal": "Focus, calm, cognitive performance",
+        "cycle_weeks": 4,
+        "off_weeks": 1,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "Semax 400-800mcg intranasal daily (morning) + Selank 400-800mcg intranasal daily (morning or split AM/PM). Administer separately, 5-10 minutes apart.",
+                "dosing_details": "Standard nasal dropper or spray. Lean head back slightly, administer, hold position for 30 seconds. Avoid blowing nose for 10 minutes.",
+                "timing": "Semax in the morning for cognitive activation. Selank morning or split AM+PM for all-day calm.",
+            },
+        ],
+        "post_cycle": "1 week off. Can cycle on as needed. Some users run 8 weeks with 2 weeks off.",
+        "sources": [
+            "Semax: approved in Russia for stroke recovery. Studies show increased BDNF.",
+            "Selank: approved in Russia for anxiety disorders. Modulates serotonin and enkephalin.",
+        ],
+        "evidence_summary": "Both have regional regulatory approval (Russia) and human studies. US FDA approval not obtained. Intranasal bioavailability well established.",
+    },
+    "pt141": {
+        "name": "PT-141 (Bremelanotide)",
+        "goal": "Sexual arousal and desire",
+        "cycle_weeks": 0,
+        "off_weeks": 0,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "PRN",
+                "protocol": "PT-141 0.75-1.75mg subQ as needed. Onset ~30-60 minutes, effects last 6-12 hours. Start at lowest dose to assess tolerance and nausea response.",
+                "dosing_details": "Inject subcutaneously in abdomen. Nausea is dose-dependent — starting at 0.75mg reduces this risk.",
+                "timing": "As needed, 30-60 minutes before desired effect. Do not exceed 2 doses per 24 hours. Max 8 doses per month per FDA labeling.",
+            },
+        ],
+        "post_cycle": "No cycling required — used as needed per FDA guidelines. Monitor for blood pressure changes.",
+        "sources": [
+            "FDA approved as Vyleesi for hypoactive sexual desire disorder in premenopausal women.",
+            "Clinical trials show improved desire scores vs placebo.",
+        ],
+        "evidence_summary": "FDA approved with clinical trial data. Better studied in women than men. Used off-label in men for ED and desire enhancement.",
+    },
+    "ss31+mots-c": {
+        "name": "SS-31 (Elamipretide) + MOTS-c",
+        "goal": "Mitochondrial support, endurance, metabolic flexibility",
+        "cycle_weeks": 8,
+        "off_weeks": 2,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-8",
+                "protocol": "SS-31 20-40mg subQ daily (evening) + MOTS-c 5-10mg subQ 2-3x weekly. Mitochondrial-targeted stack for cellular energy optimization.",
+                "dosing_details": "SS-31: daily subQ injection. MOTS-c: subQ injection every other day. Separate injection sites.",
+                "timing": "SS-31 in evening. MOTS-c morning or pre-workout.",
+            },
+        ],
+        "post_cycle": "2 weeks off. Mitochondrial adaptation requires cycling to maintain sensitivity.",
+        "sources": [
+            "SS-31: FDA Orphan Drug designation for mitochondrial disease. Multiple human trials.",
+            "MOTS-c: discovered 2015. Animal studies show improved metabolic parameters. Limited human data.",
+        ],
+        "evidence_summary": "SS-31 has the strongest evidence among mitochondrial peptides with FDA Orphan status and human trials. MOTS-c is much earlier stage.",
+    },
+    "ghk-cu": {
+        "name": "GHK-Cu (Copper Peptide)",
+        "goal": "Skin health, wound healing, anti-aging",
+        "cycle_weeks": 8,
+        "off_weeks": 2,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-8",
+                "protocol": "GHK-Cu 1-5mg subQ daily (systemic) or topical 2x daily. For systemic effects (collagen, hair, tissue repair): 2-5mg daily subQ. For cosmetic/skin: topical 1-2x daily.",
+                "dosing_details": "SubQ: standard injection in abdomen. Topical: apply to clean skin after cleansing.",
+                "timing": "SubQ: evening. Topical: morning and evening.",
+            },
+        ],
+        "post_cycle": "2 weeks off. Can cycle on/off 8 weeks on, 2 weeks off.",
+        "sources": [
+            "Well-studied in wound healing literature. Multiple clinical studies for topical use.",
+            "GHK-Cu naturally decreases with age — supplementation restores youthful levels.",
+        ],
+        "evidence_summary": "GHK-Cu has strong evidence for topical wound healing and skin health. Injectable systemic use has less formal study but is common in research protocols.",
+    },
+    "aod9604+mk677": {
+        "name": "AOD-9604 + MK-677",
+        "goal": "Fat loss support",
+        "cycle_weeks": 12,
+        "off_weeks": 4,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-12",
+                "protocol": "AOD-9604 300-500mcg subQ 1-2x daily (morning + pre-bed) + MK-677 10-25mg orally daily (evening). AOD targets lipolysis directly while MK-677 supports GH-mediated metabolic effects.",
+                "dosing_details": "AOD-9604: subQ injection. MK-677: oral capsule. Can take concurrently in evening window.",
+                "timing": "AOD split dose: morning + evening. MK-677 with evening dose or before bed.",
+            },
+        ],
+        "post_cycle": "4 weeks off. Monitor appetite normalization during off-period.",
+        "sources": [
+            "AOD-9604: completed Phase 2 obesity trials. Modest fat loss effect.",
+            "MK-677: increases IGF-1, may support metabolic rate.",
+        ],
+        "evidence_summary": "Both have limited human data. AOD-9604 Phase 2 data showed modest fat loss but development was discontinued. Combination lacks trials.",
+    },
+    "thymosin-alpha1+ghk-cu": {
+        "name": "Thymosin Alpha-1 + GHK-Cu",
+        "goal": "Immune support + tissue repair",
+        "cycle_weeks": 6,
+        "off_weeks": 2,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-6",
+                "protocol": "Thymosin Alpha-1 750-1500mcg subQ 1-2x weekly + GHK-Cu 2-5mg subQ daily. Immune modulation + systemic repair protocol.",
+                "dosing_details": "Thymosin Alpha-1: inject subQ, fewer injections per week (long-acting effect). GHK-Cu: daily subQ. Separate sites.",
+                "timing": "Thymosin Alpha-1: morning (may cause mild warmth/flush — normal). GHK-Cu: evening.",
+            },
+        ],
+        "post_cycle": "2 weeks off. Immune peptides are typically cycled 6-8 weeks on, 2-4 weeks off.",
+        "sources": [
+            "Thymosin Alpha-1: approved in several countries for immune support. Multiple human studies in hepatitis and vaccine response.",
+            "GHK-Cu: wound healing literature. Systemic effects less studied.",
+        ],
+        "evidence_summary": "Thymosin Alpha-1 has human clinical data in immune contexts (hepatitis, vaccine response). GHK-Cu adds repair support. Combination is extrapolated from individual evidence.",
+    },
+    "selank+dsip": {
+        "name": "Selank + DSIP",
+        "goal": "Sleep quality, stress reduction, calm",
+        "cycle_weeks": 4,
+        "off_weeks": 1,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "Selank 400-800mcg intranasal daily (morning/afternoon) + DSIP 50-100mcg subQ daily (evening). Selank for daytime calm, DSIP for deep sleep architecture.",
+                "dosing_details": "Selank: intranasal spray. DSIP: subQ injection in abdomen evening. DSIP is light-sensitive — protect from light during reconstitution and storage.",
+                "timing": "Selank morning + afternoon as needed. DSIP 30-60 minutes before bed.",
+            },
+        ],
+        "post_cycle": "1 week off. Can repeat 4-week cycles as needed.",
+        "sources": [
+            "DSIP: discovered 1970s, studied in small human sleep trials.",
+            "Selank: approved in Russia for anxiety. Modulates serotonin without sedation.",
+        ],
+        "evidence_summary": "Both have modest human data. DSIP research is older (1970s-90s). Selank has more recent clinical data from Russian research programs.",
+    },
+    "retatrutide+tesamorelin": {
+        "name": "Retatrutide + Tesamorelin",
+        "goal": "Weight loss with visceral fat targeting",
+        "cycle_weeks": 24,
+        "off_weeks": 0,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "Retatrutide 2mg subQ once weekly + Tesamorelin 2mg subQ daily. Incretin priming phase — low retatrutide dose to assess tolerance before escalation.",
+                "dosing_details": "Retatrutide weekly subQ injection. Tesamorelin daily subQ in evening. Separate injection sites — minimum 2 inches apart.",
+                "timing": "Retatrutide same day weekly (any time). Tesamorelin evening empty stomach (2h+ after last meal).",
+            },
+            {
+                "phase": 2,
+                "weeks": "5-8",
+                "protocol": "Retatrutide 4mg subQ weekly + Tesamorelin 2mg daily. Mid-dose escalation. Monitor appetite, nausea, and injection site tolerance.",
+                "dosing_details": "Double retatrutide dose. Continue tesamorelin at 2mg daily. Both subQ.",
+                "timing": "Same timing windows as phase 1.",
+            },
+            {
+                "phase": 3,
+                "weeks": "9-24",
+                "protocol": "Retatrutide 6-8mg subQ weekly + Tesamorelin 2mg daily. Full maintenance dose. Dual mechanism — triple agonist incretin + GHRH-driven fat loss.",
+                "dosing_details": "Retatrutide at max tolerated dose (6-8mg) weekly. Tesamorelin 2mg daily.",
+                "timing": "Same timing windows.",
+            },
+        ],
+        "post_cycle": "Retatrutide can continue as maintenance if desired. If discontinuing, taper retatrutide over 2-4 weeks to minimize appetite rebound. Tesamorelin can be stopped without taper.",
+        "sources": [
+            "Retatrutide Phase 2: up to 17.1% weight loss at 24 weeks (Jastreboff et al., 2023).",
+            "Tesamorelin Phase 3: ~15-20% visceral fat reduction in HIV lipodystrophy (Falutz et al., 2007).",
+        ],
+        "evidence_summary": "Retatrutide has strong Phase 2 obesity data. Tesamorelin has Phase 3 data for visceral fat. The combination is logical but lacks dedicated trials — each targets different fat-loss pathways (incretin vs GH-axis), suggesting additive potential.",
+    },
+    "retatrutide+tesamorelin+mots-c": {
+        "name": "Retatrutide + Tesamorelin + MOTS-c",
+        "goal": "Weight loss with metabolic optimization",
+        "cycle_weeks": 16,
+        "off_weeks": 4,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "Retatrutide 2mg weekly + Tesamorelin 2mg daily. Establish incretin and GH-axis baseline before adding mitochondrial support.",
+                "dosing_details": "Retatrutide weekly subQ. Tesamorelin daily subQ evening.",
+                "timing": "Retatrutide any day. Tesamorelin evening empty stomach.",
+            },
+            {
+                "phase": 2,
+                "weeks": "5-8",
+                "protocol": "Retatrutide 4mg weekly + Tesamorelin 2mg daily + MOTS-c 5mg 3x weekly. Introduce mitochondrial peptide after metabolic baseline is established.",
+                "dosing_details": "MOTS-c subQ injection. Separate from other injection sites. Can be taken pre-workout or morning.",
+                "timing": "MOTS-c morning or pre-workout on training days. Retatrutide separate day. Tesamorelin evening.",
+            },
+            {
+                "phase": 3,
+                "weeks": "9-16",
+                "protocol": "Retatrutide 6-8mg weekly + Tesamorelin 2mg daily + MOTS-c 10mg 3x weekly. Full dose triple protocol targeting weight loss, visceral fat, and metabolic flexibility.",
+                "dosing_details": "MOTS-c increased to 10mg. All three peptides maintained at full dose.",
+                "timing": "Same timing as phase 2.",
+            },
+        ],
+        "post_cycle": "4 weeks off MOTS-c. Retatrutide and tesamorelin may continue as maintenance. MOTS-c cycling follows mitochondrial adaptation principles.",
+        "sources": [
+            "Retatrutide: Phase 2 obesity data, triple agonist mechanism.",
+            "Tesamorelin: Phase 3 visceral fat reduction data.",
+            "MOTS-c: Discovered 2015, animal studies show improved metabolic flexibility and exercise capacity.",
+        ],
+        "evidence_summary": "The first two components have strong evidence. MOTS-c is early-stage (animal/limited human). The triple combination lacks any controlled data.",
+    },
+    "semaglutide+tesamorelin": {
+        "name": "Semaglutide + Tesamorelin",
+        "goal": "Weight loss with visceral fat reduction",
+        "cycle_weeks": 24,
+        "off_weeks": 0,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "Semaglutide 0.25mg subQ weekly + Tesamorelin 2mg subQ daily. Standard semaglutide titration start with GHRH support.",
+                "dosing_details": "Semaglutide weekly subQ (abdomen, thigh, arm). Tesamorelin daily subQ. Different injection sites.",
+                "timing": "Semaglutide same day weekly, morning preferred. Tesamorelin evening empty stomach.",
+            },
+            {
+                "phase": 2,
+                "weeks": "5-8",
+                "protocol": "Semaglutide 0.5mg weekly + Tesamorelin 2mg daily. Continue standard semaglutide escalation per prescribing guidelines.",
+                "dosing_details": "Semaglutide dose doubled to 0.5mg weekly. Tesamorelin unchanged.",
+                "timing": "Same timing windows.",
+            },
+            {
+                "phase": 3,
+                "weeks": "9-24",
+                "protocol": "Semaglutide titrated to therapeutic dose (1.0-2.4mg weekly) + Tesamorelin 2mg daily. Full dose maintenance. Wegovy target dose is 2.4mg weekly.",
+                "dosing_details": "Escalate semaglutide every 4 weeks per FDA protocol: 1.0mg, 1.7mg, 2.4mg. Continue tesamorelin 2mg daily.",
+                "timing": "Same timing.",
+            },
+        ],
+        "post_cycle": "If discontinuing semaglutide, taper over 4 weeks to minimize appetite rebound and blood sugar fluctuation. Tesamorelin can be stopped without taper.",
+        "sources": [
+            "Semaglutide: FDA approved (Wegovy). STEP trials show ~15% weight loss at 68 weeks.",
+            "Tesamorelin: FDA approved (Egrifta) for HIV lipodystrophy. Phase 3 data for visceral fat.",
+        ],
+        "evidence_summary": "Both FDA approved individually. The combination has strong rationale (GLP-1 + GHRH) but lacks dedicated combination trials. Each has large-trial evidence in their respective indications.",
+    },
+    "tirzepatide+tesamorelin": {
+        "name": "Tirzepatide + Tesamorelin",
+        "goal": "Weight loss with visceral fat reduction",
+        "cycle_weeks": 24,
+        "off_weeks": 0,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "Tirzepatide 2.5mg subQ weekly + Tesamorelin 2mg subQ daily. Standard tirzepatide initiation dose with concurrent GHRH analog.",
+                "dosing_details": "Tirzepatide weekly subQ (separate from tesamorelin site). Tesamorelin daily subQ evening.",
+                "timing": "Tirzepatide same day weekly (any time). Tesamorelin evening empty stomach.",
+            },
+            {
+                "phase": 2,
+                "weeks": "5-8",
+                "protocol": "Tirzepatide 5mg weekly + Tesamorelin 2mg daily. First dose escalation following standard Mounjaro/Zepbound titration.",
+                "dosing_details": "Tirzepatide increased to 5mg weekly. Tesamorelin unchanged.",
+                "timing": "Same timing.",
+            },
+            {
+                "phase": 3,
+                "weeks": "9-24",
+                "protocol": "Tirzepatide escalated to 10-15mg weekly + Tesamorelin 2mg daily. Full dual maintenance dose — dual GIP/GLP-1 agonist plus GHRH analog.",
+                "dosing_details": "Escalate tirzepatide every 4 weeks: 7.5mg, 10mg, 12.5mg, 15mg. Tesamorelin 2mg daily.",
+                "timing": "Same timing.",
+            },
+        ],
+        "post_cycle": "Taper tirzepatide over 4 weeks if discontinuing. Tesamorelin can stop without taper. Monitor appetite and glucose during transition.",
+        "sources": [
+            "Tirzepatide: FDA approved (Mounjaro/Zepbound). SURMOUNT trials show 15-22% weight loss.",
+            "Tesamorelin: FDA approved (Egrifta). Phase 3 visceral fat data.",
+        ],
+        "evidence_summary": "Both FDA approved individually. Tirzepatide has the strongest weight loss data among approved GLP-1/GIP drugs. Combination with tesamorelin is a common research protocol but lacks formal combination trials.",
+    },
+    "melanotan2+ghk-cu": {
+        "name": "Melanotan II + GHK-Cu",
+        "goal": "Tanning with skin quality support",
+        "cycle_weeks": 6,
+        "off_weeks": 2,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-2",
+                "protocol": "Melanotan II 0.25-0.5mg subQ daily or every other day (loading phase) + GHK-Cu 2mg subQ daily. Low-start melanotan to assess nausea tolerance before escalating.",
+                "dosing_details": "Melanotan II: subQ abdomen. Start low, titrate up. GHK-Cu: subQ separate site, evening preferred.",
+                "timing": "Melanotan II: morning (nausea less disruptive if asleep — consider evening). GHK-Cu: evening.",
+            },
+            {
+                "phase": 2,
+                "weeks": "3-6",
+                "protocol": "Melanotan II 0.5-1mg daily or EOD (maintenance) + GHK-Cu 2-5mg daily. Reduce melanotan frequency once desired pigmentation approaches. GHK-Cu supports skin health during melanogenesis.",
+                "dosing_details": "Maintain or reduce melanotan frequency. GHK-Cu maintained for skin remodeling support.",
+                "timing": "Same timing as phase 1.",
+            },
+        ],
+        "post_cycle": "2 weeks off. Melanotan II effects on pigmentation persist for weeks to months after cessation — re-dose only when fading becomes noticeable.",
+        "sources": [
+            "Melanotan II: Studied in Phase 1/2 for erythropoietic protoporphyria. Pigmentation effects well characterized.",
+            "GHK-Cu: Multiple clinical studies for wound healing and skin regeneration.",
+        ],
+        "evidence_summary": "Melanotan II has limited clinical trials but well-documented melanogenesis. GHK-Cu has solid wound-healing data. Combination is anecdotal — each addresses different aspects of skin aesthetics.",
+    },
+    "ghk-cu+tb500": {
+        "name": "GHK-Cu + TB-500",
+        "goal": "Systemic tissue repair and recovery",
+        "cycle_weeks": 6,
+        "off_weeks": 2,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-2",
+                "protocol": "GHK-Cu 5mg subQ daily + TB-500 2.5mg subQ 2x weekly. Loading phase — higher GHK-Cu dose for systemic copper peptide saturation.",
+                "dosing_details": "GHK-Cu daily subQ injection. TB-500 systemic subQ (abdomen/thigh). Separate injection sites.",
+                "timing": "GHK-Cu: evening. TB-500: spaced 3-4 days apart (e.g., Monday/Thursday).",
+            },
+            {
+                "phase": 2,
+                "weeks": "3-6",
+                "protocol": "GHK-Cu 2-3mg subQ daily + TB-500 2.5mg 1x weekly. Maintenance phase — reduced frequency after initial loading.",
+                "dosing_details": "GHK-Cu dose reduced. TB-500 reduced to once weekly.",
+                "timing": "Same timing as phase 1.",
+            },
+        ],
+        "post_cycle": "2 weeks off minimum. Can repeat cycle if needed. GHK-Cu for skin/connective tissue, TB-500 for systemic healing — complementary mechanisms.",
+        "sources": [
+            "GHK-Cu: clinical wound healing data, collagen synthesis stimulation.",
+            "TB-500: preclinical angiogenesis and cell migration data. Limited human trials.",
+        ],
+        "evidence_summary": "GHK-Cu has stronger human evidence (topical wound healing). TB-500 has strong preclinical but limited human data. The combination is common in recovery protocols but lacks controlled trials.",
+    },
+    "semaglutide+aod9604": {
+        "name": "Semaglutide + AOD-9604",
+        "goal": "Weight loss with targeted fat metabolism support",
+        "cycle_weeks": 24,
+        "off_weeks": 0,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "Semaglutide 0.25mg subQ weekly + AOD-9604 300mcg subQ daily. Standard semaglutide start with low-dose AOD for lipolysis support.",
+                "dosing_details": "Semaglutide weekly subQ. AOD-9604 daily subQ (morning and/or pre-bed). Different injection sites.",
+                "timing": "Semaglutide weekly. AOD-9604 morning and evening for twice-daily dosing option.",
+            },
+            {
+                "phase": 2,
+                "weeks": "5-8",
+                "protocol": "Semaglutide 0.5mg weekly + AOD-9604 500mcg daily. Both increased to mid-range doses.",
+                "dosing_details": "Semaglutide dose doubled. AOD-9604 increased to 500mcg daily.",
+                "timing": "Same timing.",
+            },
+            {
+                "phase": 3,
+                "weeks": "9-24",
+                "protocol": "Semaglutide titrated to 1.0-2.4mg weekly + AOD-9604 500mcg 1-2x daily. Full dose maintenance. AOD adds GH-fragment lipolysis signaling to GLP-1 appetite suppression.",
+                "dosing_details": "Escalate semaglutide per FDA protocol. AOD-9604 maintained at full dose.",
+                "timing": "Same timing.",
+            },
+        ],
+        "post_cycle": "Taper semaglutide over 4 weeks if discontinuing. AOD-9604 can stop without taper.",
+        "sources": [
+            "Semaglutide: FDA approved. STEP trials data.",
+            "AOD-9604: Completed Phase 2 for obesity. Modest fat loss observed. Program not continued to Phase 3.",
+        ],
+        "evidence_summary": "Semaglutide has strong FDA-reviewed evidence. AOD-9604 has Phase 2 data showing modest fat loss. AOD's mechanism (GH fragment 177-191) is distinct from GLP-1, suggesting additive potential. The combination lacks trials.",
+    },
+    "tirzepatide+mots-c+ss-31": {
+        "name": "Tirzepatide + MOTS-c + SS-31",
+        "goal": "Metabolic optimization with mitochondrial support",
+        "cycle_weeks": 16,
+        "off_weeks": 2,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "Tirzepatide 2.5mg subQ weekly + SS-31 20mg subQ daily. Establish incretin baseline and mitochondrial priming before adding MOTS-c.",
+                "dosing_details": "Tirzepatide weekly subQ. SS-31 daily subQ (evening). Separate sites.",
+                "timing": "Tirzepatide weekly any time. SS-31 evening.",
+            },
+            {
+                "phase": 2,
+                "weeks": "5-8",
+                "protocol": "Tirzepatide 5mg weekly + SS-31 40mg daily + MOTS-c 5mg 3x weekly. Introduce MOTS-c after 4-week baseline. Dose escalation of tirzepatide and SS-31.",
+                "dosing_details": "MOTS-c subQ morning or pre-workout. SS-31 increased to 40mg. Tirzepatide at 5mg.",
+                "timing": "MOTS-c pre-workout or morning. SS-31 evening. Tirzepatide separate day.",
+            },
+            {
+                "phase": 3,
+                "weeks": "9-16",
+                "protocol": "Tirzepatide 10-15mg weekly + SS-31 40mg daily + MOTS-c 10mg 3x weekly. Full maintenance — dual incretin agonist + dual mitochondrial support.",
+                "dosing_details": "Tirzepatide at max tolerated dose (10-15mg). SS-31 and MOTS-c at full dose.",
+                "timing": "Same timing as phase 2.",
+            },
+        ],
+        "post_cycle": "2 weeks off SS-31 and MOTS-c. Tirzepatide can continue as maintenance. Mitochondrial peptides are typically cycled.",
+        "sources": [
+            "Tirzepatide: FDA approved, SURMOUNT trials.",
+            "SS-31: FDA Orphan Drug for mitochondrial disease. Phase 2 heart failure data.",
+            "MOTS-c: Discovered 2015, animal studies only, very limited human data.",
+        ],
+        "evidence_summary": "Tirzepatide has the strongest evidence. SS-31 has FDA Orphan status and human trials in mitochondrial disease. MOTS-c is early-stage. The triple combination is speculative and lacks any clinical data.",
+    },
+    "retatrutide+cagrilintide": {
+        "name": "Retatrutide + Cagrilintide",
+        "goal": "Maximum metabolic weight loss",
+        "cycle_weeks": 48,
+        "off_weeks": 0,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "Retatrutide 2mg subQ weekly + Cagrilintide 0.3mg subQ weekly. Low starting doses for both to assess GI tolerance. Triple agonist + amylin analog.",
+                "dosing_details": "Both weekly subQ injections on separate days to minimize injection site reactions.",
+                "timing": "Stagger injections 2-3 days apart (e.g., retatrutide Monday, cagrilintide Thursday).",
+            },
+            {
+                "phase": 2,
+                "weeks": "5-12",
+                "protocol": "Retatrutide 4mg weekly + Cagrilintide 0.6mg weekly. Mid-level dose escalation. Monitor appetite, nausea, and tolerance closely.",
+                "dosing_details": "Both doses increased. Continue staggered injection schedule.",
+                "timing": "Same staggered schedule.",
+            },
+            {
+                "phase": 3,
+                "weeks": "13-48",
+                "protocol": "Retatrutide 6-8mg weekly + Cagrilintide 1.2-2.4mg weekly. Full maintenance dose. Triple GLP-1/GIP/glucagon agonist + long-acting amylin analog for additive weight loss.",
+                "dosing_details": "Titrate cagrilintide to max tolerated dose (up to 2.4mg). Retatrutide at 6-8mg.",
+                "timing": "Same staggered schedule.",
+            },
+        ],
+        "post_cycle": "If discontinuing, taper both agents over 4 weeks. Appetite rebound can be significant with dual withdrawal of incretin + amylin signaling.",
+        "sources": [
+            "Retatrutide: Phase 2 data showing superior weight loss to existing incretins.",
+            "Cagrilintide: Phase 2 CagriSema trials with semaglutide showing additive weight loss.",
+        ],
+        "evidence_summary": "Both are investigational with Phase 2 data. Novo Nordisk is developing cagrilintide + semaglutide (CagriSema) — the retatrutide pairing is a research extrapolation. Phase 3 data pending for both agents.",
+    },
+    "semaglutide+cagrilintide": {
+        "name": "Semaglutide + Cagrilintide (CagriSema protocol)",
+        "goal": "Weight loss — dual GLP-1 + amylin",
+        "cycle_weeks": 68,
+        "off_weeks": 0,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "Semaglutide 0.25mg subQ weekly + Cagrilintide 0.3mg subQ weekly. Standard dual start per CagriSema trial protocol. Low doses to establish GI tolerance.",
+                "dosing_details": "Separate weekly injections. Stagger 2-3 days apart. Both subQ in abdomen or thigh.",
+                "timing": "Stagger injection days (e.g., semaglutide Monday, cagrilintide Thursday).",
+            },
+            {
+                "phase": 2,
+                "weeks": "5-16",
+                "protocol": "Semaglutide titrated up by 0.25-0.5mg every 4 weeks + Cagrilintide titrated up by 0.3mg every 4 weeks. Parallel dose escalation following CagriSema trial design.",
+                "dosing_details": "Systematic escalation every 4 weeks. Monitor GI side effects closely.",
+                "timing": "Same staggered schedule.",
+            },
+            {
+                "phase": 3,
+                "weeks": "17-68",
+                "protocol": "Semaglutide 2.4mg weekly + Cagrilintide 2.4mg weekly. Full maintenance dose. GLP-1 + amylin dual agonist at therapeutic levels.",
+                "dosing_details": "Both at max dose. Continue staggered injection schedule for tolerance.",
+                "timing": "Same staggered schedule.",
+            },
+        ],
+        "post_cycle": "Taper both over 4-8 weeks. CagriSema trial design includes extended follow-up post-treatment. Monitor for appetite rebound and weight regain.",
+        "sources": [
+            "CagriSema Phase 2: Semaglutide 2.4mg + cagrilintide 2.4mg produced ~15.6% weight loss at 32 weeks.",
+            "Semaglutide: FDA approved, STEP trials.",
+        ],
+        "evidence_summary": "This combination has the strongest evidence of any dual-incretin stack — CagriSema is an active clinical development program with published Phase 2 data. Phase 3 trials ongoing.",
+    },
+    "tesamorelin+mk677": {
+        "name": "Tesamorelin + MK-677",
+        "goal": "GH-axis amplification (injectable + oral)",
+        "cycle_weeks": 12,
+        "off_weeks": 4,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-12",
+                "protocol": "Tesamorelin 2mg subQ daily (evening) + MK-677 10-25mg orally daily (before bed). Dual GH-axis activation — GHRH analog (injectable) + ghrelin mimetic (oral) for amplified GH pulse.",
+                "dosing_details": "Tesamorelin: standard subQ injection, empty stomach. MK-677: oral capsule, take before bed to sleep through hunger side effect.",
+                "timing": "Both in evening window. MK-677 before bed (hunger peak passes during sleep). Tesamorelin 2h+ after last meal.",
+            },
+        ],
+        "post_cycle": "4 weeks off minimum. GH-axis desensitization is a real concern with dual activation. Monitor IGF-1 levels and glucose during cycle.",
+        "sources": [
+            "Tesamorelin: Phase 3 data, FDA approved for HIV lipodystrophy.",
+            "MK-677: Human trials in elderly and frailty populations. Increases IGF-1 dose-dependently.",
+        ],
+        "evidence_summary": "Both have human trial data. Tesamorelin is FDA approved, MK-677 has Phase 2 human data. The combination is logical (GHRH + ghrelin agonist) but lacks dedicated trials. Monitor glucose — both can affect insulin sensitivity.",
+    },
+    "pt141+kisspeptin10": {
+        "name": "PT-141 + Kisspeptin-10",
+        "goal": "Sexual function and arousal",
+        "cycle_weeks": 0,
+        "off_weeks": 0,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "PRN",
+                "protocol": "PT-141 0.75-1.75mg subQ as needed + Kisspeptin-10 0.5-2mcg/kg subQ as needed. PT-141 addresses desire via melanocortin pathway. Kisspeptin-10 targets reproductive hormone signaling via GnRH.",
+                "dosing_details": "Both subQ injection. Administer separately. PT-141 has ~30-60min onset. Kisspeptin-10 has rapid GnRH pulse within minutes.",
+                "timing": "As needed before sexual activity. PT-141 effects last 6-12 hours. Kisspeptin-10 effects shorter (~2-4 hours).",
+            },
+        ],
+        "post_cycle": "No cycling required for either agent. Used on as-needed basis. PT-141 max 8 doses/month per FDA labeling.",
+        "sources": [
+            "PT-141 (bremelanotide): FDA approved as Vyleesi for HSDD.",
+            "Kisspeptin-10: Phase 1/2 human trials for reproductive health. Stimulates LH and FSH release.",
+        ],
+        "evidence_summary": "PT-141 is FDA approved with clinical trial data. Kisspeptin-10 has Phase 1/2 human data showing GnRH stimulation. The combination targets both desire (melanocortin) and hormonal signaling (kisspeptin/GnRH) — distinct mechanisms that may complement each other.",
+    },
+    "igf1-lr3+peg-mgf": {
+        "name": "IGF-1 LR3 + PEG-MGF",
+        "goal": "Direct anabolic signaling",
+        "cycle_weeks": 6,
+        "off_weeks": 4,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "IGF-1 LR3 20-40mcg subQ daily (post-workout or morning) + PEG-MGF 200-400mcg subQ 2-3x weekly. Direct IGF-1 receptor activation (LR3) + mechano-growth factor satellite cell signaling (MGF).",
+                "dosing_details": "IGF-1 LR3: daily subQ, close to target muscle group if desired. PEG-MGF: subQ, spaced every other day.",
+                "timing": "IGF-1 LR3 post-workout or morning. PEG-MGF on non-consecutive days.",
+            },
+            {
+                "phase": 2,
+                "weeks": "5-6",
+                "protocol": "Reduce frequency — IGF-1 LR3 EOD + PEG-MGF 1x weekly. Taper phase before off-cycle.",
+                "dosing_details": "Reduced frequency to taper off.",
+                "timing": "Same timing windows.",
+            },
+        ],
+        "post_cycle": "4 weeks off minimum. IGF-1 LR3 has strong anabolic signaling — cycling is critical to avoid receptor desensitization and allow natural IGF-1 axis to normalize.",
+        "sources": [
+            "IGF-1 LR3: Modified from natural IGF-1 for extended half-life. Preclinical anabolic data.",
+            "PEG-MGF: PEGylated MGF for extended half-life. Preclinical muscle repair signaling data.",
+        ],
+        "evidence_summary": "Both are research tools with preclinical evidence. IGF-1 LR3 has strong mechanistic rationale (IGF-1 receptor agonist). PEG-MGF is derived from the IGF-1 gene splice variant MGF. Neither has meaningful human clinical trial data. Long-term safety unknown.",
+    },
+    "semax+dihexa": {
+        "name": "Semax + Dihexa",
+        "goal": "Cognitive enhancement and neuroplasticity",
+        "cycle_weeks": 4,
+        "off_weeks": 1,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-4",
+                "protocol": "Semax 400-800mcg intranasal daily (morning) + Dihexa 10-20mg orally daily (morning). Semax provides BDNF-driven cognitive boost while Dihexa crosses blood-brain barrier and promotes synaptogenesis.",
+                "dosing_details": "Semax: intranasal spray/drops. Dihexa: oral capsule, can take with or without food.",
+                "timing": "Both in morning for daytime cognitive effects. Semax may cause mild stimulation — avoid late-day dosing.",
+            },
+        ],
+        "post_cycle": "1 week off minimum. Neuroplasticity peptides benefit from cycling to maintain sensitivity.",
+        "sources": [
+            "Semax: Russian-approved medication for stroke recovery. Human studies show increased BDNF.",
+            "Dihexa: Preclinical studies show synaptogenesis and cognitive improvement in animal models. Minimal human data.",
+        ],
+        "evidence_summary": "Semax has regional regulatory approval and human clinical data. Dihexa is preclinical with impressive animal data (improved cognition in rodent models) but almost no human studies. The combination is speculative — one has human evidence, the other is purely preclinical.",
+    },
+    "ghrp6+sermorelin": {
+        "name": "GHRP-6 + Sermorelin",
+        "goal": "GH pulse stimulation with appetite increase",
+        "cycle_weeks": 12,
+        "off_weeks": 4,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-12",
+                "protocol": "GHRP-6 200-300mcg subQ + Sermorelin 200-300mcg subQ, 1-2x daily (morning and/or evening). GHRH (sermorelin) + GHRP (GHRP-6) synergistic GH pulse. GHRP-6 adds notable appetite stimulation.",
+                "dosing_details": "Mix in same syringe for single injection. Morning upon waking (empty stomach, wait 20 min to eat). Evening 2h+ after last meal.",
+                "timing": "1-2x daily. Morning + pre-bed for twice-daily protocol. Pre-workout is also an option.",
+            },
+        ],
+        "post_cycle": "4 weeks off minimum. GH-axis desensitization possible with prolonged use. Sermorelin is shorter-acting than modified GHRH analogs (like CJC-1295-DAC).",
+        "sources": [
+            "Sermorelin: FDA approved for pediatric GH deficiency diagnosis.",
+            "GHRP-6: Preclinical and some human GH pulse data. Strong hunger effect documented.",
+        ],
+        "evidence_summary": "Sermorelin has FDA approval for diagnostic use — the strongest regulatory standing among GHRH analogs. GHRP-6 has mechanistic data. The GHRH+GHRP synergy is well-established in GH literature.",
+    },
+    "liraglutide+tirzepatide": {
+        "name": "Liraglutide + Tirzepatide",
+        "goal": "Weight loss — dual GLP-1 approach",
+        "cycle_weeks": 0,
+        "off_weeks": 0,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "All",
+                "protocol": "Medical guidance: These are FDA-approved GLP-1/GIP medications. Do NOT combine without physician supervision. Both act on incretin pathways with overlapping mechanisms — combining them increases side effect risk (nausea, vomiting, hypoglycemia) without proven additive benefit over standard monotherapy titration.",
+                "dosing_details": "Follow approved prescribing information for one agent. Choose tirzepatide (stronger weight loss) or liraglutide (shorter half-life, daily dosing).",
+                "timing": "Tirzepatide: once weekly. Liraglutide: once daily.",
+            },
+        ],
+        "post_cycle": "Taper whichever agent is used over 4 weeks. Do not combine incretin-based drugs outside clinical trials.",
+        "sources": [
+            "Liraglutide: FDA approved as Victoza (diabetes) and Saxenda (weight).",
+            "Tirzepatide: FDA approved as Mounjaro (diabetes) and Zepbound (weight).",
+        ],
+        "evidence_summary": "Both are FDA approved individually with extensive trial data. Combining GLP-1-class drugs is not recommended due to overlapping mechanisms and increased side effect risk. Choose one agent and titrate to effective dose.",
+    },
+    "ss31+humanin": {
+        "name": "SS-31 (Elamipretide) + Humanin",
+        "goal": "Mitochondrial protection and longevity signaling",
+        "cycle_weeks": 8,
+        "off_weeks": 2,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-8",
+                "protocol": "SS-31 20-40mg subQ daily (evening) + Humanin 2-4mg subQ daily (morning). SS-31 targets mitochondrial cardiolipin for energy optimization. Humanin provides cellular stress protection and insulin sensitivity signaling.",
+                "dosing_details": "SS-31 daily subQ. Humanin daily subQ (separate site). Both water-soluble peptides requiring proper reconstitution and refrigeration.",
+                "timing": "SS-31 evening for mitochondrial repair during rest. Humanin morning for metabolic signaling throughout the day.",
+            },
+        ],
+        "post_cycle": "2 weeks off. Mitochondrial peptides require cycling to maintain cellular sensitivity to their signaling effects.",
+        "sources": [
+            "SS-31: FDA Orphan Drug designation. Phase 2 trials in mitochondrial disease and heart failure.",
+            "Humanin: Discovered 2001. Extensive preclinical data for cytoprotection. Very limited human studies.",
+        ],
+        "evidence_summary": "SS-31 has the strongest evidence of any mitochondrial peptide with FDA Orphan status and human clinical trials. Humanin has broad preclinical data but minimal human evidence. The combination lacks any controlled data.",
+    },
+    "thymosin-alpha1+thymulin": {
+        "name": "Thymosin Alpha-1 + Thymulin",
+        "goal": "Immune modulation and thymic support",
+        "cycle_weeks": 6,
+        "off_weeks": 3,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-6",
+                "protocol": "Thymosin Alpha-1 750-1500mcg subQ 1-2x weekly + Thymulin 100-500mcg subQ daily or EOD. Dual thymic peptide protocol — TA1 for T-cell activation and immunomodulation, thymulin for T-cell differentiation and maturation.",
+                "dosing_details": "TA1: subQ injection, fewer weekly injections. Thymulin: more frequent (daily or every other day) subQ. Separate injection sites.",
+                "timing": "TA1: morning (may cause mild transient warmth/flush). Thymulin: morning, separate from TA1.",
+            },
+        ],
+        "post_cycle": "3 weeks off minimum. Thymic peptides are immunomodulatory — cycling is important to avoid immune system adaptation.",
+        "sources": [
+            "Thymosin Alpha-1: Approved in multiple countries for hepatitis B/C and immune support. Published human trials.",
+            "Thymulin: Zinc-dependent thymic hormone. Preclinical and some human studies for immune regulation.",
+        ],
+        "evidence_summary": "Thymosin Alpha-1 has the strongest evidence with human clinical data and international regulatory approvals. Thymulin has more limited human data. Both target different aspects of T-cell biology — combination is mechanistically logical but lacks controlled trials.",
+    },
+}
+
 GOAL_BLUEPRINTS = {
     "fat_loss": {
         "label": "Fat Loss",
@@ -500,10 +1350,10 @@ def normalize_term(term):
     return ALIASES.get(key, key)
 
 
-def fetch_json(url, headers=None, data=None):
+def fetch_json(url, headers=None, data=None, timeout=8):
     try:
         req = Request(url, data=data, headers=headers or {"User-Agent": "peptide-wiki/1.0"})
-        with urlopen(req, timeout=18) as response:
+        with urlopen(req, timeout=timeout) as response:
             return json.loads(response.read().decode("utf-8"))
     except (URLError, HTTPError, TimeoutError, json.JSONDecodeError):
         return None
@@ -1360,6 +2210,13 @@ def index():
     return render_template('index.html', all_peptides=all_peptides)
 
 
+@app.route('/stacks')
+def stacks_page():
+    all_peptides = sorted(set(ALIASES.values()) | set(STACK_KNOWLEDGE.keys()))
+    goals = {k: v["label"] for k, v in GOAL_BLUEPRINTS.items()}
+    return render_template('stacks.html', all_peptides=all_peptides, goals=goals)
+
+
 @app.route('/healthz')
 def healthz():
     return jsonify({"status": "ok"}), 200
@@ -1371,9 +2228,16 @@ def catalog():
 
 @app.route('/search')
 def search():
+    try:
+        return _do_search()
+    except Exception as e:
+        return jsonify({"error": "Search failed due to a server error. Some external databases may be temporarily unavailable. Please try again.", "detail": str(e)[:200]}), 500
+
+
+def _do_search():
     raw_term = (request.args.get("term") or "").strip()
     if not raw_term:
-        return jsonify({"error": "Please enter a peptide name."}), 400
+        return jsonify({"error": "Please enter a peptide name before searching."}), 400
 
     term = normalize_term(raw_term)
     wiki = fetch_wikipedia_summary(term)
@@ -1489,6 +2353,23 @@ def order_request():
     return jsonify({"ok": True, "order": order_record}), 200
 
 
+@app.route('/stack-protocol')
+def stack_protocol():
+    stack_key = (request.args.get("stack") or "").strip().lower()
+    if not stack_key:
+        return jsonify({"error": "No stack key provided."}), 400
+    # Try exact match first, then search for any protocol containing all peptides
+    if stack_key in STACK_PROTOCOLS:
+        return jsonify({"stack": stack_key, "protocol": STACK_PROTOCOLS[stack_key]}), 200
+    # Try partial match — check each protocol key if it contains all terms
+    terms = stack_key.replace("+", " ").split()
+    for key, proto in STACK_PROTOCOLS.items():
+        key_lower = key.lower()
+        if all(t in key_lower for t in terms):
+            return jsonify({"stack": key, "protocol": proto}), 200
+    return jsonify({"error": "No protocol found for this stack combination."}), 404
+
+
 @app.route('/stack-recommend')
 def stack_recommend():
     goal = (request.args.get("goal") or "fat_loss").strip().lower()
@@ -1496,6 +2377,11 @@ def stack_recommend():
     if goal not in GOAL_BLUEPRINTS:
         return jsonify({"error": "Unsupported goal."}), 400
     candidates = build_stack_candidates(goal, priority)
+    # Attach protocol data to each recommendation
+    for cand in candidates:
+        stack_key = "+".join(cand.get("stack", []))
+        if stack_key in STACK_PROTOCOLS:
+            cand["protocol"] = STACK_PROTOCOLS[stack_key]
     return jsonify(
         {
             "goal": goal,
