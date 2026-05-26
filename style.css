@@ -54,18 +54,20 @@ body::before {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 80% 60% at 15% 5%, rgba(217, 56, 56, 0.15) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 85% 85%, rgba(200, 40, 40, 0.10) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 45% at 50% 40%, rgba(180, 30, 30, 0.07) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 40% at 30% 70%, rgba(220, 60, 60, 0.06) 0%, transparent 45%);
-  animation: atmosphereDrift 12s ease-in-out infinite alternate;
+    radial-gradient(ellipse 85% 60% at 10% 0%, rgba(217, 56, 56, 0.30) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 90% 85%, rgba(200, 40, 40, 0.22) 0%, transparent 45%),
+    radial-gradient(ellipse 55% 45% at 50% 35%, rgba(180, 30, 30, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 45% at 25% 70%, rgba(220, 60, 60, 0.12) 0%, transparent 45%),
+    radial-gradient(ellipse 40% 30% at 75% 20%, rgba(230, 80, 80, 0.08) 0%, transparent 40%);
+  animation: atmosphereDrift 14s ease-in-out infinite alternate;
   pointer-events: none;
 }
 
 @keyframes atmosphereDrift {
-  0%   { opacity: 0.5; transform: scale(1); }
-  50%  { opacity: 1; transform: scale(1.05); }
-  100% { opacity: 0.7; transform: scale(0.95); }
+  0%   { opacity: 0.5; transform: scale(1) rotate(0deg); }
+  33%  { opacity: 0.8; transform: scale(1.06) rotate(1deg); }
+  66%  { opacity: 1; transform: scale(0.96) rotate(-0.5deg); }
+  100% { opacity: 0.7; transform: scale(1.03) rotate(0.5deg); }
 }
 
 /* ─── Particles Canvas ─── */
@@ -351,11 +353,14 @@ body::before {
   border-radius: var(--radius-lg);
   padding: 20px;
   transition: all var(--transition);
+  transform-style: preserve-3d;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(217, 56, 56, 0.02);
 }
 
 .panel:hover {
-  border-color: rgba(217, 56, 56, 0.2);
-  box-shadow: 0 0 24px rgba(217, 56, 56, 0.05);
+  border-color: rgba(217, 56, 56, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 1px rgba(217, 56, 56, 0.06), 0 0 32px rgba(217, 56, 56, 0.06);
 }
 
 .panel h2 {
@@ -572,6 +577,42 @@ body::before {
 .article-list span {
   font-size: 0.78rem;
   color: var(--ink-tertiary);
+}
+
+/* ─── PDB Structures ─── */
+.pdb-list {
+  display: grid;
+  gap: 8px;
+}
+
+.pdb-item {
+  display: block;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all var(--transition);
+}
+
+.pdb-item strong {
+  display: block;
+  color: var(--primary);
+  margin-bottom: 2px;
+}
+
+.pdb-item span {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--ink-tertiary);
+}
+
+.pdb-item:hover {
+  border-color: rgba(217, 56, 56, 0.2);
+  background: var(--surface-3);
+  box-shadow: 0 0 16px rgba(217, 56, 56, 0.04);
 }
 
 /* ─── Sources ─── */

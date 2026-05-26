@@ -153,6 +153,18 @@ function renderArticles(articles) {
   }).join('') + '</ol>';
 }
 
+function renderPdb(structures) {
+  if (!structures || !structures.length) return '<p class="empty">No protein structures found.</p>';
+  return '<div class="pdb-list">' + structures.slice(0, 3).map(function (s) {
+    var label = s.structure_id || s.id || 'PDB entry';
+    var desc = s.title || '';
+    return '<a class="pdb-item" href="' + escapeHtml(s.url || '#') + '" target="_blank" rel="noopener">' +
+      '<strong>' + escapeHtml(label) + '</strong>' +
+      (desc ? '<span>' + escapeHtml(desc) + '</span>' : '') +
+    '</a>';
+  }).join('') + '</div>';
+}
+
 function renderSources(sources) {
   if (!sources || !sources.length) return '<p class="empty">No source links provided.</p>';
   return '<div class="source-grid">' + sources.map(function (s) {
@@ -171,9 +183,19 @@ function buildResponse(response, title) {
   var html = '';
 
   // Overview card
+  var chemInfo = '';
+  if (response.pubchem) {
+    var pc = response.pubchem;
+    chemInfo = '<div class="metric-row" style="margin-top:10px">';
+    if (pc.formula) chemInfo += '<span class="metric-tag">Formula: ' + escapeHtml(pc.formula) + '</span>';
+    if (pc.molecular_weight) chemInfo += '<span class="metric-tag">MW: ' + escapeHtml(pc.molecular_weight) + '</span>';
+    if (pc.log_p) chemInfo += '<span class="metric-tag">LogP: ' + escapeHtml(pc.log_p) + '</span>';
+    chemInfo += '</div>';
+  }
+
   html += '<section class="panel overview-card">' +
     '<h3>' + escapeHtml(topTerm) + '</h3>' +
-    '<p>' + escapeHtml(summary) + '</p>' +
+    '<p>' + escapeHtml(summary) + '</p>' + chemInfo +
     '<div class="metric-row">' +
       '<span class="metric-tag"><span class="dot ' + dotClass + '"></span>Score: ' + escapeHtml(String(score)) + '</span>' +
       '<span class="metric-tag">Tier: ' + escapeHtml(String(tier)) + '</span>' +
@@ -184,6 +206,11 @@ function buildResponse(response, title) {
   // Clinical snapshot
   if (response.clinical_snapshot) {
     html += makePanel('Clinical Snapshot', renderSnapshot(response.clinical_snapshot));
+  }
+
+  // PDB structures
+  if (response.pdb_structures && response.pdb_structures.length) {
+    html += makePanel('Protein Structures (PDB)', renderPdb(response.pdb_structures));
   }
 
   // Clinical Trials

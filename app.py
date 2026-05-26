@@ -225,22 +225,85 @@ def normalize_term(term):
     return ALIASES.get(key, key)
 
 
-def fetch_json(url, headers=None):
+def fetch_json(url, headers=None, data=None):
     try:
-        req = Request(url, headers=headers or {"User-Agent": "peptide-wiki/1.0"})
+        req = Request(url, data=data, headers=headers or {"User-Agent": "peptide-wiki/1.0"})
         with urlopen(req, timeout=18) as response:
             return json.loads(response.read().decode("utf-8"))
     except (URLError, HTTPError, TimeoutError, json.JSONDecodeError):
         return None
 
 
-def source_status(wiki, trials, pubmed, fda_data):
+def source_status(wiki, trials, pubmed, fda_data, pubchem=None, rcsb=None):
     return {
         "wikipedia": bool(wiki and wiki.get("summary")),
         "clinicaltrials": bool(trials),
         "pubmed": bool(pubmed),
         "openfda": bool(fda_data),
+        "pubchem": bool(pubchem),
+        "rcsb_pdb": bool(rcsb),
     }
+
+
+def fetch_pubchem(term):
+    endpoint = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{quote(term)}/JSON"
+    data = fetch_json(endpoint)
+    if not data:
+        return None
+    props = data.get("PC_Compounds", [{}])[0].get("props", [])
+    result = {}
+    for p in props:
+        label = p.get("urn", {}).get("label", "")
+        value = p.get("value", {}).get("sval", "")
+        if label == "Molecular Weight":
+            result["molecular_weight"] = value
+        elif label == "Molecular Formula":
+            result["formula"] = value
+        elif label == "IUPAC Name":
+            result["iupac"] = value
+        elif label == "Log P":
+            result["log_p"] = value
+        elif label == "Hydrogen Bond Donor Count":
+            result["h_bond_donors"] = value
+        elif label == "Hydrogen Bond Acceptor Count":
+            result["h_bond_acceptors"] = value
+        if len(result) >= 5:
+            break
+    return result if result else None
+
+
+def fetch_rcsb_pdb(term):
+    query = {
+        "query": {
+            "type": "group",
+            "logical_operator": "and",
+            "nodes": [{
+                "type": "terminal",
+                "service": "full_text",
+                "parameters": {"value": term}
+            }]
+        },
+        "return_type": "entry",
+        "rows": 3
+    }
+    data = fetch_json("https://search.rcsb.org/rcsbsearch/v2/query", {
+        "User-Agent": "peptide-wiki/1.0",
+        "Content-Type": "application/json",
+    }, data=json.dumps(query).encode())
+    if not data:
+        return None
+    hits = data.get("result_set", [])
+    if not hits:
+        return None
+    structures = []
+    for hit in hits[:3]:
+        pdb_id = hit.get("identifier", "")
+        if pdb_id:
+            structures.append({
+                "pdb_id": pdb_id,
+                "url": f"https://www.rcsb.org/structure/{pdb_id}",
+            })
+    return structures if structures else None
 
 
 def fetch_wikipedia_summary(term):
@@ -768,7 +831,7 @@ def build_evidence_claims(trials, pubmed, fda_data):
     return claims
 
 
-def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary):
+def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubchem=None):
     base = SNAPSHOT_LIBRARY.get(term, {})
     primary_effect = base.get("primary_effect")
     mechanism_pathway = base.get("mechanism_pathway")
@@ -836,16 +899,18 @@ def search():
     trials = fetch_clinical_trials(term)
     pubmed = rank_pubmed(fetch_pubmed(term))
     fda_data = fetch_openfda(term)
+    pubchem = fetch_pubchem(term)
+    rcsb = fetch_rcsb_pdb(term)
     medical_definition = build_medical_definition(wiki["title"], trials, fda_data, wiki["summary"])
     plain_summary = build_plain_summary(wiki["summary"], trials)
     benefits, cons = build_benefits_and_cons(trials, fda_data)
     timeline = build_timeline(trials)
     claims = build_evidence_claims(trials, pubmed, fda_data)
-    snapshot = build_clinical_snapshot(term, trials, pubmed, fda_data, wiki["summary"])
+    snapshot = build_clinical_snapshot(term, trials, pubmed, fda_data, wiki["summary"], pubchem)
     evidence_score = build_evidence_score(trials, pubmed, fda_data, wiki)
-    source_ok = source_status(wiki, trials, pubmed, fda_data)
+    source_ok = source_status(wiki, trials, pubmed, fda_data, pubchem, rcsb)
     healthy_sources = sum(1 for ok in source_ok.values() if ok)
-    reliability = "HIGH" if healthy_sources >= 3 else ("MEDIUM" if healthy_sources >= 2 else "LOW")
+    reliability = "HIGH" if healthy_sources >= 4 else ("MEDIUM" if healthy_sources >= 2 else "LOW")
 
     method_block = trials[0]["methods"] if trials else "No trial method details available."
 
@@ -866,6 +931,8 @@ def search():
         "evidence_claims": claims,
         "evidence_score": evidence_score,
         "clinical_snapshot": snapshot,
+        "pubchem": pubchem,
+        "pdb_structures": rcsb,
         "source_status": source_ok,
         "reliability": reliability,
         "partial_data": healthy_sources < 4,
@@ -875,6 +942,8 @@ def search():
             {"label": "ClinicalTrials.gov search", "url": f"https://clinicaltrials.gov/search?term={quote(term)}"},
             {"label": "PubMed search", "url": f"https://pubmed.ncbi.nlm.nih.gov/?term={quote(term)}"},
             {"label": "OpenFDA drug labels", "url": f"https://api.fda.gov/drug/label.json?search={quote(term)}&limit=1"},
+            {"label": "PubChem", "url": f"https://pubchem.ncbi.nlm.nih.gov/#query={quote(term)}"},
+            {"label": "RCSB Protein Data Bank", "url": f"https://www.rcsb.org/search?request=%7B%22query%22%3A%7B%22type%22%3A%22group%22%2C%22logical_operator%22%3A%22and%22%2C%22nodes%22%3A%5B%7B%22type%22%3A%22terminal%22%2C%22service%22%3A%22full_text%22%2C%22parameters%22%3A%7B%22value%22%3A%22{quote(term)}%22%7D%7D%5D%7D%7D"},
         ],
     }
     return jsonify(response)
