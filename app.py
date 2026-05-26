@@ -1273,6 +1273,154 @@ STACK_PROTOCOLS = {
         ],
         "evidence_summary": "Thymosin Alpha-1 has the strongest evidence with human clinical data and international regulatory approvals. Thymulin has more limited human data. Both target different aspects of T-cell biology — combination is mechanistically logical but lacks controlled trials.",
     },
+    "dsip+pinealon": {
+        "name": "DSIP + Pinealon",
+        "goal": "Deep sleep and circadian rhythm support",
+        "cycle_weeks": 8,
+        "off_weeks": 2,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-8",
+                "protocol": "DSIP 100-400mcg subQ or intranasal 30-60 min before bed, nightly. Pinealon 500-1000mcg subQ or intranasal 1-2x daily. DSIP targets delta-wave sleep architecture; Pinealon supports circadian regulation and pineal function.",
+                "dosing_details": "DSIP: subQ or intranasal, best absorbed before sleep. Start at 100mcg and titrate up. Pinealon: subQ or intranasal, can be taken morning and/or evening.",
+                "timing": "DSIP: 30-60 min before bedtime. Pinealon: morning and/or evening — avoid late-night dosing that could interfere with DSIP sleep architecture effects.",
+            },
+        ],
+        "post_cycle": "2 weeks off. DSIP may have carry-over sleep benefits post-cycle. Monitor sleep quality changes.",
+        "sources": [
+            "DSIP: Identified as sleep-promoting peptide in animal and limited human studies.",
+            "Pinealon: Synthetic pineal peptide, studied for circadian rhythm support primarily in Eastern European research.",
+        ],
+        "evidence_summary": "DSIP has modest human data for sleep architecture improvement. Pinealon evidence is predominantly preclinical. Both target sleep via complementary mechanisms — delta-wave promotion (DSIP) and circadian regulation (Pinealon).",
+    },
+    "pinealon+selank": {
+        "name": "Pinealon + Selank",
+        "goal": "Sleep quality with anxiety support",
+        "cycle_weeks": 8,
+        "off_weeks": 2,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-8",
+                "protocol": "Pinealon 500-1000mcg subQ or intranasal 1-2x daily. Selank 500-1000mcg subQ or intranasal 1-2x daily. Pinealon for circadian/sleep support, Selank for daytime calm and anxiety reduction — complementary approach targeting both sleep quality and stress.",
+                "dosing_details": "Both can be administered subQ or intranasal. Pinealon can be split morning and evening. Selank is best taken in morning and early afternoon to avoid sedation overlap with sleep.",
+                "timing": "Pinealon: morning and/or early evening. Selank: morning and early afternoon. Avoid Selank late in the day to prevent interference with natural sleep drive.",
+            },
+        ],
+        "post_cycle": "2 weeks off. Monitor for rebound anxiety or sleep changes during washout.",
+        "sources": [
+            "Selank: Anxiolytic peptide with limited human efficacy trials.",
+            "Pinealon: Synthetic pineal peptide, limited published human data.",
+        ],
+        "evidence_summary": "Selank has some human clinical data for anxiety reduction. Pinealon evidence is preclinical. Combination is mechanistically plausible (sleep + anxiety) but evidence certainty is low for both peptides.",
+    },
+    "bpc-157+ghk-cu": {
+        "name": "BPC-157 + GHK-Cu",
+        "goal": "Systemic healing and tissue repair",
+        "cycle_weeks": 8,
+        "off_weeks": 4,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-8",
+                "protocol": "BPC-157 250-500mcg subQ 1-2x daily. GHK-Cu 1-5mg subQ daily or EOD. BPC-157 for systemic healing and angiogenesis support; GHK-Cu for wound healing, tissue regeneration, and skin quality. Both target repair via different signaling pathways.",
+                "dosing_details": "BPC-157: best dosed twice daily due to short half-life. GHK-Cu: once daily subQ is typical. Can be combined in same injection if pH-compatible.",
+                "timing": "BPC-157: morning and evening. GHK-Cu: morning preferred. Separate injection sites for best absorption.",
+            },
+        ],
+        "post_cycle": "4 weeks minimum off. Healing peptides should be cycled to prevent adaptation.",
+        "sources": [
+            "BPC-157: Extensive preclinical GI and soft tissue healing data; minimal human trials.",
+            "GHK-Cu: Some human data for wound healing and skin regeneration.",
+        ],
+        "evidence_summary": "BPC-157 has robust preclinical evidence for healing but very limited human trial data. GHK-Cu has modest human evidence particularly for topical wound healing. Combination logic is strong but controlled human data is limited.",
+    },
+    "tb-500+bpc-157": {
+        "name": "TB-500 + BPC-157",
+        "goal": "Advanced recovery and connective tissue healing",
+        "cycle_weeks": 6,
+        "off_weeks": 4,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-6",
+                "protocol": "TB-500 (Thymosin Beta-4) 2.5-5mg subQ 2x weekly for first 2 weeks, then 2.5mg weekly for maintenance. BPC-157 250-500mcg subQ 1-2x daily throughout. TB-500 for actin binding, cell migration, and systemic repair signaling; BPC-157 for localized angiogenesis and healing.",
+                "dosing_details": "TB-500: loading phase (2x/week) then maintenance (1x/week). BPC-157: consistent twice-daily dosing for steady-state levels.",
+                "timing": "TB-500: any time of day, consistent schedule. BPC-157: morning and evening. Separate injection sites.",
+            },
+        ],
+        "post_cycle": "4 weeks minimum. This is a heavy healing stack — adequate off-time is critical.",
+        "sources": [
+            "TB-500: Preclinical for wound healing and actin regulation; limited human data.",
+            "BPC-157: Broad preclinical healing evidence across multiple tissue types.",
+        ],
+        "evidence_summary": "Both peptides have robust preclinical but very limited human evidence. Widely combined in anecdotal recovery protocols. The mechanistic rationale (actin remodeling + angiogenesis) is biologically plausible but unvalidated in controlled human trials.",
+    },
+    "mots-c+humanin": {
+        "name": "MOTS-c + Humanin",
+        "goal": "Mitochondrial support and metabolic endurance",
+        "cycle_weeks": 12,
+        "off_weeks": 2,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-12",
+                "protocol": "MOTS-c 5-10mg subQ 3-5x weekly. Humanin 2-4mg subQ daily or EOD. Both are mitochondrial-derived peptides (MDPs) — MOTS-c for metabolic flexibility and exercise tolerance, Humanin for cytoprotective and metabolic signaling.",
+                "dosing_details": "MOTS-c: higher dose range, fewer weekly injections. Humanin: lower dose, can be taken daily. Both subQ.",
+                "timing": "MOTS-c: morning or pre-exercise. Humanin: morning, can be combined in same injection session.",
+            },
+        ],
+        "post_cycle": "2 weeks off. Mitochondrial peptide cycling is not well-studied — standard precaution.",
+        "sources": [
+            "MOTS-c: Identified as mitochondrial peptide with metabolic regulatory functions; early human studies.",
+            "Humanin: Cytoprotective MDP with some cell and animal data for metabolic health.",
+        ],
+        "evidence_summary": "Both are mitochondrial-derived peptides with emerging but still early human evidence. MOTS-c has some human exercise trial data. Humanin is more preclinical. Their combined mitochondrial targeting is mechanistically logical.",
+    },
+    "ipamorelin+cjc-1295": {
+        "name": "Ipamorelin + CJC-1295",
+        "goal": "GH pulse support and lean mass",
+        "cycle_weeks": 12,
+        "off_weeks": 4,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-12",
+                "protocol": "CJC-1295 500-1000mcg subQ 2x weekly (morning). Ipamorelin 200-500mcg subQ 1-2x daily. CJC-1295 provides sustained GHRH analog signaling with extended half-life; Ipamorelin provides GH pulse stimulation — synergistic GH-axis activation without exogenous GH.",
+                "dosing_details": "CJC-1295: twice weekly subQ due to DAC (Drug Affinity Complex) extended half-life. Ipamorelin: split into two daily doses if possible for consistent GH pulse signaling.",
+                "timing": "CJC-1295: morning of dosing days (e.g., Mon/Thu). Ipamorelin: first dose upon waking (fasted), second dose early afternoon or post-workout if applicable. Avoid late-night dosing.",
+            },
+        ],
+        "post_cycle": "4 weeks minimum. GH-axis peptides require adequate off-time for hypothalamic sensitivity recovery.",
+        "sources": [
+            "CJC-1295: GHRH analog with DAC technology; studied for GH deficiency and body composition.",
+            "Ipamorelin: Selective GH secretagogue with better safety profile than earlier GHRPs.",
+        ],
+        "evidence_summary": "CJC-1295 has some human data for GH elevation. Ipamorelin is well-tolerated with GH pulse data. The GHRH + GHRP synergy is mechanistically well-established from endocrine literature.",
+    },
+    "semax+selank+dsip": {
+        "name": "Semax + Selank + DSIP",
+        "goal": "Cognitive focus with stress modulation and sleep support",
+        "cycle_weeks": 6,
+        "off_weeks": 2,
+        "phases": [
+            {
+                "phase": 1,
+                "weeks": "1-6",
+                "protocol": "Semax 400-1200mcg intranasal 1-2x daily. Selank 500-1000mcg intranasal 1-2x daily. DSIP 100-400mcg intranasal or subQ 30-60 min before bed. Semax for focus and cognitive enhancement, Selank for daytime anxiety modulation, DSIP for sleep architecture optimization. Full-spectrum cognitive stack.",
+                "dosing_details": "All three can be administered intranasal. Semax and Selank during daytime hours. DSIP exclusively before sleep.",
+                "timing": "Semax: morning and early afternoon. Selank: morning and early afternoon (avoid evening). DSIP: 30-60 min before bedtime. Note: DSIP may cause drowsiness if taken during the day.",
+            },
+        ],
+        "post_cycle": "2-4 weeks off. Cognitive peptides benefit from cycling to maintain sensitivity.",
+        "sources": [
+            "Semax: Russian nootropic with some human cognitive data.",
+            "Selank: Anxiolytic peptide with limited human trials.",
+            "DSIP: Sleep peptide with modest human sleep architecture data.",
+        ],
+        "evidence_summary": "Semax has the strongest human cognitive data of the three. Selank has some human anxiety data. DSIP evidence is weaker. The triple combination covers cognition, mood, and sleep but no controlled studies exist for this specific stack.",
+    },
 }
 
 GOAL_BLUEPRINTS = {
@@ -1835,6 +1983,13 @@ def build_stack_candidates(goal_key, priority_peptide):
         ["ss-31", "humanin"],
         ["thymosin-alpha-1", "thymulin"],
         ["aod-9604", "mk-677"],
+        ["dsip", "pinealon"],
+        ["pinealon", "selank"],
+        ["bpc-157", "ghk-cu"],
+        ["tb-500", "bpc-157"],
+        ["mots-c", "humanin"],
+        ["ipamorelin", "cjc-1295"],
+        ["semax", "selank", "dsip"],
     ]
     for stack in base_pool:
         if known_priority and known_priority not in stack:
