@@ -3,6 +3,7 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 import json
+import time
 from datetime import datetime, timezone
 import os
 import re
@@ -2362,6 +2363,12 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
         "clinical_context": clinical_context,
         "evidence_strength": evidence_strength,
     }
+
+CACHE_BUST = str(int(time.time()))
+
+@app.context_processor
+def inject_cache_bust():
+    return dict(cache_bust=CACHE_BUST)
 
 @app.route('/')
 def index():
