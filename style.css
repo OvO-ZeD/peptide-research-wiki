@@ -140,8 +140,6 @@ body::before {
   position: relative;
   overflow: hidden;
   animation: fadeSlide 0.7s ease-out;
-  transform-style: preserve-3d;
-  perspective: 600px;
 }
 
 .hero::before {
@@ -174,7 +172,6 @@ body::before {
   align-items: center;
   gap: 14px;
   flex-shrink: 0;
-  transform: translateZ(20px);
 }
 
 .brand-spike {
@@ -225,7 +222,6 @@ body::before {
   font-size: 0.85rem;
   flex: 1;
   min-width: 0;
-  transform: translateZ(10px);
 }
 
 /* ─── Search Section ─── */
@@ -392,7 +388,6 @@ body::before {
   border-radius: var(--radius-lg);
   padding: 20px;
   transition: all var(--transition);
-  transform-style: preserve-3d;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 0 0 1px rgba(217, 56, 56, 0.02);
 }
 

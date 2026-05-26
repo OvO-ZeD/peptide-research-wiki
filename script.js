@@ -62,51 +62,6 @@ var resultsRoot = null;
   draw();
 })();
 
-/* ─── 3D Tilt Effect ─── */
-(function initTilt() {
-  var ticking = false;
-  document.addEventListener('mouseover', function (e) {
-    var card = e.target.closest('.panel, .trial-item, .snapshot-item, .data-list li, .article-list li, .source-link, .search-section, .hero');
-    if (!card) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    var onMove = function (ev) {
-      if (!ticking) {
-        requestAnimationFrame(function () {
-          var r = card.getBoundingClientRect();
-          var x = (ev.clientX - r.left) / r.width - 0.5;
-          var y = (ev.clientY - r.top) / r.height - 0.5;
-          var tiltX = y * -10;
-          var tiltY = x * 10;
-          card.style.setProperty('--rx', tiltX + 'deg');
-          card.style.setProperty('--ry', tiltY + 'deg');
-          card.style.transform = 'perspective(600px) rotateX(var(--rx)) rotateY(var(--ry)) translateZ(4px)';
-          card.style.transition = 'transform 0.06s linear';
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    // immediate first frame
-    (function firstFrame() {
-      var r = card.getBoundingClientRect();
-      var x = (e.clientX - r.left) / r.width - 0.5;
-      var y = (e.clientY - r.top) / r.height - 0.5;
-      card.style.transform = 'perspective(600px) rotateX(' + (y * -10) + 'deg) rotateY(' + (x * 10) + 'deg) translateZ(4px)';
-      card.style.transition = 'transform 0.06s linear';
-    })();
-
-    document.addEventListener('mousemove', onMove);
-
-    card.addEventListener('mouseleave', function reset() {
-      document.removeEventListener('mousemove', onMove);
-      card.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg) translateZ(0)';
-      card.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
-    }, { once: true });
-  }, true);
-})();
-
 /* ─── Status ─── */
 function setStatus(message, type) {
   var status = document.getElementById('status_message');
