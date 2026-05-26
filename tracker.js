@@ -1,6 +1,5 @@
-/* ─── Peptide Tracker — Client Logic ─── */
+/* ─── Peptide Tracker — Simplified ─── */
 
-/* ─── State ─── */
 var STATE_KEY = "peptide_tracker_v3";
 var COLORS = ["#d93838", "#e86f3a", "#f0b34b", "#4cd964", "#5ac8fa", "#af6ee8", "#ff6b9d", "#50c8a0"];
 var state = loadState();
@@ -19,26 +18,20 @@ function getWeekKey(d) {
 
 function todayStr() { return new Date().toISOString().split("T")[0]; }
 function nowStr() { return new Date().toTimeString().slice(0, 5); }
+function escHtml(v) { return String(v || "").replace(/[&<>"']/g, function (m) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m]; }); }
 
 function loadState() {
-  try {
-    var raw = localStorage.getItem(STATE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch (_) {}
+  try { var raw = localStorage.getItem(STATE_KEY); if (raw) return JSON.parse(raw); } catch (_) {}
   return { peptides: {}, logs: {} };
 }
 
-function saveState() {
-  localStorage.setItem(STATE_KEY, JSON.stringify(state));
-}
+function saveState() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
 
 /* ─── Peptide CRUD ─── */
 function addPeptide(name, doseMg, freq) {
   var id = "p" + Date.now() + Math.random().toString(36).slice(2, 6);
   state.peptides[id] = {
-    id: id,
-    name: name.trim(),
-    doseMg: parseFloat(doseMg) || 0,
+    id: id, name: name.trim(), doseMg: parseFloat(doseMg) || 0,
     freq: parseInt(freq) || 1,
     color: COLORS[Object.keys(state.peptides).length % COLORS.length],
     created: new Date().toISOString(),
@@ -51,48 +44,52 @@ function addPeptide(name, doseMg, freq) {
 }
 
 function deletePeptide(id) {
+  if (!confirm('Delete "' + state.peptides[id].name + '" and all its logs?')) return;
   delete state.peptides[id];
   delete state.logs[id];
   saveState();
-  if (activeId === id) {
-    var keys = Object.keys(state.peptides);
-    activeId = keys.length ? keys[0] : null;
-  }
-  renderTabs();
-  renderActive();
+  var keys = Object.keys(state.peptides);
+  activeId = keys.length ? keys[0] : null;
+  renderAll();
 }
 
-function updatePeptide(id, name, doseMg, freq) {
-  var p = state.peptides[id];
-  if (!p) return;
-  p.name = name.trim();
-  p.doseMg = parseFloat(doseMg) || 0;
-  p.freq = parseInt(freq) || 1;
-  saveState();
-  renderTabs();
-  renderActive();
+/* ─── Inline add form ─── */
+function openAddForm() {
+  document.getElementById("add_form").style.display = "block";
+  document.getElementById("add_name").value = "";
+  document.getElementById("add_dose").value = "";
+  document.getElementById("add_freq").value = "3";
+  setTimeout(function () { document.getElementById("add_name").focus(); }, 50);
+}
+
+function closeAddForm() { document.getElementById("add_form").style.display = "none"; }
+
+function saveAddPeptide() {
+  var name = document.getElementById("add_name").value.trim();
+  var dose = document.getElementById("add_dose").value;
+  var freq = document.getElementById("add_freq").value;
+  if (!name) return;
+  addPeptide(name, dose, freq);
+  closeAddForm();
 }
 
 /* ─── Logging ─── */
-function logDose(e) {
-  e.preventDefault();
-  if (!activeId) return false;
-  var dose = parseFloat(document.getElementById("log_dose").value);
-  var date = document.getElementById("log_date").value;
-  var time = document.getElementById("log_time").value;
-  if (!dose || !date || !time) return false;
-  var dt = new Date(date + "T" + time);
+function logDoseNow(pepId, doseVal) {
+  var p = state.peptides[pepId];
+  if (!p) return;
+  var date = todayStr();
+  var time = nowStr();
   var weekKey = getWeekKey(date);
-  if (!state.logs[activeId][weekKey]) state.logs[activeId][weekKey] = [];
-  state.logs[activeId][weekKey].push({
-    dose: dose,
-    timestamp: dt.toISOString(),
-    date: date,
-    time: time,
-  });
+  if (!state.logs[pepId][weekKey]) state.logs[pepId][weekKey] = [];
+  state.logs[pepId][weekKey].push({ dose: doseVal, timestamp: date + "T" + time, date: date, time: time });
   saveState();
   renderActive();
-  return false;
+}
+
+function logDoseCustom(pepId) {
+  var inp = document.getElementById("custom_dose");
+  var val = parseFloat(inp.value);
+  if (val && val > 0) logDoseNow(pepId, val);
 }
 
 function deleteLog(pepId, weekKey, idx) {
@@ -103,11 +100,8 @@ function deleteLog(pepId, weekKey, idx) {
   renderActive();
 }
 
-/* ─── Week navigation ─── */
-function weekOffset(delta) {
-  weekOff += delta;
-  renderActive();
-}
+/* ─── Week nav ─── */
+function weekOffset(delta) { weekOff += delta; renderActive(); }
 
 function getCurrentWeekKey() {
   var d = new Date();
@@ -115,24 +109,24 @@ function getCurrentWeekKey() {
   return { key: getWeekKey(d), start: d };
 }
 
-/* ─── Render tabs ─── */
+/* ─── Render ─── */
+function renderAll() { renderTabs(); renderActive(); }
+
 function renderTabs() {
   var bar = document.getElementById("tab_bar");
   var keys = Object.keys(state.peptides);
   var html = "";
   for (var i = 0; i < keys.length; i++) {
     var p = state.peptides[keys[i]];
-    var activeClass = keys[i] === activeId ? " active" : "";
-    var logCount = 0;
-    for (var wk in (state.logs[keys[i]] || {})) logCount += state.logs[keys[i]][wk].length;
-    html += '<button class="tab-btn' + activeClass + '" onclick="setActive(\'' + keys[i] + '\')" style="border-left:2px solid ' + p.color + '">' +
-      escHtml(p.name) + ' <span class="tab-badge">' + logCount + '</span></button>';
+    var act = keys[i] === activeId ? " active" : "";
+    html += '<button class="tab-btn' + act + '" onclick="setActive(\'' + keys[i] + '\')">' +
+      '<span class="tab-dot" style="background:' + p.color + '"></span>' + escHtml(p.name) +
+      ' <span class="tab-del" onclick="event.stopPropagation();deletePeptide(\'' + keys[i] + '\')">✕</span></button>';
   }
-  html += '<button class="tab-btn add-tab" onclick="openAddPeptideModal()">+</button>';
+  html += '<button class="tab-add" onclick="openAddForm()" title="Add peptide">+</button>';
   bar.innerHTML = html;
 }
 
-/* ─── Set active ─── */
 function setActive(id) {
   activeId = id;
   weekOff = 0;
@@ -140,117 +134,111 @@ function setActive(id) {
   renderActive();
 }
 
-/* ─── Render active panel ─── */
 function renderActive() {
-  var p = state.peptides[activeId];
   var panel = document.getElementById("active_panel");
-  if (!p) {
-    panel.innerHTML = '<div class="empty-logs">Add a peptide to start tracking.</div>';
+  var p = state.peptides[activeId];
+
+  if (!p || !Object.keys(state.peptides).length) {
+    panel.innerHTML = '<div class="empty-tracker"><p>No peptides yet.</p><button class="big-add-btn" onclick="openAddForm()">+ Add your first peptide</button></div>';
     return;
   }
 
-  // Log form header
-  document.getElementById("log_color").style.background = p.color;
-  document.getElementById("log_pep_name").textContent = p.name;
-  document.getElementById("log_dose").value = p.doseMg || "";
-  document.getElementById("log_date").value = todayStr();
-  document.getElementById("log_time").value = nowStr();
-
-  // Current week
   var wk = getCurrentWeekKey();
   var weekKey = wk.key;
-  document.getElementById("week_label").textContent = weekOff === 0 ? "This week" : weekKey;
-
   var logs = (state.logs[activeId] || {})[weekKey] || [];
   var freq = p.freq;
 
-  // Insights
+  // ─── Log bar ───
+  var dose = p.doseMg || 0;
+  var halfDose = (dose / 2).toFixed(2);
+  var html = '<div class="log-bar">' +
+    '<span class="pep-name" id="pep_name_display" onclick="startRename(\'' + activeId + '\')">' + escHtml(p.name) + '</span>' +
+    '<span class="sep">|</span>';
+
+  if (dose > 0) {
+    html += '<button class="quick-btn primary" onclick="logDoseNow(\'' + activeId + '\',' + dose + ')">+' + dose.toFixed(1) + 'mg</button>' +
+      '<button class="quick-btn" onclick="logDoseNow(\'' + activeId + '\',' + halfDose + ')">+' + halfDose + 'mg</button>';
+  }
+
+  html += '<input class="dose-input" id="custom_dose" type="number" step="0.01" min="0.01" placeholder="mg" onkeydown="if(event.key===\'Enter\')logDoseCustom(\'' + activeId + '\')">' +
+    '<button class="quick-btn" onclick="logDoseCustom(\'' + activeId + '\')">Log</button>' +
+    '</div>';
+
+  // ─── Insights ───
   var weekTotal = logs.reduce(function (s, l) { return s + l.dose; }, 0);
-  document.getElementById("insight_total").textContent = weekTotal.toFixed(1) + "mg";
-
-  var expected = Math.max(freq, 1);
   var actual = logs.length;
-  var compliance = expected > 0 ? Math.round((actual / expected) * 100) : 0;
-  document.getElementById("insight_compliance").textContent = Math.min(compliance, 100) + "%";
-  document.getElementById("insight_expected").textContent = actual + "/" + expected + " doses";
+  var expected = Math.max(freq, 1);
+  var compliance = expected > 0 ? Math.min(Math.round((actual / expected) * 100), 100) : 0;
 
-  // Last dose
   var allLogs = [];
   for (var wk2 in (state.logs[activeId] || {})) {
-    for (var li = 0; li < (state.logs[activeId][wk2] || []).length; li++) {
-      allLogs.push(state.logs[activeId][wk2][li]);
-    }
+    for (var li = 0; li < (state.logs[activeId][wk2] || []).length; li++) allLogs.push(state.logs[activeId][wk2][li]);
   }
   allLogs.sort(function (a, b) { return b.timestamp.localeCompare(a.timestamp); });
+
+  var lastStr = "—";
   if (allLogs.length) {
-    var last = new Date(allLogs[0].timestamp);
-    var hours = Math.round((Date.now() - last) / 3600000);
-    document.getElementById("insight_last").textContent = hours < 24 ? hours + "h ago" : Math.round(hours / 24) + "d ago";
-  } else {
-    document.getElementById("insight_last").textContent = "—";
+    var hours = Math.round((Date.now() - new Date(allLogs[0].timestamp)) / 3600000);
+    lastStr = hours < 24 ? hours + "h ago" : Math.round(hours / 24) + "d ago";
   }
 
-  // Streak
-  var streak = 0;
-  if (allLogs.length) {
-    var checkDate = new Date();
-    // Normalize to midnight
-    for (var s = 0; s < 365; s++) {
-      var check = new Date(checkDate);
-      check.setDate(check.getDate() - s);
-      var checkStr = check.toISOString().split("T")[0];
-      var hasLog = false;
-      for (var lc = 0; lc < allLogs.length; lc++) {
-        if (allLogs[lc].date === checkStr) { hasLog = true; break; }
-      }
-      if (hasLog) streak++;
-      else if (s > 0) break;
-      else { /* today has no log yet, that's ok */ }
-    }
-  }
-  document.getElementById("insight_streak").textContent = streak + "d";
+  html += '<div class="insights">' +
+    '<div class="insight-card"><div class="val">' + weekTotal.toFixed(1) + '</div><div class="lbl">Week total</div></div>' +
+    '<div class="insight-card"><div class="val">' + compliance + '%</div><div class="lbl">' + actual + '/' + expected + ' doses</div></div>' +
+    '<div class="insight-card"><div class="val">' + lastStr + '</div><div class="lbl">Last dose</div></div>' +
+    '<div class="insight-card"><div class="val">' + (allLogs.length) + '</div><div class="lbl">Total logs</div></div>' +
+    '</div>';
 
-  // Chart
-  renderChart(activeId, logs);
+  // ─── Chart ───
+  html += '<div class="chart-wrap"><canvas id="dose_chart"></canvas></div>';
 
-  // Logs list
-  var listEl = document.getElementById("logs_list");
+  // ─── Logs list ───
+  html += '<div class="logs-section"><div class="logs-head">' +
+    '<h3>Dose history</h3>' +
+    '<div class="week-nav"><button onclick="weekOffset(-1)">←</button><span>' + (weekOff === 0 ? "This week" : weekKey) + '</span><button onclick="weekOffset(1)">→</button></div>' +
+    '<div class="l-actions">' +
+    '<button onclick="exportCSV(\'' + activeId + '\')">CSV</button>' +
+    '<button onclick="exportJSON()">JSON</button>' +
+    '<button onclick="document.getElementById(\'import_input\').click()">Import</button>' +
+    '</div></div>' +
+    '<input type="file" id="import_input" accept=".json" style="display:none" onchange="importData(event)">' +
+    '<div id="logs_list">';
+
   if (!logs.length) {
-    listEl.innerHTML = '<div class="empty-logs">No doses logged this week.</div>';
+    html += '<div class="empty-logs">No doses this week.</div>';
   } else {
-    // Sort newest first
     var sorted = logs.slice().sort(function (a, b) { return b.timestamp.localeCompare(a.timestamp); });
-    var html = "";
     for (var li2 = 0; li2 < sorted.length; li2++) {
       var l = sorted[li2];
-      // Find original index for delete
       var origIdx = logs.indexOf(l);
-      html += '<div class="log-entry">' +
-        '<div class="log-entry-left">' +
-          '<span class="dot" style="background:' + p.color + '"></span>' +
-          '<span class="date">' + escHtml(l.date) + '</span>' +
-          '<span class="time">' + escHtml(l.time) + '</span>' +
-        '</div>' +
+      html += '<div class="log-row">' +
+        '<div class="l-left"><span class="dot" style="background:' + p.color + '"></span>' +
+        '<span class="date">' + escHtml(l.date) + '</span>' +
+        '<span class="time">' + escHtml(l.time) + '</span></div>' +
         '<span class="dose">' + l.dose.toFixed(2) + ' mg</span>' +
-        '<button class="del" onclick="deleteLog(\'' + activeId + '\',\'' + weekKey + '\',' + origIdx + ')">✕</button>' +
-        '</div>';
+        '<button class="del" onclick="deleteLog(\'' + activeId + '\',\'' + weekKey + '\',' + origIdx + ')">✕</button></div>';
     }
-    listEl.innerHTML = html;
   }
+
+  html += '</div></div>';
+  panel.innerHTML = html;
+
+  // ─── Render chart ───
+  renderChart(activeId, logs);
 }
 
 /* ─── Chart ─── */
 function renderChart(pepId, weekLogs) {
   var canvas = document.getElementById("dose_chart");
+  if (!canvas) return;
   var ctx = canvas.getContext("2d");
   var rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width = rect.width - 32;
-  canvas.height = 120;
+  canvas.width = rect.width - 28;
+  canvas.height = 100;
 
   var w = canvas.width, h = canvas.height;
   ctx.clearRect(0, 0, w, h);
 
-  // Group by date
   var byDate = {};
   for (var i = 0; i < weekLogs.length; i++) {
     var d = weekLogs[i].date;
@@ -258,39 +246,35 @@ function renderChart(pepId, weekLogs) {
     byDate[d] += weekLogs[i].dose;
   }
 
-  // Get last 7 days
   var days = [];
   var today = new Date();
   for (var j = 6; j >= 0; j--) {
     var d2 = new Date(today);
     d2.setDate(d2.getDate() - j);
     var key = d2.toISOString().split("T")[0];
-    var val = byDate[key] || 0;
-    days.push({ key: key, val: val });
+    days.push({ key: key, val: byDate[key] || 0 });
   }
 
   var maxVal = Math.max.apply(null, days.map(function (d) { return d.val; })) || 1;
   var pad = 8;
   var barW = (w - pad * 2) / 7;
-  var p = state.peptides[activeId];
+  var pp = state.peptides[activeId];
+  var color = pp ? pp.color : "#d93838";
 
   for (var k = 0; k < days.length; k++) {
     var x = pad + k * barW;
-    var barH = (days[k].val / maxVal) * (h - 30);
-    var y = h - 10 - barH;
+    var barH = (days[k].val / maxVal) * (h - 28);
+    var y = h - 8 - barH;
 
-    // Bar
-    ctx.fillStyle = days[k].val > 0 ? p.color : "rgba(255,255,255,0.04)";
+    ctx.fillStyle = days[k].val > 0 ? color : "rgba(255,255,255,0.04)";
     ctx.beginPath();
-    ctx.roundRect(x + 3, y, barW - 6, barH, [3, 3, 0, 0]);
+    ctx.roundRect(x + 3, y, barW - 6, Math.max(barH, 0), [3, 3, 0, 0]);
     ctx.fill();
 
-    // Day label
-    var dayName = days[k].key.slice(-2);
-    ctx.fillStyle = days[k].val > 0 ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.15)";
-    ctx.font = "9px system-ui";
+    ctx.fillStyle = days[k].val > 0 ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.1)";
+    ctx.font = "8px system-ui";
     ctx.textAlign = "center";
-    ctx.fillText(dayName, x + barW / 2, h - 1);
+    ctx.fillText(days[k].key.slice(-2), x + barW / 2, h - 1);
   }
 }
 
@@ -299,33 +283,26 @@ function calcUnits() {
   var vial = parseFloat(document.getElementById("calc_vial").value) || 5;
   var water = parseFloat(document.getElementById("calc_water").value) || 1;
   var dose = parseFloat(document.getElementById("calc_dose").value) || 0;
-  var concentration = vial / water;
-  var units = dose / concentration * 100;
+  var units = dose / (vial / water) * 100;
   document.getElementById("calc_result").textContent = "= " + Math.round(units) + " units";
 }
 
 /* ─── Export / Import ─── */
-function exportCSV() {
-  if (!activeId) return;
-  var p = state.peptides[activeId];
+function exportCSV(pepId) {
+  var p = state.peptides[pepId];
+  if (!p) return;
   var rows = [["Date", "Time", "Dose (mg)", "Peptide"]];
   var allLogs = [];
-  for (var wk in (state.logs[activeId] || {})) {
-    for (var i = 0; i < (state.logs[activeId][wk] || []).length; i++) {
-      allLogs.push(state.logs[activeId][wk][i]);
-    }
+  for (var wk in (state.logs[pepId] || {})) {
+    for (var i = 0; i < (state.logs[pepId][wk] || []).length; i++) allLogs.push(state.logs[pepId][wk][i]);
   }
   allLogs.sort(function (a, b) { return a.timestamp.localeCompare(b.timestamp); });
-  for (var j = 0; j < allLogs.length; j++) {
-    rows.push([allLogs[j].date, allLogs[j].time, allLogs[j].dose, p.name]);
-  }
+  for (var j = 0; j < allLogs.length; j++) rows.push([allLogs[j].date, allLogs[j].time, allLogs[j].dose, p.name]);
   var csv = rows.map(function (r) { return r.join(","); }).join("\n");
   download(csv, "peptide_logs_" + p.name + ".csv", "text/csv");
 }
 
-function exportJSON() {
-  download(JSON.stringify(state, null, 2), "peptide_tracker_backup.json", "application/json");
-}
+function exportJSON() { download(JSON.stringify(state, null, 2), "peptide_tracker_backup.json", "application/json"); }
 
 function importData(e) {
   var file = e.target.files[0];
@@ -339,8 +316,7 @@ function importData(e) {
         saveState();
         var keys = Object.keys(state.peptides);
         activeId = keys.length ? keys[0] : null;
-        renderTabs();
-        renderActive();
+        renderAll();
       }
     } catch (_) { alert("Invalid file format."); }
   };
@@ -357,58 +333,10 @@ function download(content, filename, mime) {
   URL.revokeObjectURL(a.href);
 }
 
-/* ─── Modal ─── */
-function openAddPeptideModal(editId) {
-  var existing = editId ? state.peptides[editId] : null;
-  var title = existing ? "Edit peptide" : "Add peptide";
-  var nameVal = existing ? existing.name : "";
-  var doseVal = existing ? existing.doseMg : "";
-  var freqVal = existing ? existing.freq : "3";
-
-  var overlay = document.createElement("div");
-  overlay.className = "modal-overlay";
-  overlay.onclick = function (e) { if (e.target === overlay) overlay.remove(); };
-  overlay.innerHTML =
-    '<div class="modal">' +
-      '<h3>' + title + '</h3>' +
-      '<div class="modal-field"><label>Name</label><input id="modal_name" value="' + escHtml(nameVal) + '" placeholder="e.g. Tesamorelin"></div>' +
-      '<div class="modal-field"><label>Dose (mg)</label><input id="modal_dose" type="number" step="0.01" min="0.01" value="' + doseVal + '" placeholder="e.g. 2"></div>' +
-      '<div class="modal-field"><label>Frequency / week</label><input id="modal_freq" type="number" min="1" max="14" value="' + freqVal + '"></div>' +
-      '<div class="modal-actions">' +
-        '<button class="secondary" onclick="this.closest(\'.modal-overlay\').remove()">Cancel</button>' +
-        (existing ? '<button class="danger" onclick="deletePeptide(\'' + editId + '\'); this.closest(\'.modal-overlay\').remove()">Delete</button>' : '') +
-        '<button class="primary" onclick="savePeptideModal(\'' + (editId || "") + '\')">Save</button>' +
-      '</div>' +
-    '</div>';
-  document.body.appendChild(overlay);
-  setTimeout(function () { document.getElementById("modal_name").focus(); }, 100);
-}
-
-function savePeptideModal(editId) {
-  var name = document.getElementById("modal_name").value.trim();
-  var dose = document.getElementById("modal_dose").value;
-  var freq = document.getElementById("modal_freq").value;
-  if (!name) return;
-  if (editId) {
-    updatePeptide(editId, name, dose, freq);
-  } else {
-    addPeptide(name, dose, freq);
-  }
-  document.querySelector(".modal-overlay").remove();
-}
-
-/* ─── Escaping ─── */
-function escHtml(v) {
-  return String(v || "").replace(/[&<>"']/g, function (m) {
-    return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m];
-  });
-}
-
 /* ─── Init ─── */
 document.addEventListener("DOMContentLoaded", function () {
   var keys = Object.keys(state.peptides);
   if (keys.length) activeId = keys[0];
-  renderTabs();
-  renderActive();
+  renderAll();
   calcUnits();
 });

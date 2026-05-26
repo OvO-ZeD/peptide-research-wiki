@@ -13,140 +13,88 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    /* ─── Tracker Page ─── */
-    .tracker-page { max-width: 920px; margin: 0 auto; }
+    .tracker-page { max-width: 800px; margin: 0 auto; }
 
-    .tracker-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
-    .tracker-header h2 {
+    .tracker-h2 {
       font-family: 'Playfair Display', serif;
       font-size: 1.2rem;
       font-weight: 700;
       letter-spacing: -0.03em;
-      margin: 0;
+      margin: 0 0 2px;
     }
 
-    .tracker-header p {
-      margin: 2px 0 0;
-      font-size: 0.78rem;
-      color: var(--ink-subtle);
-    }
-
-    /* ─── Tab bar ─── */
-    .tab-bar {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-      padding: 4px;
+    /* ─── Empty state ─── */
+    .empty-tracker {
+      text-align: center;
+      padding: 48px 20px;
       background: var(--surface-1);
       border: 1px solid var(--hairline);
-      border-radius: var(--radius-xl);
-      min-height: 44px;
-      align-items: center;
-      overflow-x: auto;
+      border-radius: var(--radius-lg);
     }
 
-    .tab-btn {
-      padding: 7px 14px;
+    .empty-tracker p { color: var(--ink-subtle); font-size: 0.85rem; margin: 6px 0; }
+
+    .big-add-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
       border: none;
-      border-radius: var(--radius-lg);
-      background: transparent;
-      color: var(--ink-subtle);
+      border-radius: var(--radius-md);
+      background: var(--primary);
+      color: white;
       font-family: 'Inter', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 500;
+      font-size: 0.9rem;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
-      white-space: nowrap;
+      margin-top: 12px;
     }
 
-    .tab-btn:hover { color: var(--ink); background: var(--surface-2); }
-
-    .tab-btn.active {
-      background: var(--primary-soft);
-      color: var(--primary);
-      font-weight: 600;
+    .big-add-btn:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 4px 20px var(--primary-glow-soft);
     }
 
-    .tab-btn.add-tab {
-      color: var(--ink-tertiary);
-      font-size: 1.1rem;
-      padding: 7px 10px;
-    }
-
-    .tab-btn.add-tab:hover { color: var(--primary); }
-
-    .tab-badge {
-      display: inline-block;
-      margin-left: 4px;
-      padding: 0 5px;
-      border-radius: 6px;
-      background: var(--surface-3);
-      color: var(--ink-tertiary);
-      font-size: 0.6rem;
-      font-weight: 600;
-    }
-
-    .tab-btn.active .tab-badge {
-      background: rgba(217,56,56,0.2);
-      color: var(--primary);
-    }
-
-    /* ─── Log form card ─── */
-    .log-card {
+    /* ─── Inline add form ─── */
+    .inline-add {
       background: var(--surface-1);
       border: 1px solid var(--hairline);
       border-radius: var(--radius-lg);
       padding: 18px 20px;
       margin-bottom: 14px;
+      animation: slideUp 0.25s ease;
     }
 
-    .log-card h3 {
+    .inline-add h3 {
       margin: 0 0 10px;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 600;
       letter-spacing: -0.01em;
+    }
+
+    .inline-add .row {
       display: flex;
-      align-items: center;
       gap: 8px;
-    }
-
-    .log-card h3 .pep-color {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .log-form {
-      display: flex;
-      gap: 10px;
       flex-wrap: wrap;
       align-items: end;
     }
 
-    .log-field {
+    .inline-add .field {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 2px;
     }
 
-    .log-field label {
-      font-size: 0.65rem;
+    .inline-add .field label {
+      font-size: 0.62rem;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
       color: var(--ink-tertiary);
     }
 
-    .log-field input, .log-field select {
+    .inline-add .field input {
       height: 38px;
       padding: 0 10px;
       border-radius: var(--radius-sm);
@@ -159,44 +107,182 @@
       transition: border-color 0.2s;
     }
 
-    .log-field input:focus, .log-field select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 2px var(--primary-glow-soft);
+    .inline-add .field input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-glow-soft); }
+
+    /* ─── Tabs ─── */
+    .tab-bar {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      padding: 4px;
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-xl);
+      min-height: 42px;
+      align-items: center;
     }
 
-    .log-field input[type="number"] { width: 80px; }
-    .log-field input[type="date"] { width: 130px; }
-    .log-field input[type="time"] { width: 100px; }
-
-    .log-submit {
-      height: 38px;
-      padding: 0 18px;
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
       border: none;
-      border-radius: var(--radius-sm);
-      background: var(--primary);
-      color: white;
+      border-radius: var(--radius-lg);
+      background: transparent;
+      color: var(--ink-subtle);
       font-family: 'Inter', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 600;
+      font-size: 0.76rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
+      white-space: nowrap;
     }
 
-    .log-submit:hover {
-      background: var(--primary-hover);
-      box-shadow: 0 2px 12px var(--primary-glow-soft);
+    .tab-btn:hover { color: var(--ink); background: var(--surface-2); }
+
+    .tab-btn.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 600;
     }
 
-    /* ─── Insights grid ─── */
+    .tab-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    .tab-add {
+      margin-left: auto;
+      padding: 6px 10px;
+      border: none;
+      border-radius: var(--radius-lg);
+      background: transparent;
+      color: var(--ink-tertiary);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .tab-add:hover { color: var(--primary); }
+
+    .tab-del {
+      background: none;
+      border: none;
+      color: transparent;
+      font-size: 0.7rem;
+      cursor: pointer;
+      padding: 0 2px;
+      transition: color 0.15s;
+      line-height: 1;
+    }
+
+    .tab-btn:hover .tab-del { color: var(--ink-tertiary); }
+    .tab-btn .tab-del:hover { color: var(--error) !important; }
+
+    /* ─── Log bar ─── */
+    .log-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .log-bar .pep-name {
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 3px;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+
+    .log-bar .pep-name:hover { background: var(--surface-2); }
+
+    .log-bar .sep { color: var(--ink-tertiary); font-size: 0.7rem; }
+
+    .quick-btn {
+      padding: 6px 12px;
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      color: var(--ink-muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.76rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .quick-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    .quick-btn.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .quick-btn.primary:hover { background: var(--primary-hover); }
+
+    .log-bar .dose-input {
+      width: 65px;
+      height: 34px;
+      padding: 0 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--hairline);
+      background: var(--surface-2);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      text-align: center;
+      outline: none;
+    }
+
+    .log-bar .dose-input:focus { border-color: var(--primary); }
+
+    .log-bar .now-btn {
+      background: none;
+      border: none;
+      color: var(--ink-tertiary);
+      font-size: 0.72rem;
+      cursor: pointer;
+      padding: 4px;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      text-decoration-style: dotted;
+    }
+
+    .log-bar .now-btn:hover { color: var(--primary); }
+
+    /* ─── Inline rename ─── */
+    .rename-input {
+      height: 28px;
+      padding: 0 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--primary);
+      background: var(--surface-2);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      outline: none;
+      width: 150px;
+    }
+
+    /* ─── Insights ─── */
     .insights {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(4, 1fr);
       gap: 8px;
       margin-bottom: 14px;
     }
 
     .insight-card {
-      padding: 14px;
+      padding: 12px 10px;
       border-radius: var(--radius-md);
       background: var(--surface-1);
       border: 1px solid var(--hairline);
@@ -204,7 +290,7 @@
     }
 
     .insight-card .val {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-weight: 700;
       color: var(--ink);
       letter-spacing: -0.02em;
@@ -212,7 +298,7 @@
     }
 
     .insight-card .lbl {
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       color: var(--ink-tertiary);
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -220,13 +306,18 @@
       margin-top: 2px;
     }
 
-    .insight-card .sub {
-      font-size: 0.7rem;
-      color: var(--ink-subtle);
-      margin-top: 1px;
+    /* ─── Chart ─── */
+    .chart-wrap {
+      padding: 12px 14px;
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      margin-bottom: 14px;
     }
 
-    /* ─── Logs table ─── */
+    .chart-wrap canvas { width: 100%; height: 100px; display: block; }
+
+    /* ─── Logs list ─── */
     .logs-section {
       background: var(--surface-1);
       border: 1px solid var(--hairline);
@@ -235,288 +326,134 @@
       margin-bottom: 14px;
     }
 
-    .logs-header {
+    .logs-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 16px;
+      padding: 10px 14px;
       border-bottom: 1px solid var(--hairline);
     }
 
-    .logs-header h3 {
-      margin: 0;
-      font-size: 0.82rem;
-      font-weight: 600;
-    }
+    .logs-head h3 { margin: 0; font-size: 0.8rem; font-weight: 600; }
 
-    .logs-actions {
+    .logs-head .week-nav {
       display: flex;
+      align-items: center;
       gap: 6px;
     }
 
-    .logs-actions button {
-      padding: 5px 10px;
+    .logs-head .week-nav button {
+      background: none;
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-sm);
+      color: var(--ink-subtle);
+      padding: 2px 8px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: all 0.15s;
+    }
+
+    .logs-head .week-nav button:hover { border-color: var(--primary); color: var(--primary); }
+
+    .logs-head .week-nav span { font-size: 0.78rem; font-weight: 500; color: var(--ink-muted); min-width: 60px; text-align: center; }
+
+    .logs-head .l-actions { display: flex; gap: 4px; }
+
+    .logs-head .l-actions button {
+      padding: 3px 8px;
       border: 1px solid var(--hairline);
       border-radius: var(--radius-sm);
       background: var(--surface-2);
-      color: var(--ink-subtle);
+      color: var(--ink-tertiary);
       font-family: 'Inter', sans-serif;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.15s;
     }
 
-    .logs-actions button:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
+    .logs-head .l-actions button:hover { border-color: var(--primary); color: var(--primary); }
 
-    .log-entry {
+    .log-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 16px;
+      padding: 8px 14px;
       border-bottom: 1px solid var(--hairline);
-      transition: background 0.15s;
+      transition: background 0.1s;
     }
 
-    .log-entry:last-child { border-bottom: none; }
-    .log-entry:hover { background: var(--surface-2); }
+    .log-row:last-child { border-bottom: none; }
+    .log-row:hover { background: var(--surface-2); }
 
-    .log-entry-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+    .log-row .l-left { display: flex; align-items: center; gap: 8px; }
+    .log-row .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .log-row .date { font-size: 0.76rem; color: var(--ink-muted); }
+    .log-row .time { font-size: 0.7rem; color: var(--ink-tertiary); }
+    .log-row .dose { font-size: 0.8rem; font-weight: 600; color: var(--ink); }
 
-    .log-entry .dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .log-entry .date {
-      font-size: 0.78rem;
-      color: var(--ink-muted);
-      font-weight: 500;
-    }
-
-    .log-entry .time {
-      font-size: 0.72rem;
-      color: var(--ink-tertiary);
-    }
-
-    .log-entry .dose {
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--ink);
-    }
-
-    .log-entry .del {
+    .log-row .del {
       background: none;
       border: none;
       color: var(--ink-tertiary);
       cursor: pointer;
-      padding: 4px;
-      font-size: 0.9rem;
-      transition: color 0.15s;
-    }
-
-    .log-entry .del:hover { color: var(--primary); }
-
-    .empty-logs {
-      padding: 28px 16px;
-      text-align: center;
-      color: var(--ink-tertiary);
-      font-size: 0.82rem;
-    }
-
-    /* ─── Week picker ─── */
-    .week-picker {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .week-picker button {
-      background: none;
-      border: 1px solid var(--hairline);
-      border-radius: var(--radius-sm);
-      color: var(--ink-subtle);
-      padding: 4px 8px;
-      cursor: pointer;
+      padding: 2px 6px;
       font-size: 0.8rem;
-      transition: all 0.15s;
+      transition: color 0.15s;
+      opacity: 0;
     }
 
-    .week-picker button:hover { border-color: var(--primary); color: var(--primary); }
+    .log-row:hover .del { opacity: 1; }
+    .log-row .del:hover { color: var(--primary); }
 
-    .week-picker span {
-      font-size: 0.82rem;
-      font-weight: 500;
-      color: var(--ink-muted);
-    }
+    .empty-logs { padding: 24px 14px; text-align: center; color: var(--ink-tertiary); font-size: 0.8rem; }
 
     /* ─── Calculator ─── */
     .calc-card {
+      padding: 14px 16px;
       background: var(--surface-1);
       border: 1px solid var(--hairline);
       border-radius: var(--radius-lg);
-      padding: 16px 18px;
       margin-bottom: 14px;
     }
 
-    .calc-card h3 {
-      margin: 0 0 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-    }
+    .calc-card h3 { margin: 0 0 8px; font-size: 0.78rem; font-weight: 600; letter-spacing: -0.01em; }
 
     .calc-row {
       display: flex;
-      gap: 10px;
-      align-items: end;
+      gap: 8px;
+      align-items: center;
       flex-wrap: wrap;
     }
 
-    .calc-result {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--primary);
-      letter-spacing: -0.02em;
-      padding: 8px 0;
-    }
+    .calc-row .field { display: flex; align-items: center; gap: 4px; }
 
-    /* ─── Modal ─── */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      background: rgba(0,0,0,0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      animation: fadeIn 0.2s ease;
-    }
+    .calc-row .field label { font-size: 0.65rem; color: var(--ink-tertiary); font-weight: 500; }
 
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    .modal {
-      background: var(--surface-1);
-      border: 1px solid var(--hairline);
-      border-radius: var(--radius-lg);
-      padding: 20px 22px;
-      width: 100%;
-      max-width: 400px;
-      animation: slideUp 0.25s ease;
-    }
-
-    @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-    .modal h3 {
-      margin: 0 0 12px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-
-    .modal-field {
-      margin-bottom: 10px;
-    }
-
-    .modal-field label {
-      display: block;
-      margin-bottom: 3px;
-      font-size: 0.68rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--ink-tertiary);
-    }
-
-    .modal-field input, .modal-field select {
-      width: 100%;
-      height: 40px;
-      padding: 0 12px;
+    .calc-row .field input {
+      width: 60px;
+      height: 32px;
+      padding: 0 8px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--hairline);
       background: var(--surface-2);
       color: var(--ink);
       font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
+      text-align: center;
       outline: none;
     }
 
-    .modal-field input:focus { border-color: var(--primary); }
+    .calc-row .field input:focus { border-color: var(--primary); }
 
-    .modal-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 14px;
-    }
+    .calc-result { font-size: 0.95rem; font-weight: 700; color: var(--primary); letter-spacing: -0.02em; padding: 4px 0 4px 8px; }
 
-    .modal-actions button {
-      flex: 1;
-      padding: 9px;
-      border-radius: var(--radius-sm);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: none;
-    }
+    @keyframes slideUp { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-    .modal-actions .primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .modal-actions .primary:hover { background: var(--primary-hover); }
-
-    .modal-actions .secondary {
-      background: var(--surface-2);
-      color: var(--ink-subtle);
-      border: 1px solid var(--hairline);
-    }
-
-    .modal-actions .secondary:hover { color: var(--ink); border-color: var(--hairline-strong); }
-
-    .modal-actions .danger {
-      background: rgba(229,72,77,0.12);
-      color: var(--error);
-    }
-
-    .modal-actions .danger:hover { background: rgba(229,72,77,0.2); }
-
-    /* ─── Chart ─── */
-    .chart-wrap {
-      padding: 14px 16px;
-      background: var(--surface-2);
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--hairline);
-      margin: 0 16px 14px;
-    }
-
-    .chart-wrap canvas {
-      width: 100%;
-      height: 120px;
-      display: block;
-    }
-
-    /* ─── Responsive ─── */
     @media (max-width: 640px) {
-      .log-form { flex-direction: column; }
-      .log-field input[type="number"],
-      .log-field input[type="date"],
-      .log-field input[type="time"] { width: 100%; }
-      .log-field { width: 100%; }
-      .log-submit { width: 100%; }
       .insights { grid-template-columns: 1fr 1fr; }
+      .log-bar { flex-direction: column; align-items: stretch; }
+      .log-bar .dose-input { width: 100%; }
     }
   </style>
 </head>
@@ -530,95 +467,79 @@
       <a href="/tracker" class="nav-btn active">Tracker</a>
     </nav>
 
-    <!-- Header -->
-    <div class="tracker-header">
-      <div>
-        <h2>Peptide Tracker</h2>
-        <p>Log doses, view weekly history, track compliance.</p>
-      </div>
-    </div>
+    <h2 class="tracker-h2">Peptide Tracker</h2>
 
     <!-- Tabs -->
-    <div class="tab-bar" id="tab_bar">
-      <button class="tab-btn add-tab" onclick="openAddPeptideModal()" title="Add peptide">+</button>
+    <div class="tab-bar" id="tab_bar"></div>
+
+    <!-- Inline add form (hidden by default) -->
+    <div id="add_form" style="display:none">
+      <div class="inline-add">
+        <h3>Add peptide</h3>
+        <div class="row">
+          <div class="field" style="flex:1;min-width:140px">
+            <label>Name</label>
+            <input id="add_name" placeholder="e.g. Tesamorelin">
+          </div>
+          <div class="field">
+            <label>Dose (mg)</label>
+            <input id="add_dose" type="number" step="0.01" min="0.01" placeholder="2" style="width:80px">
+          </div>
+          <div class="field">
+            <label>x/week</label>
+            <input id="add_freq" type="number" min="1" max="14" value="3" style="width:60px">
+          </div>
+          <button class="quick-btn primary" onclick="saveAddPeptide()">Add</button>
+          <button class="quick-btn" onclick="closeAddForm()">Cancel</button>
+        </div>
+      </div>
     </div>
 
-    <!-- Active peptide panel -->
-    <div id="active_panel">
-      <!-- Log form -->
-      <div class="log-card" id="log_card">
-        <h3><span class="pep-color" id="log_color" style="background:var(--primary)"></span> Log dose — <span id="log_pep_name">select a peptide</span></h3>
-        <form class="log-form" id="log_form" onsubmit="return logDose(event)">
-          <div class="log-field">
-            <label>Dose (mg)</label>
-            <input type="number" id="log_dose" step="0.01" min="0.01" required placeholder="e.g. 2">
-          </div>
-          <div class="log-field">
-            <label>Date</label>
-            <input type="date" id="log_date" required>
-          </div>
-          <div class="log-field">
-            <label>Time</label>
-            <input type="time" id="log_time" required>
-          </div>
-          <button class="log-submit" type="submit">Log</button>
-        </form>
-      </div>
+    <!-- Active panel -->
+    <div id="active_panel"></div>
 
-      <!-- Insights -->
-      <div class="insights" id="insights_grid">
-        <div class="insight-card"><div class="val" id="insight_total">0</div><div class="lbl">This week</div></div>
-        <div class="insight-card"><div class="val" id="insight_compliance">—</div><div class="lbl">Compliance</div><div class="sub" id="insight_expected"></div></div>
-        <div class="insight-card"><div class="val" id="insight_last">—</div><div class="lbl">Last dose</div></div>
-        <div class="insight-card"><div class="val" id="insight_streak">0</div><div class="lbl">Day streak</div></div>
-      </div>
-
-      <!-- Chart -->
-      <div class="chart-wrap" id="chart_wrap">
-        <canvas id="dose_chart"></canvas>
-      </div>
-
-      <!-- Logs -->
-      <div class="logs-section">
-        <div class="logs-header">
-          <h3>Dose history</h3>
-          <div class="week-picker">
-            <button onclick="weekOffset(-1)">←</button>
-            <span id="week_label">This week</span>
-            <button onclick="weekOffset(1)">→</button>
-          </div>
-          <div class="logs-actions">
-            <button onclick="exportCSV()">CSV</button>
-            <button onclick="exportJSON()">JSON</button>
-            <button onclick="document.getElementById('import_input').click()">Import</button>
-            <input type="file" id="import_input" accept=".json" style="display:none" onchange="importData(event)">
-          </div>
-        </div>
-        <div id="logs_list"></div>
-      </div>
-
-      <!-- Calculator -->
-      <div class="calc-card">
-        <h3>Dose calculator — mg to units</h3>
-        <div class="calc-row">
-          <div class="log-field">
-            <label>Vial (mg)</label>
-            <input type="number" id="calc_vial" value="5" step="0.1" min="0.1" style="width:80px" oninput="calcUnits()">
-          </div>
-          <div class="log-field">
-            <label>Water (ml)</label>
-            <input type="number" id="calc_water" value="1" step="0.1" min="0.1" style="width:80px" oninput="calcUnits()">
-          </div>
-          <div class="log-field">
-            <label>Dose (mg)</label>
-            <input type="number" id="calc_dose" value="2" step="0.01" min="0.01" style="width:80px" oninput="calcUnits()">
-          </div>
-          <div class="calc-result" id="calc_result">= 40 units</div>
-        </div>
+    <!-- Calculator (always visible) -->
+    <div class="calc-card">
+      <h3>Dose calculator — mg to units</h3>
+      <div class="calc-row">
+        <div class="field"><label>Vial</label><input id="calc_vial" value="5" step="0.1" min="0.1" oninput="calcUnits()"></div>
+        <span style="color:var(--ink-tertiary);font-size:0.7rem">mg /</span>
+        <div class="field"><label>Water</label><input id="calc_water" value="1" step="0.1" min="0.1" oninput="calcUnits()"></div>
+        <span style="color:var(--ink-tertiary);font-size:0.7rem">ml</span>
+        <span style="color:var(--ink-tertiary)">→</span>
+        <div class="field"><label>Dose</label><input id="calc_dose" value="2" step="0.01" min="0.01" oninput="calcUnits()"></div>
+        <div class="calc-result" id="calc_result">= 40 units</div>
       </div>
     </div>
   </div>
 
+  <script>
+    // ─── Inline rename ───
+    function startRename(id) {
+      var p = state.peptides[id];
+      if (!p) return;
+      var el = document.getElementById("pep_name_display");
+      el.innerHTML = '<input class="rename-input" id="rename_input" value="' + escHtml(p.name) + '" onblur="finishRename(\'' + id + '\')" onkeydown="if(event.key===\'Enter\')this.blur()" autofocus>';
+      var inp = document.getElementById("rename_input");
+      inp.focus();
+      inp.select();
+    }
+
+    function finishRename(id) {
+      var inp = document.getElementById("rename_input");
+      if (inp) {
+        var val = inp.value.trim();
+        if (val) {
+          state.peptides[id].name = val;
+          saveState();
+          renderTabs();
+          renderActive();
+        } else {
+          renderActive();
+        }
+      }
+    }
+  </script>
   <script src="tracker.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
