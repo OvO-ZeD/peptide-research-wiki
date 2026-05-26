@@ -17,6 +17,45 @@ ALIASES = {
     "tirz": "tirzepatide",
     "bpc": "bpc-157",
     "cjc": "cjc-1295",
+    "lira": "liraglutide",
+    "cagri": "cagrilintide",
+    "aod": "aod-9604",
+    "mazdu": "mazdutide",
+    "survo": "survodutide",
+    "ipa": "ipamorelin",
+    "mk": "mk-677",
+    "mk677": "mk-677",
+    "ibutamoren": "mk-677",
+    "serm": "sermorelin",
+    "hexa": "hexarelin",
+    "ghrp2": "ghrp-2",
+    "ghrp6": "ghrp-6",
+    "tb": "tb-500",
+    "thymosin": "thymosin-alpha-1",
+    "ta1": "thymosin-alpha-1",
+    "ghk": "ghk-cu",
+    "mots": "mots-c",
+    "ss31": "ss-31",
+    "epita": "epitalon",
+    "humanin": "humanin",
+    "pt141": "pt-141",
+    "kiss": "kisspeptin-10",
+    "kisspeptin": "kisspeptin-10",
+    "igf1-lr3": "igf-1-lr3",
+    "lr3": "igf-1-lr3",
+    "igf1-des": "igf-1-des",
+    "follistatin": "follistatin-344",
+    "fs344": "follistatin-344",
+    "dsip": "dsip",
+    "pinealon": "pinealon",
+    "vilon": "vilon",
+    "kpv": "kpv",
+    "dihexa": "dihexa",
+    "selank": "selank",
+    "semax": "semax",
+    "thymulin": "thymulin",
+    "peg-mgf": "peg-mgf",
+    "humanin": "humanin",
 }
 
 SNAPSHOT_LIBRARY = {
@@ -79,6 +118,108 @@ SNAPSHOT_LIBRARY = {
         "mechanism_pathway": "GHK-Cu is a tripeptide (three amino acids: glycine-histidine-lysine) with a copper ion attached. It signals skin cells to produce more collagen and elastin (the proteins that keep skin firm and youthful), reduces inflammation, and acts as an antioxidant. It also promotes blood vessel growth to injured tissues, which aids wound healing. The copper ion is essential for these effects.",
         "expected_body_outcomes": "Topical application may improve skin firmness, reduce fine lines and wrinkles, and support wound healing. Injected forms are discussed for tissue repair, hair growth, and anti-aging, though injection use has less formal study than topical. Effects on skin typically appear after weeks to months of consistent use.",
         "clinical_context": "GHK-Cu is widely used in cosmetic skin care products and has been studied in clinical settings for wound healing. It is not FDA approved as a drug (it is a cosmetic ingredient). Injectable forms are available as research chemicals. The safety of long-term injection use is not as well established as topical application.",
+    },
+    "liraglutide": {
+        "primary_effect": "Liraglutide helps lower blood sugar and supports weight loss. It is a well-established medication for type 2 diabetes (Victoza) and weight management (Saxenda), with over a decade of clinical use.",
+        "mechanism_pathway": "Liraglutide mimics the natural hormone GLP-1, which your gut releases when you eat. It tells your pancreas to release more insulin when sugar is high, slows down stomach emptying so you feel full longer, and signals your brain to reduce appetite. A fatty acid chain attached to the molecule keeps it active in the body for a full day.",
+        "expected_body_outcomes": "People usually eat less and feel full sooner after meals. Blood sugar levels drop steadily, and weight loss of 5-10% is typical over several months. Some people experience nausea when starting, which often fades. It is injected once daily.",
+        "clinical_context": "Liraglutide is FDA approved and has been prescribed since 2010 for diabetes and since 2014 for weight management. It has been studied in large, long-term trials including cardiovascular outcome studies. It is available by prescription only.",
+    },
+    "sermorelin": {
+        "primary_effect": "Sermorelin stimulates the pituitary gland to release more growth hormone. It is used medically to diagnose and treat growth hormone deficiency in children.",
+        "mechanism_pathway": "Sermorelin is a synthetic fragment of GHRH (growth hormone releasing hormone). It binds to receptors on the pituitary gland and triggers natural pulsatile release of growth hormone. Unlike synthetic GH injections which replace the hormone directly, sermorelin stimulates the body's own production, preserving the natural feedback loop.",
+        "expected_body_outcomes": "In children with growth deficiency, sermorelin can increase growth rate. In adults used off-label, it may improve body composition, energy, and recovery. Effects are gradual and require consistent use over months.",
+        "clinical_context": "Sermorelin is FDA approved for pediatric growth hormone deficiency. It is used off-label in anti-aging clinics for its GH-releasing effects. Requires daily subcutaneous injections and is available by prescription.",
+    },
+    "mk-677": {
+        "primary_effect": "MK-677 (ibutamoren) is an oral growth hormone secretagogue — a pill that stimulates the body to release more growth hormone and IGF-1.",
+        "mechanism_pathway": "MK-677 mimics ghrelin, the hunger hormone, by binding to the ghrelin receptor (GHSR). This triggers the pituitary to release pulses of growth hormone. Unlike injectable GH-releasing peptides, MK-677 is orally bioavailable — a pill. It also increases appetite as a side effect of ghrelin receptor activation.",
+        "expected_body_outcomes": "Users typically see IGF-1 levels comparable to mild GH therapy. Increased appetite is common, especially in the first weeks. Some report better sleep quality, improved recovery, and modest lean mass gains over months. Effects vary significantly between individuals.",
+        "clinical_context": "MK-677 has been studied in human trials for frailty in the elderly, hip fracture recovery, and GH deficiency. It is not FDA approved and is sold as a research chemical. Long-term safety data beyond 12 months is limited.",
+    },
+    "hexarelin": {
+        "primary_effect": "Hexarelin is a potent GH-releasing peptide that triggers strong pulses of growth hormone. It is one of the strongest GH secretagogues in its class.",
+        "mechanism_pathway": "Hexarelin binds strongly to the ghrelin receptor (GHSR-1a) on the pituitary gland, triggering a rapid, large pulse of GH release — more potent than GHRP-2 or ipamorelin. Some research also suggests GH-independent effects on cardiovascular tissue through CD36 receptors.",
+        "expected_body_outcomes": "A strong GH pulse within minutes. Potential benefits include improved recovery, fat metabolism, and lean mass. The GH spike is typically larger and shorter than from other GHRPs. This potency means desensitization (reduced response over time) may occur faster.",
+        "clinical_context": "Hexarelin has been studied in human trials but is not FDA approved. It is known for its potency — the strongest GH spike of common secretagogues. Sold as a research chemical.",
+    },
+    "ghrp-6": {
+        "primary_effect": "GHRP-6 stimulates growth hormone release and is notable for also significantly increasing appetite — useful when both GH support and hunger stimulation are desired.",
+        "mechanism_pathway": "GHRP-6 binds to the ghrelin receptor (GHSR) in the pituitary and hypothalamus. This triggers GH release and also activates neuropeptide Y neurons, which strongly stimulate appetite. The hunger effect is much stronger than with GHRP-2 or ipamorelin.",
+        "expected_body_outcomes": "GH pulse within 15-30 minutes. Noticeably increased appetite within minutes, lasting 30-60 minutes. Improved recovery and sleep quality with regular use.",
+        "clinical_context": "GHRP-6 is not FDA approved. It is one of the older GHRPs with the strongest hunger effect. Sold as a research chemical, typically injected subcutaneously.",
+    },
+    "ghrp-2": {
+        "primary_effect": "GHRP-2 stimulates growth hormone release with less appetite activation than GHRP-6. Commonly stacked with GHRH analogs (like CJC-1295) for a synergistic GH pulse.",
+        "mechanism_pathway": "GHRP-2 binds to the ghrelin receptor (GHSR) and triggers GH release. Compared to GHRP-6, it has less effect on appetite pathways. It works synergistically with GHRH analogs — using both produces a larger GH pulse than either alone.",
+        "expected_body_outcomes": "GH pulse within 15-30 minutes, milder than hexarelin but more consistent for daily use. Less appetite stimulation than GHRP-6. Better recovery and body composition when used consistently over months.",
+        "clinical_context": "GHRP-2 is not FDA approved. One of the most commonly used GHRPs in research. Often stacked with a GHRH analog. Sold as a research chemical.",
+    },
+    "tb-500": {
+        "primary_effect": "TB-500 (Thymosin Beta-4) is studied for accelerating healing of injuries — especially tendons, ligaments, and muscles.",
+        "mechanism_pathway": "TB-500 is a synthetic version of Thymosin Beta-4, a protein found in all human cells. It binds to actin and promotes cell migration to injury sites, increases blood vessel growth (angiogenesis), reduces inflammation, and stimulates release of healing factors.",
+        "expected_body_outcomes": "Anecdotal reports describe faster recovery from soft tissue injuries, reduced scar tissue, and improved flexibility in injured areas. Effects may take days to weeks.",
+        "clinical_context": "TB-500 is not FDA approved. Studied mainly in preclinical contexts. Sold as a research chemical.",
+    },
+    "pt-141": {
+        "primary_effect": "PT-141 (bremelanotide) is studied for sexual arousal and desire. Unlike Viagra, it works on the brain rather than blood flow.",
+        "mechanism_pathway": "PT-141 activates melanocortin receptors (MC3R and MC4R) in the central nervous system, triggering increased sexual desire independently of sex hormones. Unlike PDE5 inhibitors (Viagra/Cialis), it acts on the brain's desire pathways.",
+        "expected_body_outcomes": "Increased sexual desire and arousal within 30-60 minutes, lasting 6-12 hours. Spontaneous yawning is a known side effect. Nausea can occur at higher doses.",
+        "clinical_context": "PT-141 (bremelanotide) is FDA approved as Vyleesi for hypoactive sexual desire disorder in premenopausal women. Studied off-label in men for ED. Self-injected subcutaneously.",
+    },
+    "thymosin-alpha-1": {
+        "primary_effect": "Thymosin Alpha-1 helps regulate the immune system. Studied for immune support, infection response, and as an adjunct in vaccine therapy.",
+        "mechanism_pathway": "Produced by the thymus gland, it acts as a biological response modifier. Activates T-cells, natural killer cells, and dendritic cells. Modulates cytokine production — helping dial the immune system to the right level.",
+        "expected_body_outcomes": "Improved immune function, particularly in immunocompromised populations. Studied to reduce infections and improve vaccine responses in older adults.",
+        "clinical_context": "Approved as a medication in several countries (China, Russia, parts of Europe) for immune support and hepatitis. Not FDA approved in the US. Sold as a research chemical.",
+    },
+    "igf-1-lr3": {
+        "primary_effect": "IGF-1 LR3 is a synthetic long-acting version of insulin-like growth factor 1. Studied for potent anabolic and metabolic effects.",
+        "mechanism_pathway": "Binds to IGF-1 receptors on nearly all cell types, promoting protein synthesis, inhibiting protein breakdown, and supporting cell growth. The LR3 modification prevents binding to IGF-binding proteins, keeping it active much longer than natural IGF-1.",
+        "expected_body_outcomes": "Increased lean muscle mass, improved recovery, better glucose uptake in muscles, and improved skin quality with consistent use.",
+        "clinical_context": "IGF-1 LR3 is not FDA approved. Sold as a research chemical. The LR3 variant is a research tool designed for longer half-life. Human safety data is limited.",
+    },
+    "aod-9604": {
+        "primary_effect": "AOD-9604 is a fragment of human growth hormone studied for fat loss. Designed to stimulate fat breakdown without affecting blood sugar or growth.",
+        "mechanism_pathway": "A 16-amino-acid fragment of the fat-burning region of GH. Activates lipolysis (fat breakdown) without binding to GH receptors that affect blood sugar and cell growth.",
+        "expected_body_outcomes": "Proposed accelerated fat loss, particularly from stubborn areas. Human studies are limited and results mixed. Effects would likely be modest alongside diet and exercise.",
+        "clinical_context": "Completed Phase 2 trials for obesity but development was not continued to approval. Sold as a research chemical.",
+    },
+    "semax": {
+        "primary_effect": "Semax is a synthetic peptide used for cognitive enhancement — improving focus, memory, and mental stamina.",
+        "mechanism_pathway": "Increases levels of BDNF (brain-derived neurotrophic factor), supporting neural growth and survival. Also modulates dopamine, serotonin, and acetylcholine — neurotransmitters involved in attention, mood, and memory.",
+        "expected_body_outcomes": "Improved focus, mental clarity, better memory recall, reduced brain fog within hours. Some users report improved mood. Used both acutely and long-term.",
+        "clinical_context": "Approved as a prescription medication in Russia for stroke recovery and cognitive impairment. Not FDA approved in the US. Administered as nasal drops.",
+    },
+    "selank": {
+        "primary_effect": "Selank is a synthetic peptide studied for reducing anxiety without sedation or cognitive dulling.",
+        "mechanism_pathway": "Increases enkephalin and serotonin levels in the brain, promoting calmness. Does not act on GABA receptors like benzodiazepines, so it is less likely to cause sedation or memory issues.",
+        "expected_body_outcomes": "Calm, clear-headed state without drowsiness. Reduced anxiety and better stress handling. Often described as making things 'bother you less' rather than a strong drug effect.",
+        "clinical_context": "Approved as a prescription medication in Russia for anxiety disorders. Not FDA approved in the US. Administered as nasal drops.",
+    },
+    "dsip": {
+        "primary_effect": "DSIP (Delta Sleep-Inducing Peptide) promotes deep, restorative sleep and reduces stress.",
+        "mechanism_pathway": "Promotes delta wave activity — the deepest stage of sleep. Also influences the stress axis (HPA axis) by modulating cortisol and ACTH. Not a sedative — it shifts sleep architecture toward more deep sleep.",
+        "expected_body_outcomes": "Improved sleep quality, deeper and more restorative sleep. Better stress resilience. Effects may take days to develop.",
+        "clinical_context": "Studied in small human trials for sleep disorders. Not FDA approved. Sold as a research chemical. Research history dating back to the 1970s.",
+    },
+    "ss-31": {
+        "primary_effect": "SS-31 (elamipretide) targets mitochondria to improve cellular energy production and exercise tolerance.",
+        "mechanism_pathway": "A small tetrapeptide that targets the inner mitochondrial membrane. Interacts with cardiolipin to optimize energy production and reduce reactive oxygen species. Helps cells' energy factories work better.",
+        "expected_body_outcomes": "Improved exercise tolerance, faster recovery, better energy levels. In clinical studies, improved walking distance in mitochondrial disease patients.",
+        "clinical_context": "Studied in human trials for mitochondrial disease and heart failure. Received FDA Orphan Drug designation. Not yet FDA approved. More clinical data exists than for most research peptides.",
+    },
+    "humanin": {
+        "primary_effect": "Humanin is a naturally occurring mitochondrial peptide with proposed protective effects against aging and cellular stress.",
+        "mechanism_pathway": "Encoded by mitochondrial DNA, acts as a cellular stress signal. Reduces oxidative stress, inhibits cell death, and improves insulin sensitivity. Levels naturally decline with age.",
+        "expected_body_outcomes": "Proposed metabolic health and inflammation benefits. Most evidence from animal and cell studies. Human research is very early stage.",
+        "clinical_context": "Discovered in 2001. Studied in animal models of Alzheimer's, heart disease, and metabolic disorders. Not approved by any regulatory agency.",
+    },
+    "cagrilintide": {
+        "primary_effect": "Cagrilintide is an investigational peptide that mimics amylin, a hormone regulating appetite and blood sugar. Being developed for weight loss, often with semaglutide.",
+        "mechanism_pathway": "A long-acting analog of amylin, a hormone released by the pancreas after meals. Slows gastric emptying, promotes satiety signals, and suppresses glucagon. Works through a different mechanism than GLP-1 drugs.",
+        "expected_body_outcomes": "Reduced appetite, slower digestion, earlier fullness, weight loss. In trials, combination with semaglutide (CagriSema) produced greater weight loss than either alone.",
+        "clinical_context": "Developed by Novo Nordisk, completed Phase 2 trials. Not yet FDA approved. Being studied in combination with semaglutide for obesity.",
     },
 }
 
@@ -172,6 +313,116 @@ STACK_KNOWLEDGE = {
         "tier": "C",
         "summary": "Mitochondrial-targeted candidate with translational potential and evolving human evidence.",
     },
+    "liraglutide": {
+        "effects": ["fat_loss", "glycemic_support", "appetite_modulation"],
+        "tier": "A",
+        "summary": "GLP-1 agonist with long clinical track record in type 2 diabetes and weight management.",
+    },
+    "cagrilintide": {
+        "effects": ["fat_loss", "appetite_modulation"],
+        "tier": "C",
+        "summary": "Amylin analog under investigation as adjunct to GLP-1 agonists for enhanced weight loss.",
+    },
+    "mazdutide": {
+        "effects": ["fat_loss", "glycemic_support", "appetite_modulation"],
+        "tier": "C",
+        "summary": "Dual GLP-1/glucagon receptor agonist in clinical development for metabolic disease.",
+    },
+    "survodutide": {
+        "effects": ["fat_loss", "appetite_modulation"],
+        "tier": "C",
+        "summary": "Dual GLP-1/glucagon agonist with emerging Phase 2 data in obesity and MASH.",
+    },
+    "mk-677": {
+        "effects": ["gh_axis", "recovery", "lean_mass_support"],
+        "tier": "C",
+        "summary": "Oral ghrelin mimetic that stimulates GH release; studied in frailty and recovery contexts.",
+    },
+    "sermorelin": {
+        "effects": ["gh_axis", "body_composition"],
+        "tier": "B",
+        "summary": "Synthetic GHRH analog FDA-approved for growth hormone deficiency diagnosis and treatment.",
+    },
+    "hexarelin": {
+        "effects": ["gh_axis", "recovery"],
+        "tier": "C",
+        "summary": "GH-releasing peptide with potent GH pulse stimulation; limited long-term human safety data.",
+    },
+    "ghrp-2": {
+        "effects": ["gh_axis", "recovery", "lean_mass_support"],
+        "tier": "C",
+        "summary": "Synthetic ghrelin mimetic that strongly stimulates GH release; commonly stacked with GHRH analogs.",
+    },
+    "ghrp-6": {
+        "effects": ["gh_axis", "recovery", "appetite_modulation"],
+        "tier": "C",
+        "summary": "GH secretagogue with notable appetite-stimulating effect in addition to GH pulse signaling.",
+    },
+    "peg-mgf": {
+        "effects": ["recovery", "lean_mass_support"],
+        "tier": "D",
+        "summary": "PEGylated mechano-growth factor with proposed localized repair signaling; evidence mostly preclinical.",
+    },
+    "humanin": {
+        "effects": ["mitochondrial_support", "metabolic_flexibility"],
+        "tier": "D",
+        "summary": "Mitochondrial-derived peptide with proposed cytoprotective and metabolic signaling roles.",
+    },
+    "thymosin-alpha-1": {
+        "effects": ["thymic_support", "recovery"],
+        "tier": "C",
+        "summary": "Thymic peptide with immunomodulatory properties studied in immune function and infection contexts.",
+    },
+    "thymulin": {
+        "effects": ["thymic_support"],
+        "tier": "D",
+        "summary": "Thymic hormone peptide with proposed immune-regulatory effects; limited human trial data.",
+    },
+    "dihexa": {
+        "effects": ["focus"],
+        "tier": "D",
+        "summary": "Angiotensin IV analog with proposed cognitive enhancement signals; minimal human data.",
+    },
+    "pt-141": {
+        "effects": ["sexual_function"],
+        "tier": "C",
+        "summary": "Melanocortin receptor agonist studied for sexual arousal and desire; intranasal route.",
+    },
+    "kisspeptin-10": {
+        "effects": ["sexual_function", "gh_axis"],
+        "tier": "C",
+        "summary": "Kisspeptin receptor agonist involved in reproductive hormone signaling and GH pulse modulation.",
+    },
+    "igf-1-lr3": {
+        "effects": ["igf_signaling", "lean_mass_support"],
+        "tier": "C",
+        "summary": "Long-acting IGF-1 analog with potent anabolic signaling; limited controlled human data.",
+    },
+    "igf-1-des": {
+        "effects": ["igf_signaling"],
+        "tier": "D",
+        "summary": "Truncated IGF-1 variant with high receptor affinity; mostly discussed in research contexts.",
+    },
+    "follistatin-344": {
+        "effects": ["myostatin_inhibition", "lean_mass_support"],
+        "tier": "D",
+        "summary": "Follistatin isoform that binds myostatin; preclinical muscle-growth signals without human trial confirmation.",
+    },
+    "pinealon": {
+        "effects": ["sleep_support", "recovery"],
+        "tier": "D",
+        "summary": "Synthetic pineal peptide proposed for circadian support; very limited human evidence.",
+    },
+    "vilon": {
+        "effects": ["thymic_support"],
+        "tier": "D",
+        "summary": "Short dipeptide with proposed immune-support effects; primarily discussed in Eastern European research.",
+    },
+    "kpv": {
+        "effects": ["inflammation_hypothesis", "healing_support"],
+        "tier": "D",
+        "summary": "Short peptide fragment of alpha-melanocyte stimulating hormone with proposed anti-inflammatory signaling.",
+    },
 }
 
 GOAL_BLUEPRINTS = {
@@ -258,7 +509,7 @@ def fetch_json(url, headers=None, data=None):
         return None
 
 
-def source_status(wiki, trials, pubmed, fda_data, pubchem=None, rcsb=None):
+def source_status(wiki, trials, pubmed, fda_data, pubchem=None, rcsb=None, uniprot=None):
     return {
         "wikipedia": bool(wiki and wiki.get("summary")),
         "clinicaltrials": bool(trials),
@@ -266,6 +517,7 @@ def source_status(wiki, trials, pubmed, fda_data, pubchem=None, rcsb=None):
         "openfda": bool(fda_data),
         "pubchem": bool(pubchem),
         "rcsb_pdb": bool(rcsb),
+        "uniprot": bool(uniprot),
     }
 
 
@@ -328,6 +580,42 @@ def fetch_rcsb_pdb(term):
                 "url": f"https://www.rcsb.org/structure/{pdb_id}",
             })
     return structures if structures else None
+
+
+def fetch_uniprot(term):
+    url = f"https://rest.uniprot.org/uniprotkb/search?query={quote(term)}&format=json&size=1"
+    data = fetch_json(url, {"User-Agent": "peptide-wiki/1.0"})
+    if not data or not data.get("results"):
+        return None
+    entry = data["results"][0]
+    result = {
+        "accession": entry.get("primaryAccession"),
+        "id": entry.get("uniProtkbId"),
+        "protein_name": entry.get("proteinDescription", {}).get("recommendedName", {}).get("fullName", {}).get("value"),
+        "gene": entry.get("genes", [{}])[0].get("geneName", {}).get("value"),
+    }
+    for comment in entry.get("comments", []):
+        ctype = comment.get("commentType")
+        if ctype == "FUNCTION":
+            texts = comment.get("texts", [])
+            if texts:
+                result["function"] = texts[0].get("value")
+        elif ctype == "PHARMACEUTICAL":
+            texts = comment.get("texts", [])
+            if texts:
+                result["pharmaceutical"] = texts[0].get("value")
+        elif ctype == "BIOTECHNOLOGY":
+            texts = comment.get("texts", [])
+            if texts:
+                result["biotechnology"] = texts[0].get("value")
+        elif ctype == "DISEASE":
+            diseases = []
+            for d in comment.get("disease", []):
+                diseases.append(d.get("diseaseId"))
+            if diseases:
+                result["diseases"] = diseases
+    result["keywords"] = [kw.get("name") for kw in entry.get("keywords", [])]
+    return result
 
 
 def fetch_wikipedia_summary(term):
@@ -532,6 +820,11 @@ def describe_effect(effect):
         "mitochondrial_support": "mitochondrial energetic support",
         "exercise_tolerance": "exercise tolerance signaling",
         "inflammation_hypothesis": "inflammation-related exploratory signaling",
+        "ghrelin_axis": "ghrelin-receptor growth-hormone secretagogue signaling",
+        "sexual_function": "sexual-function and arousal signaling",
+        "thymic_support": "thymic and adaptive-immune support",
+        "igf_signaling": "direct IGF-1 receptor activation signaling",
+        "myostatin_inhibition": "myostatin-inhibition and muscle-growth signaling",
     }
     return labels.get(effect, effect.replace("_", " "))
 
@@ -678,6 +971,20 @@ def build_stack_candidates(goal_key, priority_peptide):
         ["ss-31", "mots-c"],
         ["semaglutide", "aod-9604"],
         ["tirzepatide", "mots-c", "ss-31"],
+        ["retatrutide", "cagrilintide"],
+        ["semaglutide", "cagrilintide"],
+        ["tesamorelin", "mk-677"],
+        ["mk-677", "ipamorelin"],
+        ["pt-141", "kisspeptin-10"],
+        ["thymosin-alpha-1", "ghk-cu"],
+        ["igf-1-lr3", "peg-mgf"],
+        ["semax", "dihexa"],
+        ["ghrp-2", "cjc-1295"],
+        ["ghrp-6", "sermorelin"],
+        ["liraglutide", "tirzepatide"],
+        ["ss-31", "humanin"],
+        ["thymosin-alpha-1", "thymulin"],
+        ["aod-9604", "mk-677"],
     ]
     for stack in base_pool:
         if known_priority and known_priority not in stack:
@@ -761,12 +1068,18 @@ def fetch_openfda(term):
     }
 
 
-def build_medical_definition(name, trials, fda_data, wiki_summary):
+def build_medical_definition(name, trials, fda_data, wiki_summary, uniprot_data=None):
     has_trials = bool(trials)
     has_fda = bool(fda_data)
     trial_count = len(trials) if trials else 0
 
     parts = [f"{name} is a peptide — a short chain of amino acids that acts like a signaling molecule in the body."]
+
+    if uniprot_data and uniprot_data.get("protein_name") and uniprot_data["protein_name"].lower() != name.lower():
+        parts.append(f"Its official protein name is {uniprot_data['protein_name']}.")
+
+    if uniprot_data and uniprot_data.get("function"):
+        parts.append(f"At the molecular level: {uniprot_data['function'][:500]}")
 
     if has_trials:
         top = trials[0]
@@ -796,8 +1109,10 @@ def build_medical_definition(name, trials, fda_data, wiki_summary):
         if ind and ind != "No FDA indication text available.":
             parts.append(f"From FDA sources, its approved or investigated use involves: {ind[:400]}")
 
+    if uniprot_data and uniprot_data.get("pharmaceutical"):
+        parts.append(f"Its pharmaceutical role, from protein databases: {uniprot_data['pharmaceutical'][:400]}")
+
     if wiki_summary and "No encyclopedia" not in wiki_summary and "No summary" not in wiki_summary:
-        # Add wikipedia context in simple terms
         short_wiki = wiki_summary[:500]
         parts.append(f"General background: {short_wiki}")
 
@@ -807,7 +1122,7 @@ def build_medical_definition(name, trials, fda_data, wiki_summary):
     return " ".join(parts)
 
 
-def build_plain_summary(wiki_summary, trials, fda_data=None, pubchem=None):
+def build_plain_summary(wiki_summary, trials, fda_data=None, pubchem=None, uniprot_data=None):
     parts = []
 
     if trials:
@@ -845,8 +1160,13 @@ def build_plain_summary(wiki_summary, trials, fda_data=None, pubchem=None):
         warn = fda_data.get("warnings", "")
         if warn and warn != "No FDA warnings text available.":
             parts.append(f" Safety note from regulators: {warn[:300]}")
+    elif uniprot_data and uniprot_data.get("function"):
+        parts.append(f"From protein databases: {uniprot_data['function'][:500]}")
     else:
         parts.append(f"In simple terms: {wiki_summary[:600]}")
+
+    if uniprot_data and uniprot_data.get("pharmaceutical") and not fda_data:
+        parts.append(f"Its pharmaceutical role: {uniprot_data['pharmaceutical'][:400]}")
 
     if pubchem:
         mw = pubchem.get("molecular_weight")
@@ -871,7 +1191,7 @@ def build_plain_summary(wiki_summary, trials, fda_data=None, pubchem=None):
             else:
                 parts.append(f"Its LogP value is {log_p}, meaning it is more attracted to fatty tissues than water.")
 
-    if not trials and not fda_data and not pubchem:
+    if not trials and not fda_data and not pubchem and not (uniprot_data and uniprot_data.get("function")):
         parts.append(wiki_summary[:600])
 
     return " ".join(parts)
@@ -946,7 +1266,7 @@ def build_evidence_claims(trials, pubmed, fda_data):
     return claims
 
 
-def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubchem=None):
+def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubchem=None, uniprot_data=None):
     base = SNAPSHOT_LIBRARY.get(term, {})
     primary_effect = base.get("primary_effect")
     mechanism_pathway = base.get("mechanism_pathway")
@@ -954,6 +1274,8 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
     clinical_context = base.get("clinical_context")
 
     trial_count = len(trials) if trials else 0
+    uniprot_func = uniprot_data.get("function") if uniprot_data else None
+    uniprot_pharm = uniprot_data.get("pharmaceutical") if uniprot_data else None
 
     if not primary_effect:
         if trials:
@@ -972,6 +1294,8 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
                 f"This peptide is mentioned in official FDA drug records, meaning it has some level of regulatory review behind it. "
                 f"According to the FDA, its documented medical purpose is: {ind[:400] if ind else 'Available in drug labeling databases.'}"
             )
+        elif uniprot_func:
+            primary_effect = f"According to protein databases, this peptide has the following biological role: {uniprot_func[:400]}"
         else:
             primary_effect = (
                 f"Based on public research databases, this peptide is known to scientists and has been written about in research papers. "
@@ -979,7 +1303,13 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
             )
 
     if not mechanism_pathway:
-        if trials:
+        if uniprot_func and uniprot_data.get("keywords"):
+            keywords = ", ".join(uniprot_data["keywords"][:5])
+            mechanism_pathway = (
+                f"From protein database records, this peptide is classified with the following biological keywords: {keywords}. "
+                f"Its described function is: {uniprot_func[:300]}"
+            )
+        elif trials:
             top = trials[0]
             methods = top.get("methods", "")
             mechanism_pathway = (
@@ -994,12 +1324,15 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
             )
 
     if not expected_body_outcomes:
-        expected_body_outcomes = (
-            "What might happen in your body depends on many factors: the specific peptide, how much is taken (dose), "
-            "how long it is used, the person's health status, and whether it is combined with other treatments. "
-            "People may experience different effects. For the most reliable picture of what to expect, "
-            "look at the completed clinical trials below — they show what happened to actual study participants."
-        )
+        if uniprot_pharm:
+            expected_body_outcomes = uniprot_pharm[:400]
+        else:
+            expected_body_outcomes = (
+                "What might happen in your body depends on many factors: the specific peptide, how much is taken (dose), "
+                "how long it is used, the person's health status, and whether it is combined with other treatments. "
+                "People may experience different effects. For the most reliable picture of what to expect, "
+                "look at the completed clinical trials below — they show what happened to actual study participants."
+            )
 
     if not clinical_context:
         clinical_context = (
@@ -1023,7 +1356,8 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    all_peptides = sorted(set(ALIASES.values()) | set(STACK_KNOWLEDGE.keys()))
+    return render_template('index.html', all_peptides=all_peptides)
 
 
 @app.route('/healthz')
@@ -1048,14 +1382,15 @@ def search():
     fda_data = fetch_openfda(term)
     pubchem = fetch_pubchem(term)
     rcsb = fetch_rcsb_pdb(term)
-    medical_definition = build_medical_definition(wiki["title"], trials, fda_data, wiki["summary"])
-    plain_summary = build_plain_summary(wiki["summary"], trials, fda_data, pubchem)
+    uniprot_data = fetch_uniprot(term)
+    medical_definition = build_medical_definition(wiki["title"], trials, fda_data, wiki["summary"], uniprot_data)
+    plain_summary = build_plain_summary(wiki["summary"], trials, fda_data, pubchem, uniprot_data)
     benefits, cons = build_benefits_and_cons(trials, fda_data)
     timeline = build_timeline(trials)
     claims = build_evidence_claims(trials, pubmed, fda_data)
-    snapshot = build_clinical_snapshot(term, trials, pubmed, fda_data, wiki["summary"], pubchem)
+    snapshot = build_clinical_snapshot(term, trials, pubmed, fda_data, wiki["summary"], pubchem, uniprot_data)
     evidence_score = build_evidence_score(trials, pubmed, fda_data, wiki)
-    source_ok = source_status(wiki, trials, pubmed, fda_data, pubchem, rcsb)
+    source_ok = source_status(wiki, trials, pubmed, fda_data, pubchem, rcsb, uniprot_data)
     healthy_sources = sum(1 for ok in source_ok.values() if ok)
     reliability = "HIGH" if healthy_sources >= 4 else ("MEDIUM" if healthy_sources >= 2 else "LOW")
 
@@ -1080,6 +1415,7 @@ def search():
         "clinical_snapshot": snapshot,
         "pubchem": pubchem,
         "pdb_structures": rcsb,
+        "uniprot": uniprot_data,
         "source_status": source_ok,
         "reliability": reliability,
         "partial_data": healthy_sources < 4,
@@ -1091,6 +1427,7 @@ def search():
             {"label": "OpenFDA drug labels", "url": f"https://api.fda.gov/drug/label.json?search={quote(term)}&limit=1"},
             {"label": "PubChem", "url": f"https://pubchem.ncbi.nlm.nih.gov/#query={quote(term)}"},
             {"label": "RCSB Protein Data Bank", "url": f"https://www.rcsb.org/search?request=%7B%22query%22%3A%7B%22type%22%3A%22group%22%2C%22logical_operator%22%3A%22and%22%2C%22nodes%22%3A%5B%7B%22type%22%3A%22terminal%22%2C%22service%22%3A%22full_text%22%2C%22parameters%22%3A%7B%22value%22%3A%22{quote(term)}%22%7D%7D%5D%7D%7D"},
+            {"label": "UniProt", "url": f"https://www.uniprot.org/uniprotkb?query={quote(term)}"},
         ],
     }
     return jsonify(response)

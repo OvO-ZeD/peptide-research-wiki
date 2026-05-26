@@ -165,6 +165,33 @@ function renderPdb(structures) {
   }).join('') + '</div>';
 }
 
+function renderUniprot(data) {
+  if (!data) return '';
+  var html = '';
+  if (data.protein_name) {
+    html += '<div class="snapshot-item"><strong>Protein name</strong><p>' + escapeHtml(data.protein_name) + '</p></div>';
+  }
+  if (data.accession) {
+    html += '<div class="snapshot-item"><strong>Accession</strong><p>' + escapeHtml(data.accession) + '</p></div>';
+  }
+  if (data.function) {
+    html += '<div class="snapshot-item" style="grid-column:1/-1"><strong>Biological function</strong><p>' + escapeHtml(data.function.slice(0, 600)) + '</p></div>';
+  }
+  if (data.pharmaceutical) {
+    html += '<div class="snapshot-item" style="grid-column:1/-1"><strong>Pharmaceutical role</strong><p>' + escapeHtml(data.pharmaceutical.slice(0, 500)) + '</p></div>';
+  }
+  if (data.biotechnology) {
+    html += '<div class="snapshot-item" style="grid-column:1/-1"><strong>Biotechnology</strong><p>' + escapeHtml(data.biotechnology.slice(0, 400)) + '</p></div>';
+  }
+  if (data.gene) {
+    html += '<div class="snapshot-item"><strong>Gene</strong><p>' + escapeHtml(data.gene) + '</p></div>';
+  }
+  if (data.keywords && data.keywords.length) {
+    html += '<div class="snapshot-item"><strong>Keywords</strong><p>' + escapeHtml(data.keywords.slice(0, 6).join(', ')) + '</p></div>';
+  }
+  return html ? '<div class="snapshot-grid">' + html + '</div>' : '';
+}
+
 function renderSources(sources) {
   if (!sources || !sources.length) return '<p class="empty">No source links provided.</p>';
   return '<div class="source-grid">' + sources.map(function (s) {
@@ -211,6 +238,11 @@ function buildResponse(response, title) {
   // PDB structures
   if (response.pdb_structures && response.pdb_structures.length) {
     html += makePanel('Protein Structures (PDB)', renderPdb(response.pdb_structures));
+  }
+
+  // UniProt
+  if (response.uniprot) {
+    html += makePanel('UniProt Data', renderUniprot(response.uniprot));
   }
 
   // Clinical Trials

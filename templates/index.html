@@ -30,11 +30,21 @@
       <div class="search-row">
         <div class="search-field">
           <label for="term_input">Peptide</label>
-          <input id="term_input" type="text" placeholder="e.g., retatrutide, semaglutide, bpc-157" autofocus>
+          <input id="term_input" type="text" placeholder="e.g., retatrutide, semaglutide, bpc-157" autofocus list="peptide-list">
+          <datalist id="peptide-list">
+            {% for p in all_peptides %}
+            <option value="{{ p }}">
+            {% endfor %}
+          </datalist>
         </div>
         <div class="search-field">
           <label for="compare_input">Compare (optional)</label>
-          <input id="compare_input" type="text" placeholder="e.g., tesa">
+          <input id="compare_input" type="text" placeholder="e.g., tesa" list="peptide-list-compare">
+          <datalist id="peptide-list-compare">
+            {% for p in all_peptides %}
+            <option value="{{ p }}">
+            {% endfor %}
+          </datalist>
         </div>
         <button id="search_button" class="search-btn" onclick="searchPeptide()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
