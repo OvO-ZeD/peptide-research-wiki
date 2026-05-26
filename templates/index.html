@@ -23,6 +23,7 @@
         <a href="/" class="nav-btn active">Search</a>
         <a href="/stacks" class="nav-btn">Stacks</a>
         <a href="/tracker" class="nav-btn">Tracker</a>
+        <button class="theme-toggle" id="theme_btn" title="Toggle theme">☾</button>
       </span>
     </nav>
 
@@ -38,6 +39,7 @@
     </header>
 
     <section class="search-section">
+      <div class="favorites-bar" id="fav_bar"></div>
       <div class="search-row">
         <div class="search-field">
           <label for="term_input">Peptide</label>
@@ -63,14 +65,61 @@
         </button>
       </div>
       <div id="status_message" class="status-message">Enter a peptide name and press Search.</div>
+      <div class="recent-searches" id="recent_searches"></div>
     </section>
 
+    <div class="search-filter-wrap" id="results_filter_wrap" style="display:none">
+      <input class="search-filter-input" id="results_filter" type="text" placeholder="Filter results by keyword…">
+    </div>
     <main id="results" class="results"></main>
   </div>
 
   <div id="tilt-elements" aria-hidden="true"></div>
+  <div class="progress-bar" id="progress_bar"></div>
+  <div class="toast-container" id="toast_container"></div>
+  <div class="install-banner" id="install_banner">
+    <span>Install PeptideDB for offline access</span>
+    <button class="install-btn" id="install_btn">Install</button>
+    <button class="install-dismiss" id="install_dismiss">✕</button>
+  </div>
   <script src="script.js?v={{ cache_bust }}"></script>
   <script>
+    // ─── Toast ───
+    function showToast(msg, icon) {
+      var c = document.getElementById('toast_container');
+      var t = document.createElement('div');
+      t.className = 'toast';
+      if (icon) t.innerHTML = '<span class="toast-icon">' + icon + '</span>' + msg;
+      else t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(function () { t.classList.add('toast-out'); setTimeout(function () { t.remove(); }, 300); }, 2200);
+    }
+
+    // ─── Keyboard shortcuts ───
+    document.addEventListener('keydown', function (e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 's' || e.key === 'S') { e.preventDefault(); var inp = document.getElementById('term_input'); if (inp) inp.focus(); }
+      if (e.key === '1') { window.location.href = '/'; }
+      if (e.key === '2') { window.location.href = '/stacks'; }
+      if (e.key === '3') { window.location.href = '/tracker'; }
+    });
+
+    // ─── Swipe between pages ───
+    (function () {
+      var startX = 0, startY = 0;
+      document.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; startY = e.touches[0].clientY; }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - startX;
+        var dy = e.changedTouches[0].clientY - startY;
+        if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
+        var pages = ['/', '/stacks', '/tracker'];
+        var idx = pages.indexOf(window.location.pathname);
+        if (idx < 0) return;
+        if (dx < 0 && idx < pages.length - 1) { showToast('→ ' + pages[idx + 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker') || 'Search'); setTimeout(function () { window.location.href = pages[idx + 1]; }, 200); }
+        if (dx > 0 && idx > 0) { showToast('← ' + pages[idx - 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker') || 'Home'); setTimeout(function () { window.location.href = pages[idx - 1]; }, 200); }
+      }, { passive: true });
+    })();
+
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js');
     }

@@ -500,6 +500,7 @@
         <a href="/" class="nav-btn">Search</a>
         <a href="/stacks" class="nav-btn active">Stacks</a>
         <a href="/tracker" class="nav-btn">Tracker</a>
+        <button class="theme-toggle" id="theme_btn" title="Toggle theme">☾</button>
       </span>
     </nav>
 
@@ -518,6 +519,7 @@
       </div>
     </section>
 
+    <input class="stack-filter" id="stack_filter" type="text" placeholder="Filter stacks by peptide..." style="display:none">
     <div id="stack_results" style="margin-top:6px"></div>
 
     <div class="tier-legend">
@@ -528,6 +530,86 @@
     </div>
   </div>
 
+  <div class="progress-bar" id="progress_bar"></div>
+  <div class="toast-container" id="toast_container"></div>
+  <div class="install-banner" id="install_banner">
+    <span>Install PeptideDB for offline access</span>
+    <button class="install-btn" id="install_btn">Install</button>
+    <button class="install-dismiss" id="install_dismiss">✕</button>
+  </div>
+  <script>
+    // ─── Toast ───
+    function showToast(msg, icon) {
+      var c = document.getElementById('toast_container');
+      var t = document.createElement('div');
+      t.className = 'toast';
+      if (icon) t.innerHTML = '<span class="toast-icon">' + icon + '</span>' + msg;
+      else t.textContent = msg;
+      c.appendChild(t);
+      setTimeout(function () { t.classList.add('toast-out'); setTimeout(function () { t.remove(); }, 300); }, 2200);
+    }
+
+    // ─── Keyboard shortcuts ───
+    document.addEventListener('keydown', function (e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === '1') { window.location.href = '/'; }
+      if (e.key === '2') { window.location.href = '/stacks'; }
+      if (e.key === '3') { window.location.href = '/tracker'; }
+      if (e.key === 'f' || e.key === 'F') { e.preventDefault(); var inp = document.getElementById('stack_filter'); if (inp) { inp.style.display = 'block'; inp.focus(); } }
+    });
+
+    // ─── Theme toggle ───
+    (function(){
+      var btn = document.getElementById('theme_btn');
+      if (!btn) return;
+      var saved = localStorage.getItem('peptide_theme');
+      if (saved === 'light') document.body.classList.add('light-theme');
+      btn.textContent = document.body.classList.contains('light-theme') ? '☀' : '☾';
+      btn.addEventListener('click', function () {
+        document.body.classList.toggle('light-theme');
+        var isLight = document.body.classList.contains('light-theme');
+        localStorage.setItem('peptide_theme', isLight ? 'light' : 'dark');
+        btn.textContent = isLight ? '☀' : '☾';
+      });
+    })();
+
+    // ─── Progress bar ───
+    (function(){
+      var bar = document.getElementById('progress_bar');
+      if (!bar) return;
+      window.addEventListener('scroll', function () {
+        var h = document.documentElement.scrollHeight - window.innerHeight;
+        bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%';
+      });
+    })();
+
+    // ─── PWA Install ───
+    (function(){
+      var banner = document.getElementById('install_banner');
+      if (!banner) return;
+      var deferred = null;
+      window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; banner.classList.add('active'); });
+      var btn = document.getElementById('install_btn');
+      if (btn) btn.addEventListener('click', function () { if (!deferred) return; deferred.prompt(); deferred.userChoice.then(function () { deferred = null; banner.classList.remove('active'); }); });
+      document.getElementById('install_dismiss').addEventListener('click', function () { banner.classList.remove('active'); });
+    })();
+
+    // ─── Swipe between pages ───
+    (function () {
+      var startX = 0, startY = 0;
+      document.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; startY = e.touches[0].clientY; }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        var dx = e.changedTouches[0].clientX - startX;
+        var dy = e.changedTouches[0].clientY - startY;
+        if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
+        var pages = ['/', '/stacks', '/tracker'];
+        var idx = pages.indexOf(window.location.pathname);
+        if (idx < 0) return;
+        if (dx < 0 && idx < pages.length - 1) { showToast('→ ' + (pages[idx + 1].replace('/', '') || 'Search').replace('stacks', 'Stacks').replace('tracker', 'Tracker') || 'Search'); setTimeout(function () { window.location.href = pages[idx + 1]; }, 200); }
+        if (dx > 0 && idx > 0) { showToast('← ' + (pages[idx - 1].replace('/', '') || 'Home').replace('stacks', 'Stacks').replace('tracker', 'Tracker')); setTimeout(function () { window.location.href = pages[idx - 1]; }, 200); }
+      }, { passive: true });
+    })();
+  </script>
   <script src="stacks.js?v={{ cache_bust }}"></script>
   <script>
     if ('serviceWorker' in navigator) {

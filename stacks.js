@@ -48,10 +48,26 @@ function badgeTier(tier) {
   return '<span class="badge badge-tier-' + tier.toLowerCase() + '">' + escapeHtml(tier) + '</span>';
 }
 
+/* ─── Skeleton ─── */
+function renderSkeleton() {
+  var html = '';
+  for (var i = 0; i < 4; i++) {
+    html += '<div class="skeleton-card" style="animation:fadeSlide 0.4s ease-out both;animation-delay:' + (i * 0.06) + 's">' +
+      '<div class="skeleton-line short"></div>' +
+      '<div class="skeleton-line" style="width:45%"></div>' +
+      '<div style="display:flex;gap:6px;margin-top:10px">' +
+        '<div class="skeleton-badge"></div>' +
+        '<div class="skeleton-badge" style="width:60px"></div>' +
+      '</div>' +
+    '</div>';
+  }
+  resultsRoot.innerHTML = html;
+}
+
 /* ─── Fetch Stacks ─── */
 async function fetchStacks(goal) {
   _lastGoal = goal;
-  resultsRoot.innerHTML = '<div class="loading-wrap"><div class="loading-dots"><span></span><span></span><span></span><span></span><span></span></div></div>';
+  renderSkeleton();
 
   try {
     var res = await fetch('/stack-recommend?goal=' + encodeURIComponent(goal));
@@ -63,6 +79,29 @@ async function fetchStacks(goal) {
   } catch (err) {
     resultsRoot.innerHTML = '<div class="empty-state"><p>Could not load recommendations.</p></div>';
   }
+}
+
+/* ─── Copy protocol ─── */
+function copyProtocol(el, name) {
+  // Find the protocol text from the card
+  var card = el.closest('.stack-card');
+  var body = card && card.querySelector('.stack-body-inner');
+  if (!body) return;
+  // Get visible text, clean up
+  var text = body.textContent || body.innerText || '';
+  text = name + '\n' + '='.repeat(name.length) + '\n\n' + text.trim();
+  navigator.clipboard.writeText(text).then(function () {
+    if (typeof showToast === 'function') showToast('Protocol copied', '📋');
+  }).catch(function () {
+    // Fallback
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    if (typeof showToast === 'function') showToast('Protocol copied', '📋');
+  });
 }
 
 /* ─── Render one stack card ─── */
@@ -178,17 +217,33 @@ function renderStackCard(r, saved) {
     html += '<div class="section-block"><h4 style="color:var(--ink-tertiary)">Protocol</h4><p style="font-size:0.78rem;color:var(--ink-tertiary)">No protocol data for this combination.</p></div>';
   }
 
+  // Copy button + Sources
+  html += '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+    '<button class="copy-btn" onclick="copyProtocol(this,\'' + escapeHtml(name) + '\')">Copy protocol</button>';
+
   var sources = r.sources || [];
   if (sources.length) {
-    html += '<div class="section-block"><h4>Sources</h4><div class="sources-mini">';
+    html += '<div class="sources-mini" style="flex:1">';
     for (var u = 0; u < sources.length; u++) {
       html += '<a class="source-chip" href="' + escapeHtml(sources[u].url) + '" target="_blank">' + escapeHtml(sources[u].label) + '</a>';
     }
-    html += '</div></div>';
+    html += '</div>';
   }
+
+  html += '</div>';
 
   html += '</div></div></div>';
   return html;
+}
+
+/* ─── Filter stacks ─── */
+function filterStacks(val) {
+  var q = val.toLowerCase().trim();
+  var cards = resultsRoot.querySelectorAll('.stack-card');
+  for (var i = 0; i < cards.length; i++) {
+    var name = cards[i].getAttribute('data-stack-name') || '';
+    cards[i].style.display = (!q || name.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+  }
 }
 
 /* ─── Render Stacks ─── */
@@ -231,13 +286,9 @@ function toggleSave(el, name) {
   var isSaved = el.classList.contains('saved');
 
   if (isSaved) {
-    // Unsave
     removeStackFromLocal({ stack: name.split(' + ') });
-    el.classList.remove('saved');
-    el.innerHTML = '&#9734;';
-    el.title = 'Save';
+    if (typeof showToast === 'function') showToast('Stack unsaved', '☆');
   } else {
-    // Save — find full data from cached response
     var recs = (_lastResponse && _lastResponse.recommendations) || [];
     var found = null;
     for (var i = 0; i < recs.length; i++) {
@@ -245,13 +296,10 @@ function toggleSave(el, name) {
     }
     if (found) {
       saveStackToLocal(found);
-      el.classList.add('saved');
-      el.innerHTML = '&#9733;';
-      el.title = 'Unsave';
+      if (typeof showToast === 'function') showToast('Stack saved', '★');
     }
   }
 
-  // Re-render saved section + bookmark states
   renderStacks(_lastResponse || { recommendations: [] }, _lastGoal);
 }
 
@@ -262,5 +310,12 @@ document.addEventListener('DOMContentLoaded', function () {
   sel.addEventListener('change', function () {
     fetchStacks(this.value);
   });
+
+  // Stack filter input
+  var filter = document.getElementById('stack_filter');
+  if (filter) {
+    filter.addEventListener('input', function () { filterStacks(this.value); });
+  }
+
   fetchStacks(sel.value);
 });

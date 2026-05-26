@@ -5,6 +5,7 @@ var COLORS = ["#d93838", "#e86f3a", "#f0b34b", "#4cd964", "#5ac8fa", "#af6ee8", 
 var state = loadState();
 var activeId = null;
 var weekOff = 0;
+var _contextTarget = null;
 
 /* ─── Helpers ─── */
 function getWeekKey(d) {
@@ -20,9 +21,14 @@ function todayStr() { return new Date().toISOString().split("T")[0]; }
 function nowStr() { return new Date().toTimeString().slice(0, 5); }
 function escHtml(v) { return String(v || "").replace(/[&<>"']/g, function (m) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[m]; }); }
 
+function daysBetween(a, b) {
+  var da = new Date(a), db = new Date(b);
+  return Math.round((db - da) / 86400000);
+}
+
 function loadState() {
   try { var raw = localStorage.getItem(STATE_KEY); if (raw) return JSON.parse(raw); } catch (_) {}
-  return { peptides: {}, logs: {} };
+  return { peptides: {}, logs: {}, order: [] };
 }
 
 function saveState() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
@@ -37,6 +43,8 @@ function addPeptide(name, doseMg, freq) {
     created: new Date().toISOString(),
   };
   if (!state.logs[id]) state.logs[id] = {};
+  if (!state.order) state.order = [];
+  state.order.push(id);
   saveState();
   renderTabs();
   if (!activeId) setActive(id);
@@ -47,10 +55,21 @@ function deletePeptide(id) {
   if (!confirm('Delete "' + state.peptides[id].name + '" and all its logs?')) return;
   delete state.peptides[id];
   delete state.logs[id];
+  if (state.order) state.order = state.order.filter(function (o) { return o !== id; });
   saveState();
-  var keys = Object.keys(state.peptides);
+  var keys = peptideIds();
   activeId = keys.length ? keys[0] : null;
   renderAll();
+}
+
+function peptideIds() {
+  var ids = Object.keys(state.peptides);
+  if (state.order && state.order.length) {
+    var ordered = state.order.filter(function (o) { return ids.indexOf(o) > -1; });
+    var remaining = ids.filter(function (i) { return ordered.indexOf(i) === -1; });
+    return ordered.concat(remaining);
+  }
+  return ids;
 }
 
 /* ─── Inline add form ─── */
@@ -73,12 +92,11 @@ function saveAddPeptide() {
   closeAddForm();
 }
 
-/* ─── Logging (current time) ─── */
+/* ─── Logging ─── */
 function logDoseNow(pepId, doseVal) {
   _logDose(pepId, doseVal, todayStr(), nowStr());
 }
 
-/* ─── Logging (backdated) ─── */
 function logDoseBackdated(pepId) {
   var date = document.getElementById("bd_date").value;
   var time = document.getElementById("bd_time").value;
@@ -123,6 +141,67 @@ function deleteLog(pepId, weekKey, idx) {
   renderActive();
 }
 
+function editLog(pepId, weekKey, idx) {
+  var logs = (state.logs[pepId] || {})[weekKey] || [];
+  if (!logs[idx]) return;
+  var newDose = prompt("Edit dose (mg):", logs[idx].dose);
+  if (newDose !== null && parseFloat(newDose) > 0) {
+    logs[idx].dose = parseFloat(newDose);
+    saveState();
+    renderActive();
+  }
+}
+
+/* ─── Quick copy last week ─── */
+function copyLastWeek(pepId) {
+  var wk = getCurrentWeekKey();
+  var curWeekKey = wk.key;
+  var logs = (state.logs[pepId] || {})[curWeekKey] || [];
+  if (logs.length) {
+    if (typeof showToast === 'function') showToast('This week already has logs', '');
+    return;
+  }
+  // Find previous week
+  var allWeeks = Object.keys(state.logs[pepId] || {}).sort();
+  var idx2 = allWeeks.indexOf(curWeekKey);
+  if (idx2 <= 0) {
+    if (typeof showToast === 'function') showToast('No previous week to copy', '');
+    return;
+  }
+  var prevWeek = allWeeks[idx2 - 1];
+  var prevLogs = state.logs[pepId][prevWeek] || [];
+  if (!prevLogs.length) {
+    if (typeof showToast === 'function') showToast('No logs in previous week', '');
+    return;
+  }
+  // Calculate date offset between weeks
+  var curStart = new Date(wk.start);
+  curStart.setDate(curStart.getDate() - curStart.getDay() + 1);
+  var prevStart = new Date(curStart);
+  prevStart.setDate(prevStart.getDate() - 7);
+  var offset = 7;
+
+  if (!state.logs[pepId][curWeekKey]) state.logs[pepId][curWeekKey] = [];
+  for (var i = 0; i < prevLogs.length; i++) {
+    var pl = prevLogs[i];
+    if (pl.date) {
+      var d = new Date(pl.date);
+      d.setDate(d.getDate() + offset);
+      var newDate = d.toISOString().split("T")[0];
+      var newTime = pl.time || "08:00";
+      state.logs[pepId][curWeekKey].push({
+        dose: pl.dose,
+        timestamp: newDate + "T" + newTime,
+        date: newDate,
+        time: newTime,
+      });
+    }
+  }
+  saveState();
+  renderActive();
+  if (typeof showToast === 'function') showToast('Copied last week\'s schedule', '📋');
+}
+
 /* ─── Week nav ─── */
 function weekOffset(delta) { weekOff += delta; renderActive(); }
 
@@ -132,22 +211,134 @@ function getCurrentWeekKey() {
   return { key: getWeekKey(d), start: d };
 }
 
+/* ─── Streak calc ─── */
+function calcStreak(pepId) {
+  var allLogs = [];
+  for (var wk in (state.logs[pepId] || {})) {
+    for (var i = 0; i < (state.logs[pepId][wk] || []).length; i++) {
+      allLogs.push(state.logs[pepId][wk][i]);
+    }
+  }
+  if (!allLogs.length) return { streak: 0, current: false };
+  var dates = {};
+  for (var j = 0; j < allLogs.length; j++) dates[allLogs[j].date] = true;
+  var dayKeys = Object.keys(dates).sort();
+  var today = todayStr();
+  var yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+  var yesStr = yesterday.toISOString().split("T")[0];
+  var check = dates[today] ? today : (dates[yesterday] ? yesterday : null);
+  if (!check) return { streak: 0, current: false };
+  var streak = 1;
+  var cur = new Date(check);
+  for (var k = 0; k < 365; k++) {
+    cur.setDate(cur.getDate() - 1);
+    var ds = cur.toISOString().split("T")[0];
+    if (dates[ds]) { streak++; } else { break; }
+  }
+  return { streak: streak, current: true };
+}
+
+/* ─── Sparkline data ─── */
+function getSparklineData(pepId) {
+  var byDate = {};
+  for (var wk in (state.logs[pepId] || {})) {
+    for (var i = 0; i < (state.logs[pepId][wk] || []).length; i++) {
+      var l = state.logs[pepId][wk][i];
+      if (!byDate[l.date]) byDate[l.date] = 0;
+      byDate[l.date] += l.dose;
+    }
+  }
+  var days = [];
+  var today = new Date();
+  for (var j = 6; j >= 0; j--) {
+    var d = new Date(today);
+    d.setDate(d.getDate() - j);
+    days.push(byDate[d.toISOString().split("T")[0]] || 0);
+  }
+  return days;
+}
+
+function renderSparkline(data, color) {
+  var max = Math.max.apply(null, data) || 1;
+  var html = '<span class="sparkline-wrap">';
+  for (var i = 0; i < data.length; i++) {
+    var h = Math.max(2, (data[i] / max) * 22);
+    html += '<span class="sparkline-bar" style="height:' + h + 'px;background:' + (data[i] > 0 ? color : 'var(--surface-4)') + '"></span>';
+  }
+  html += '</span>';
+  return html;
+}
+
+/* ─── Trend calc ─── */
+function calcTrend(pepId) {
+  var allLogs = [];
+  for (var wk in (state.logs[pepId] || {})) {
+    for (var i = 0; i < (state.logs[pepId][wk] || []).length; i++) {
+      allLogs.push(state.logs[pepId][wk][i]);
+    }
+  }
+  allLogs.sort(function (a, b) { return a.timestamp.localeCompare(b.timestamp); });
+  if (allLogs.length < 4) return 0;
+  var recent = allLogs.slice(-4);
+  var firstHalf = (recent[0].dose + recent[1].dose) / 2;
+  var secondHalf = (recent[2].dose + recent[3].dose) / 2;
+  if (secondHalf > firstHalf * 1.1) return 1;
+  if (secondHalf < firstHalf * 0.9) return -1;
+  return 0;
+}
+
 /* ─── Render ─── */
 function renderAll() { renderTabs(); renderActive(); }
 
 function renderTabs() {
   var bar = document.getElementById("tab_bar");
-  var keys = Object.keys(state.peptides);
+  var ids = peptideIds();
   var html = "";
-  for (var i = 0; i < keys.length; i++) {
-    var p = state.peptides[keys[i]];
-    var act = keys[i] === activeId ? " active" : "";
-    html += '<button class="tab-btn' + act + '" onclick="setActive(\'' + keys[i] + '\')">' +
+  for (var i = 0; i < ids.length; i++) {
+    var p = state.peptides[ids[i]];
+    if (!p) continue;
+    var act = ids[i] === activeId ? " active" : "";
+    html += '<button class="tab-btn' + act + '" draggable="true" data-id="' + ids[i] + '" ondragstart="tabDragStart(event)" ondragover="tabDragOver(event)" ondrop="tabDrop(event)" ondragend="tabDragEnd(event)" onclick="setActive(\'' + ids[i] + '\')">' +
       '<span class="tab-dot" style="background:' + p.color + '"></span>' + escHtml(p.name) +
-      ' <span class="tab-del" onclick="event.stopPropagation();deletePeptide(\'' + keys[i] + '\')">✕</span></button>';
+      ' <span class="tab-del" onclick="event.stopPropagation();deletePeptide(\'' + ids[i] + '\')">✕</span></button>';
   }
   html += '<button class="tab-add" onclick="openAddForm()" title="Add peptide">+</button>';
   bar.innerHTML = html;
+}
+
+/* ─── Drag tabs ─── */
+var _dragId = null;
+function tabDragStart(e) {
+  _dragId = e.target.getAttribute('data-id');
+  e.target.classList.add('tab-dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+function tabDragOver(e) {
+  e.preventDefault();
+  var id = e.target.closest('.tab-btn');
+  if (id) id.classList.add('tab-drag-over');
+}
+function tabDrop(e) {
+  e.preventDefault();
+  var target = e.target.closest('.tab-btn');
+  if (!target || !_dragId) return;
+  var targetId = target.getAttribute('data-id');
+  if (_dragId === targetId) return;
+  if (!state.order) state.order = peptideIds();
+  var fromIdx = state.order.indexOf(_dragId);
+  var toIdx = state.order.indexOf(targetId);
+  if (fromIdx > -1 && toIdx > -1) {
+    state.order.splice(fromIdx, 1);
+    state.order.splice(toIdx, 0, _dragId);
+    saveState();
+    renderTabs();
+  }
+  _dragId = null;
+}
+function tabDragEnd(e) {
+  e.target.classList.remove('tab-dragging');
+  var overs = document.querySelectorAll('.tab-drag-over');
+  for (var i = 0; i < overs.length; i++) overs[i].classList.remove('tab-drag-over');
 }
 
 function setActive(id) {
@@ -174,8 +365,15 @@ function renderActive() {
   // ─── Log bar ───
   var dose = p.doseMg || 0;
   var halfDose = (dose / 2).toFixed(2);
+
+  // Streak
+  var streakInfo = calcStreak(activeId);
+  var streakHtml = streakInfo.streak > 1 ? '<span class="streak-badge ' + (streakInfo.current ? 'on' : 'off') + '">' +
+    (streakInfo.current ? '🔥' : '') + streakInfo.streak + ' day streak</span>' : '';
+
   var html = '<div class="log-bar">' +
     '<span class="pep-name" id="pep_name_display" onclick="startRename(\'' + activeId + '\')">' + escHtml(p.name) + '</span>' +
+    streakHtml +
     '<span class="sep">|</span>';
 
   if (dose > 0) {
@@ -188,7 +386,7 @@ function renderActive() {
     '<button class="bd-toggle" onclick="toggleBackdate()">←</button>' +
     '</div>';
 
-  // ─── Backdate row (hidden) ───
+  // ─── Backdate row ───
   html += '<div class="bd-row" id="bd_row" style="display:none">' +
     '<input type="date" id="bd_date">' +
     '<input type="time" id="bd_time">' +
@@ -214,11 +412,22 @@ function renderActive() {
     lastStr = hours < 24 ? hours + "h ago" : Math.round(hours / 24) + "d ago";
   }
 
+  // Sparkline
+  var sparkData = getSparklineData(activeId);
+  var sparkHtml = renderSparkline(sparkData, p.color);
+
+  // Trend
+  var trend = calcTrend(activeId);
+  var trendHtml = '';
+  if (trend !== 0) {
+    trendHtml = '<span class="trend-arrow ' + (trend > 0 ? 'trend-up' : 'trend-down') + '">' + (trend > 0 ? '↑' : '↓') + '</span>';
+  }
+
   html += '<div class="insights">' +
-    '<div class="insight-card"><div class="val" style="color:' + p.color + '">' + weekTotal.toFixed(1) + '</div><div class="lbl">Week total</div></div>' +
+    '<div class="insight-card"><div class="val" style="color:' + p.color + '">' + weekTotal.toFixed(1) + '</div><div class="lbl">Week total' + trendHtml + '</div></div>' +
     '<div class="insight-card"><div class="val" style="color:' + p.color + '">' + compliance + '%</div><div class="lbl">' + actual + '/' + expected + ' doses</div></div>' +
     '<div class="insight-card"><div class="val" style="color:' + p.color + '">' + lastStr + '</div><div class="lbl">Last dose</div></div>' +
-    '<div class="insight-card"><div class="val" style="color:' + p.color + '">' + (allLogs.length) + '</div><div class="lbl">Total logs</div></div>' +
+    '<div class="insight-card"><div class="val" style="color:' + p.color + '">' + (allLogs.length) + '</div><div class="lbl">Total logs' + sparkHtml + '</div></div>' +
     '</div>';
 
   // ─── Chart ───
@@ -227,7 +436,10 @@ function renderActive() {
   // ─── Logs list ───
   html += '<div class="logs-section"><div class="logs-head">' +
     '<h3>Dose history</h3>' +
-    '<div class="week-nav"><button onclick="weekOffset(-1)">←</button><span>' + (weekOff === 0 ? "This week" : weekKey) + '</span><button onclick="weekOffset(1)">→</button></div>' +
+    '<div class="week-nav"><button onclick="weekOffset(-1)">←</button><span>' + (weekOff === 0 ? "This week" : weekKey) + '</span><button onclick="weekOffset(1)">→</button>' +
+    '<button class="timeline-toggle" onclick="toggleTimeline()" title="Timeline view">&#8986;</button>' +
+    '<button class="timeline-toggle" onclick="copyLastWeek(\'' + activeId + '\')" title="Copy last week">&#128203;</button>' +
+    '</div>' +
     '<div class="l-actions">' +
     '<button onclick="exportCSV(\'' + activeId + '\')">CSV</button>' +
     '<button onclick="exportJSON()">JSON</button>' +
@@ -243,7 +455,7 @@ function renderActive() {
     for (var li2 = 0; li2 < sorted.length; li2++) {
       var l = sorted[li2];
       var origIdx = logs.indexOf(l);
-      html += '<div class="log-row">' +
+      html += '<div class="log-row" oncontextmenu="showContextMenu(event,\'' + activeId + '\',\'' + weekKey + '\',' + origIdx + ')">' +
         '<div class="l-left"><span class="dot" style="background:' + p.color + '"></span>' +
         '<span class="date">' + escHtml(l.date) + '</span>' +
         '<span class="time">' + escHtml(l.time) + '</span></div>' +
@@ -253,10 +465,52 @@ function renderActive() {
   }
 
   html += '</div></div>';
+
+  // ─── Timeline ───
+  html += '<div id="timeline_view" class="timeline-view" style="display:none"></div>';
+
   panel.innerHTML = html;
+  panel.classList.remove('tab-panel-enter');
+  void panel.offsetWidth;
+  panel.classList.add('tab-panel-enter');
 
   // ─── Render chart ───
   renderChart(activeId, logs);
+}
+
+/* ─── Timeline toggle ─── */
+var _timelineOpen = false;
+function toggleTimeline() {
+  _timelineOpen = !_timelineOpen;
+  var el = document.getElementById('timeline_view');
+  if (!el) return;
+  if (_timelineOpen) {
+    // Gather all logs across all peptides, sorted
+    var items = [];
+    for (var pid in state.peptides) {
+      for (var wk in (state.logs[pid] || {})) {
+        for (var i = 0; i < (state.logs[pid][wk] || []).length; i++) {
+          var l = state.logs[pid][wk][i];
+          items.push({ date: l.date, time: l.time, dose: l.dose, name: state.peptides[pid].name, color: state.peptides[pid].color });
+        }
+      }
+    }
+    items.sort(function (a, b) { return (a.date + 'T' + a.time).localeCompare(b.date + 'T' + b.time); });
+    items.reverse();
+    var html = '';
+    for (var j = 0; j < Math.min(items.length, 50); j++) {
+      html += '<div class="timeline-item">' +
+        '<span class="t-date">' + escHtml(items[j].date) + ' ' + escHtml(items[j].time || '') + '</span>' +
+        '<span class="t-dose">' + items[j].dose.toFixed(2) + ' mg</span>' +
+        '<span class="t-pep" style="color:' + items[j].color + '">' + escHtml(items[j].name) + '</span>' +
+        '</div>';
+    }
+    if (!items.length) html = '<div class="empty-logs">No logs yet.</div>';
+    el.innerHTML = html;
+    el.style.display = 'block';
+  } else {
+    el.style.display = 'none';
+  }
 }
 
 /* ─── Chart ─── */
@@ -307,7 +561,6 @@ function renderChart(pepId, weekLogs) {
     var barH = (days[k].val / maxVal) * (h - 28);
     var y = h - 8 - barH;
 
-    // Brighter bar with glow
     ctx.shadowColor = color;
     ctx.shadowBlur = days[k].val > 0 ? 8 : 0;
     ctx.fillStyle = days[k].val > 0 ? color : "transparent";
@@ -316,7 +569,6 @@ function renderChart(pepId, weekLogs) {
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // Day label — bright white when data exists
     ctx.fillStyle = days[k].val > 0 ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.15)";
     ctx.font = "9px 'Inter', system-ui, sans-serif";
     ctx.textAlign = "center";
@@ -331,6 +583,56 @@ function calcUnits() {
   var dose = parseFloat(document.getElementById("calc_dose").value) || 0;
   var units = dose / (vial / water) * 100;
   document.getElementById("calc_result").textContent = Math.round(units);
+}
+
+/* ─── Context Menu ─── */
+function showContextMenu(e, pepId, weekKey, idx) {
+  e.preventDefault();
+  _contextTarget = { pepId: pepId, weekKey: weekKey, idx: idx };
+  var menu = document.getElementById('context_menu');
+  if (!menu) return;
+  menu.style.left = Math.min(e.clientX, window.innerWidth - 160) + 'px';
+  menu.style.top = Math.min(e.clientY, window.innerHeight - 100) + 'px';
+  menu.classList.add('active');
+}
+
+function contextEdit() {
+  if (_contextTarget) editLog(_contextTarget.pepId, _contextTarget.weekKey, _contextTarget.idx);
+  closeContextMenu();
+}
+
+function contextDelete() {
+  if (_contextTarget) deleteLog(_contextTarget.pepId, _contextTarget.weekKey, _contextTarget.idx);
+  closeContextMenu();
+}
+
+function closeContextMenu() {
+  var menu = document.getElementById('context_menu');
+  if (menu) menu.classList.remove('active');
+  _contextTarget = null;
+}
+
+/* ─── Pull to Refresh ─── */
+var _pullStartY = 0;
+var _pulling = false;
+function initPullToRefresh() {
+  var tracker = document.querySelector('.tracker-page');
+  if (!tracker) return;
+  tracker.addEventListener('touchstart', function (e) {
+    if (window.scrollY > 0) return;
+    _pullStartY = e.touches[0].clientY;
+    _pulling = true;
+  }, { passive: true });
+  tracker.addEventListener('touchmove', function (e) {
+    if (!_pulling || window.scrollY > 0) return;
+    var dy = e.touches[0].clientY - _pullStartY;
+    if (dy > 60) {
+      _pulling = false;
+      weekOffset(0);
+      if (typeof showToast === 'function') showToast('Refreshed', '↻');
+    }
+  }, { passive: true });
+  tracker.addEventListener('touchend', function () { _pulling = false; }, { passive: true });
 }
 
 /* ─── Export / Import ─── */
@@ -384,4 +686,11 @@ document.addEventListener("DOMContentLoaded", function () {
   if (keys.length) activeId = keys[0];
   renderAll();
   calcUnits();
+  initPullToRefresh();
+
+  // Click outside closes context menu
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.context-menu')) return;
+    closeContextMenu();
+  });
 });

@@ -1,5 +1,7 @@
 /* ─── State ─── */
 var resultsRoot = null;
+var FAV_KEY = 'peptide_favorites';
+var RECENT_KEY = 'peptide_recent_searches';
 
 /* ─── Particles ─── */
 (function initParticles() {
@@ -81,6 +83,196 @@ function makePanel(title, content, extraClass) {
   return '<section class="panel' + (extraClass ? ' ' + extraClass : '') + '"><h2>' + escapeHtml(title) + '</h2>' + content + '</section>';
 }
 
+/* ─── Theme Toggle ─── */
+function initTheme() {
+  var btn = document.getElementById('theme_btn');
+  if (!btn) return;
+  var saved = localStorage.getItem('peptide_theme');
+  if (saved === 'light') document.body.classList.add('light-theme');
+  btn.textContent = document.body.classList.contains('light-theme') ? '☀' : '☾';
+  btn.addEventListener('click', function () {
+    document.body.classList.toggle('light-theme');
+    var isLight = document.body.classList.contains('light-theme');
+    localStorage.setItem('peptide_theme', isLight ? 'light' : 'dark');
+    btn.textContent = isLight ? '☀' : '☾';
+  });
+}
+
+/* ─── Progress Bar ─── */
+function initProgressBar() {
+  var bar = document.getElementById('progress_bar');
+  if (!bar) return;
+  window.addEventListener('scroll', function () {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = h > 0 ? (window.scrollY / h) * 100 : 0;
+    bar.style.width = pct + '%';
+  });
+}
+
+/* ─── Typeahead ─── */
+function initTypeahead(inputId, listId) {
+  var input = document.getElementById(inputId);
+  var list = document.getElementById(listId);
+  if (!input || !list) return;
+  var wrap = document.createElement('div');
+  wrap.className = 'suggestions-wrap';
+  input.parentNode.insertBefore(wrap, input);
+  wrap.appendChild(input);
+
+  var dd = document.createElement('div');
+  dd.className = 'suggestions-dropdown';
+  wrap.appendChild(dd);
+
+  var options = list.querySelectorAll('option');
+  var peptides = [];
+  for (var i = 0; i < options.length; i++) peptides.push(options[i].value);
+
+  input.addEventListener('input', function () {
+    var val = input.value.toLowerCase().trim();
+    if (!val) { dd.classList.remove('active'); dd.innerHTML = ''; return; }
+    var matches = [];
+    for (var j = 0; j < peptides.length; j++) {
+      if (peptides[j].toLowerCase().indexOf(val) > -1) matches.push(peptides[j]);
+      if (matches.length >= 8) break;
+    }
+    if (!matches.length) { dd.classList.remove('active'); dd.innerHTML = ''; return; }
+    var html = '';
+    for (var k = 0; k < matches.length; k++) {
+      var idx = matches[k].toLowerCase().indexOf(val);
+      var label = idx > -1 ? matches[k].slice(0, idx) + '<span class="s-match">' + matches[k].slice(idx, idx + val.length) + '</span>' + matches[k].slice(idx + val.length) : escapeHtml(matches[k]);
+      html += '<div class="suggestion-item" onclick="pickSuggestion(\'' + escapeHtml(matches[k]) + '\',\'' + inputId + '\')">' + label + '</div>';
+    }
+    dd.innerHTML = html;
+    dd.classList.add('active');
+  });
+
+  input.addEventListener('blur', function () { setTimeout(function () { dd.classList.remove('active'); }, 200); });
+  input.addEventListener('focus', function () { if (input.value.trim()) input.dispatchEvent(new Event('input')); });
+}
+
+function pickSuggestion(val, inputId) {
+  document.getElementById(inputId).value = val;
+  if (inputId === 'term_input') searchPeptide();
+}
+
+/* ─── Recent Searches ─── */
+function initRecent() {
+  var container = document.getElementById('recent_searches');
+  if (!container) return;
+  var input = document.getElementById('term_input');
+  if (!input) return;
+
+  function render() {
+    var items = loadRecent();
+    if (!items.length) { container.classList.remove('active'); return; }
+    var html = '<span class="recent-label">Recent</span>';
+    for (var i = 0; i < items.length; i++) {
+      html += '<span class="recent-chip" onclick="document.getElementById(\'term_input\').value=\'' + escapeHtml(items[i]) + '\';searchPeptide()">' + escapeHtml(items[i]) +
+        '<span class="recent-del" onclick="event.stopPropagation();removeRecent(\'' + escapeHtml(items[i]) + '\')">✕</span></span>';
+    }
+    container.innerHTML = html;
+    container.classList.add('active');
+  }
+
+  input.addEventListener('focus', render);
+  input.addEventListener('blur', function () { setTimeout(function () { container.classList.remove('active'); }, 200); });
+  render();
+}
+
+function loadRecent() {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch (_) { return []; }
+}
+
+function saveRecent(term) {
+  var items = loadRecent();
+  items = items.filter(function (s) { return s !== term; });
+  items.unshift(term);
+  if (items.length > 6) items = items.slice(0, 6);
+  localStorage.setItem(RECENT_KEY, JSON.stringify(items));
+}
+
+function removeRecent(term) {
+  var items = loadRecent().filter(function (s) { return s !== term; });
+  localStorage.setItem(RECENT_KEY, JSON.stringify(items));
+  var container = document.getElementById('recent_searches');
+  if (container) {
+    var html = '<span class="recent-label">Recent</span>';
+    for (var i = 0; i < items.length; i++) {
+      html += '<span class="recent-chip" onclick="document.getElementById(\'term_input\').value=\'' + escapeHtml(items[i]) + '\';searchPeptide()">' + escapeHtml(items[i]) +
+        '<span class="recent-del" onclick="event.stopPropagation();removeRecent(\'' + escapeHtml(items[i]) + '\')">✕</span></span>';
+    }
+    container.innerHTML = html;
+  }
+}
+
+/* ─── Favorites ─── */
+function loadFavorites() {
+  try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch (_) { return []; }
+}
+
+function addFavorite(name) {
+  var favs = loadFavorites();
+  if (favs.indexOf(name) === -1) { favs.push(name); localStorage.setItem(FAV_KEY, JSON.stringify(favs)); }
+  renderFavBar();
+}
+
+function removeFavorite(name) {
+  var favs = loadFavorites().filter(function (s) { return s !== name; });
+  localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+  renderFavBar();
+  // Update star icons
+  var stars = document.querySelectorAll('.fav-star[data-name="' + escapeHtml(name) + '"]');
+  for (var i = 0; i < stars.length; i++) {
+    stars[i].classList.remove('active');
+    stars[i].textContent = '☆';
+  }
+}
+
+function toggleFavorite(name, el) {
+  var favs = loadFavorites();
+  if (favs.indexOf(name) > -1) {
+    removeFavorite(name);
+    if (el) { el.classList.remove('active'); el.textContent = '☆'; }
+    if (typeof showToast === 'function') showToast('Removed from favorites', '☆');
+  } else {
+    addFavorite(name);
+    if (el) { el.classList.add('active'); el.textContent = '★'; }
+    if (typeof showToast === 'function') showToast('Added to favorites', '★');
+  }
+}
+
+function renderFavBar() {
+  var bar = document.getElementById('fav_bar');
+  if (!bar) return;
+  var favs = loadFavorites();
+  if (!favs.length) { bar.classList.remove('active'); bar.innerHTML = ''; return; }
+  var html = '';
+  for (var i = 0; i < favs.length; i++) {
+    html += '<span class="fav-chip"><span onclick="searchFav(\'' + escapeHtml(favs[i]) + '\')">' + escapeHtml(favs[i]) + '</span><span class="fav-del" onclick="removeFavorite(\'' + escapeHtml(favs[i]) + '\');renderFavBar();if(typeof showToast===\'function\')showToast(\'Removed\',\'☆\')">✕</span></span>';
+  }
+  bar.innerHTML = html;
+  bar.classList.add('active');
+}
+
+function searchFav(name) {
+  document.getElementById('term_input').value = name;
+  searchPeptide();
+}
+
+/* ─── Search filter (within results) ─── */
+function initSearchFilter() {
+  var filter = document.getElementById('results_filter');
+  if (!filter) return;
+  filter.addEventListener('input', function () {
+    var q = this.value.toLowerCase().trim();
+    var panels = resultsRoot.querySelectorAll('.panel');
+    for (var i = 0; i < panels.length; i++) {
+      var text = panels[i].textContent || '';
+      panels[i].style.display = (!q || text.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+    }
+  });
+}
+
 /* ─── Renderers ─── */
 function renderSnapshot(snapshot) {
   if (!snapshot) return '';
@@ -154,6 +346,26 @@ function renderSources(sources) {
   }).join('') + '</div>';
 }
 
+/* ─── PWA Install ─── */
+var _deferredPrompt = null;
+function initPwaInstall() {
+  var banner = document.getElementById('install_banner');
+  if (!banner) return;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    _deferredPrompt = e;
+    banner.classList.add('active');
+  });
+  document.getElementById('install_btn').addEventListener('click', function () {
+    if (!_deferredPrompt) return;
+    _deferredPrompt.prompt();
+    _deferredPrompt.userChoice.then(function () { _deferredPrompt = null; banner.classList.remove('active'); });
+  });
+  document.getElementById('install_dismiss').addEventListener('click', function () {
+    banner.classList.remove('active');
+  });
+}
+
 /* ─── Build Response ─── */
 function buildResponse(response, title) {
   var score = response.evidence_score ? response.evidence_score.score : 'N/A';
@@ -161,6 +373,7 @@ function buildResponse(response, title) {
   var topTerm = response.peptide_name || response.normalized_term || title || 'Peptide';
   var summary = response.plain_summary || response.medical_definition || 'No summary available.';
   var dotClass = tier === 'HIGH' ? 'dot-high' : tier === 'MEDIUM' ? 'dot-medium' : 'dot-low';
+  var isFav = loadFavorites().indexOf(topTerm) > -1;
 
   var html = '';
 
@@ -176,7 +389,10 @@ function buildResponse(response, title) {
   }
 
   html += '<section class="panel overview-card">' +
-    '<h3>' + escapeHtml(topTerm) + '</h3>' +
+    '<div style="display:flex;align-items:center;gap:8px">' +
+      '<h3 style="margin:0;flex:1">' + escapeHtml(topTerm) + '</h3>' +
+      '<span class="fav-star' + (isFav ? ' active' : '') + '" data-name="' + escapeHtml(topTerm) + '" onclick="toggleFavorite(\'' + escapeHtml(topTerm) + '\',this)">' + (isFav ? '★' : '☆') + '</span>' +
+    '</div>' +
     '<p>' + escapeHtml(summary) + '</p>' + chemInfo +
     '<div class="metric-row">' +
       '<span class="metric-tag"><span class="dot ' + dotClass + '"></span>Score: ' + escapeHtml(String(score)) + '</span>' +
@@ -248,6 +464,7 @@ async function searchPeptide() {
     return;
   }
 
+  saveRecent(term);
   resultsRoot.innerHTML = showLoading();
   setStatus('Loading research results…', 'loading');
   document.getElementById('search_button').disabled = true;
@@ -266,6 +483,7 @@ async function searchPeptide() {
       resultsRoot.innerHTML = buildResponse(primary, term);
     }
 
+    document.getElementById('results_filter_wrap').style.display = 'block';
     setStatus('Results loaded successfully.', 'success');
   } catch (error) {
     resultsRoot.innerHTML = '';
@@ -290,4 +508,13 @@ document.addEventListener('DOMContentLoaded', function () {
       if (e.key === 'Enter') searchPeptide();
     });
   }
+
+  initTheme();
+  initProgressBar();
+  initTypeahead('term_input', 'peptide-list');
+  initTypeahead('compare_input', 'peptide-list-compare');
+  initRecent();
+  initSearchFilter();
+  renderFavBar();
+  initPwaInstall();
 });
