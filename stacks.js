@@ -145,16 +145,16 @@ function renderStacks(data) {
       // Protocol sources
       var protoSources = protocol.sources || [];
       if (protoSources.length) {
-        html += '<div style="margin-top:6px"><h4 style="font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-tertiary);margin:0 0 3px">Protocol sources</h4><ul>';
+        html += '<div style="margin-top:8px"><h4 style="font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-tertiary);margin:0 0 4px">Protocol sources</h4><ul>';
         for (var s = 0; s < protoSources.length; s++) {
-          html += '<li style="font-size:0.72rem;color:var(--ink-tertiary);margin-bottom:2px">' + escapeHtml(protoSources[s]) + '</li>';
+          html += '<li style="font-size:0.74rem;color:var(--ink-tertiary);margin-bottom:3px">' + escapeHtml(protoSources[s]) + '</li>';
         }
         html += '</ul></div>';
       }
 
       // Evidence summary
       if (protocol.evidence_summary) {
-        html += '<div class="evidence-note"><div class="phase-desc"><strong style="color:var(--warning)">Evidence summary:</strong> ' + escapeHtml(protocol.evidence_summary) + '</div></div>';
+        html += '<div class="evidence-note"><div class="phase-desc"><strong style="color:var(--warning);font-weight:600">Evidence summary:</strong> ' + escapeHtml(protocol.evidence_summary) + '</div></div>';
       }
 
       html += '</div>'; // end protocol section
