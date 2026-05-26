@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#010102">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Peptide Tracker">
+  <title>Peptide Tracker — Peptide Research Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ─── Tracker Page ─── */
+    .tracker-page { max-width: 920px; margin: 0 auto; }
+
+    .tracker-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tracker-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin: 0;
+    }
+
+    .tracker-header p {
+      margin: 2px 0 0;
+      font-size: 0.78rem;
+      color: var(--ink-subtle);
+    }
+
+    /* ─── Tab bar ─── */
+    .tab-bar {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      padding: 4px;
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-xl);
+      min-height: 44px;
+      align-items: center;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      padding: 7px 14px;
+      border: none;
+      border-radius: var(--radius-lg);
+      background: transparent;
+      color: var(--ink-subtle);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover { color: var(--ink); background: var(--surface-2); }
+
+    .tab-btn.active {
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .tab-btn.add-tab {
+      color: var(--ink-tertiary);
+      font-size: 1.1rem;
+      padding: 7px 10px;
+    }
+
+    .tab-btn.add-tab:hover { color: var(--primary); }
+
+    .tab-badge {
+      display: inline-block;
+      margin-left: 4px;
+      padding: 0 5px;
+      border-radius: 6px;
+      background: var(--surface-3);
+      color: var(--ink-tertiary);
+      font-size: 0.6rem;
+      font-weight: 600;
+    }
+
+    .tab-btn.active .tab-badge {
+      background: rgba(217,56,56,0.2);
+      color: var(--primary);
+    }
+
+    /* ─── Log form card ─── */
+    .log-card {
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      margin-bottom: 14px;
+    }
+
+    .log-card h3 {
+      margin: 0 0 10px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .log-card h3 .pep-color {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .log-form {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: end;
+    }
+
+    .log-field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .log-field label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-tertiary);
+    }
+
+    .log-field input, .log-field select {
+      height: 38px;
+      padding: 0 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--hairline);
+      background: var(--surface-2);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .log-field input:focus, .log-field select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-glow-soft);
+    }
+
+    .log-field input[type="number"] { width: 80px; }
+    .log-field input[type="date"] { width: 130px; }
+    .log-field input[type="time"] { width: 100px; }
+
+    .log-submit {
+      height: 38px;
+      padding: 0 18px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: var(--primary);
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .log-submit:hover {
+      background: var(--primary-hover);
+      box-shadow: 0 2px 12px var(--primary-glow-soft);
+    }
+
+    /* ─── Insights grid ─── */
+    .insights {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .insight-card {
+      padding: 14px;
+      border-radius: var(--radius-md);
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      text-align: center;
+    }
+
+    .insight-card .val {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .insight-card .lbl {
+      font-size: 0.65rem;
+      color: var(--ink-tertiary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .insight-card .sub {
+      font-size: 0.7rem;
+      color: var(--ink-subtle);
+      margin-top: 1px;
+    }
+
+    /* ─── Logs table ─── */
+    .logs-section {
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .logs-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .logs-header h3 {
+      margin: 0;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .logs-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .logs-actions button {
+      padding: 5px 10px;
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      color: var(--ink-subtle);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .logs-actions button:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .log-entry {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--hairline);
+      transition: background 0.15s;
+    }
+
+    .log-entry:last-child { border-bottom: none; }
+    .log-entry:hover { background: var(--surface-2); }
+
+    .log-entry-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .log-entry .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .log-entry .date {
+      font-size: 0.78rem;
+      color: var(--ink-muted);
+      font-weight: 500;
+    }
+
+    .log-entry .time {
+      font-size: 0.72rem;
+      color: var(--ink-tertiary);
+    }
+
+    .log-entry .dose {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .log-entry .del {
+      background: none;
+      border: none;
+      color: var(--ink-tertiary);
+      cursor: pointer;
+      padding: 4px;
+      font-size: 0.9rem;
+      transition: color 0.15s;
+    }
+
+    .log-entry .del:hover { color: var(--primary); }
+
+    .empty-logs {
+      padding: 28px 16px;
+      text-align: center;
+      color: var(--ink-tertiary);
+      font-size: 0.82rem;
+    }
+
+    /* ─── Week picker ─── */
+    .week-picker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .week-picker button {
+      background: none;
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-sm);
+      color: var(--ink-subtle);
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.15s;
+    }
+
+    .week-picker button:hover { border-color: var(--primary); color: var(--primary); }
+
+    .week-picker span {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--ink-muted);
+    }
+
+    /* ─── Calculator ─── */
+    .calc-card {
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 14px;
+    }
+
+    .calc-card h3 {
+      margin: 0 0 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .calc-row {
+      display: flex;
+      gap: 10px;
+      align-items: end;
+      flex-wrap: wrap;
+    }
+
+    .calc-result {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+      padding: 8px 0;
+    }
+
+    /* ─── Modal ─── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal {
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+      width: 100%;
+      max-width: 400px;
+      animation: slideUp 0.25s ease;
+    }
+
+    @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .modal h3 {
+      margin: 0 0 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .modal-field {
+      margin-bottom: 10px;
+    }
+
+    .modal-field label {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--ink-tertiary);
+    }
+
+    .modal-field input, .modal-field select {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--hairline);
+      background: var(--surface-2);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .modal-field input:focus { border-color: var(--primary); }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .modal-actions button {
+      flex: 1;
+      padding: 9px;
+      border-radius: var(--radius-sm);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .modal-actions .primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .modal-actions .primary:hover { background: var(--primary-hover); }
+
+    .modal-actions .secondary {
+      background: var(--surface-2);
+      color: var(--ink-subtle);
+      border: 1px solid var(--hairline);
+    }
+
+    .modal-actions .secondary:hover { color: var(--ink); border-color: var(--hairline-strong); }
+
+    .modal-actions .danger {
+      background: rgba(229,72,77,0.12);
+      color: var(--error);
+    }
+
+    .modal-actions .danger:hover { background: rgba(229,72,77,0.2); }
+
+    /* ─── Chart ─── */
+    .chart-wrap {
+      padding: 14px 16px;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--hairline);
+      margin: 0 16px 14px;
+    }
+
+    .chart-wrap canvas {
+      width: 100%;
+      height: 120px;
+      display: block;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 640px) {
+      .log-form { flex-direction: column; }
+      .log-field input[type="number"],
+      .log-field input[type="date"],
+      .log-field input[type="time"] { width: 100%; }
+      .log-field { width: 100%; }
+      .log-submit { width: 100%; }
+      .insights { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particles"></canvas>
+
+  <div class="page tracker-page">
+    <nav class="nav-bar">
+      <a href="/" class="nav-btn">Search</a>
+      <a href="/stacks" class="nav-btn">Stacks</a>
+      <a href="/tracker" class="nav-btn active">Tracker</a>
+    </nav>
+
+    <!-- Header -->
+    <div class="tracker-header">
+      <div>
+        <h2>Peptide Tracker</h2>
+        <p>Log doses, view weekly history, track compliance.</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-bar" id="tab_bar">
+      <button class="tab-btn add-tab" onclick="openAddPeptideModal()" title="Add peptide">+</button>
+    </div>
+
+    <!-- Active peptide panel -->
+    <div id="active_panel">
+      <!-- Log form -->
+      <div class="log-card" id="log_card">
+        <h3><span class="pep-color" id="log_color" style="background:var(--primary)"></span> Log dose — <span id="log_pep_name">select a peptide</span></h3>
+        <form class="log-form" id="log_form" onsubmit="return logDose(event)">
+          <div class="log-field">
+            <label>Dose (mg)</label>
+            <input type="number" id="log_dose" step="0.01" min="0.01" required placeholder="e.g. 2">
+          </div>
+          <div class="log-field">
+            <label>Date</label>
+            <input type="date" id="log_date" required>
+          </div>
+          <div class="log-field">
+            <label>Time</label>
+            <input type="time" id="log_time" required>
+          </div>
+          <button class="log-submit" type="submit">Log</button>
+        </form>
+      </div>
+
+      <!-- Insights -->
+      <div class="insights" id="insights_grid">
+        <div class="insight-card"><div class="val" id="insight_total">0</div><div class="lbl">This week</div></div>
+        <div class="insight-card"><div class="val" id="insight_compliance">—</div><div class="lbl">Compliance</div><div class="sub" id="insight_expected"></div></div>
+        <div class="insight-card"><div class="val" id="insight_last">—</div><div class="lbl">Last dose</div></div>
+        <div class="insight-card"><div class="val" id="insight_streak">0</div><div class="lbl">Day streak</div></div>
+      </div>
+
+      <!-- Chart -->
+      <div class="chart-wrap" id="chart_wrap">
+        <canvas id="dose_chart"></canvas>
+      </div>
+
+      <!-- Logs -->
+      <div class="logs-section">
+        <div class="logs-header">
+          <h3>Dose history</h3>
+          <div class="week-picker">
+            <button onclick="weekOffset(-1)">←</button>
+            <span id="week_label">This week</span>
+            <button onclick="weekOffset(1)">→</button>
+          </div>
+          <div class="logs-actions">
+            <button onclick="exportCSV()">CSV</button>
+            <button onclick="exportJSON()">JSON</button>
+            <button onclick="document.getElementById('import_input').click()">Import</button>
+            <input type="file" id="import_input" accept=".json" style="display:none" onchange="importData(event)">
+          </div>
+        </div>
+        <div id="logs_list"></div>
+      </div>
+
+      <!-- Calculator -->
+      <div class="calc-card">
+        <h3>Dose calculator — mg to units</h3>
+        <div class="calc-row">
+          <div class="log-field">
+            <label>Vial (mg)</label>
+            <input type="number" id="calc_vial" value="5" step="0.1" min="0.1" style="width:80px" oninput="calcUnits()">
+          </div>
+          <div class="log-field">
+            <label>Water (ml)</label>
+            <input type="number" id="calc_water" value="1" step="0.1" min="0.1" style="width:80px" oninput="calcUnits()">
+          </div>
+          <div class="log-field">
+            <label>Dose (mg)</label>
+            <input type="number" id="calc_dose" value="2" step="0.01" min="0.01" style="width:80px" oninput="calcUnits()">
+          </div>
+          <div class="calc-result" id="calc_result">= 40 units</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="tracker.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
+  </script>
+</body>
+</html>

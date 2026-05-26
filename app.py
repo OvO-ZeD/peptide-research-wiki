@@ -2376,6 +2376,12 @@ def stacks_page():
     return render_template('stacks.html', all_peptides=all_peptides, goals=goals)
 
 
+@app.route('/tracker')
+def tracker_page():
+    all_peptides = sorted(set(ALIASES.values()) | set(STACK_KNOWLEDGE.keys()))
+    return render_template('tracker.html', all_peptides=all_peptides)
+
+
 @app.route('/healthz')
 def healthz():
     return jsonify({"status": "ok"}), 200
