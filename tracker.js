@@ -73,12 +73,24 @@ function saveAddPeptide() {
   closeAddForm();
 }
 
-/* ─── Logging ─── */
+/* ─── Logging (current time) ─── */
 function logDoseNow(pepId, doseVal) {
+  _logDose(pepId, doseVal, todayStr(), nowStr());
+}
+
+/* ─── Logging (backdated) ─── */
+function logDoseBackdated(pepId) {
+  var date = document.getElementById("bd_date").value;
+  var time = document.getElementById("bd_time").value;
+  var dose = parseFloat(document.getElementById("bd_dose").value);
+  if (!date || !time || !dose) return;
+  _logDose(pepId, dose, date, time);
+  toggleBackdate();
+}
+
+function _logDose(pepId, doseVal, date, time) {
   var p = state.peptides[pepId];
-  if (!p) return;
-  var date = todayStr();
-  var time = nowStr();
+  if (!p || !doseVal || doseVal <= 0) return;
   var weekKey = getWeekKey(date);
   if (!state.logs[pepId][weekKey]) state.logs[pepId][weekKey] = [];
   state.logs[pepId][weekKey].push({ dose: doseVal, timestamp: date + "T" + time, date: date, time: time });
@@ -90,6 +102,17 @@ function logDoseCustom(pepId) {
   var inp = document.getElementById("custom_dose");
   var val = parseFloat(inp.value);
   if (val && val > 0) logDoseNow(pepId, val);
+}
+
+function toggleBackdate() {
+  var el = document.getElementById("bd_row");
+  el.style.display = el.style.display === "flex" ? "none" : "flex";
+  if (el.style.display === "flex") {
+    document.getElementById("bd_date").value = todayStr();
+    document.getElementById("bd_time").value = nowStr();
+    var p = state.peptides[activeId];
+    if (p) document.getElementById("bd_dose").value = p.doseMg || "";
+  }
 }
 
 function deleteLog(pepId, weekKey, idx) {
@@ -107,6 +130,19 @@ function getCurrentWeekKey() {
   var d = new Date();
   d.setDate(d.getDate() + weekOff * 7);
   return { key: getWeekKey(d), start: d };
+}
+
+/* ─── 3D Tilt ─── */
+function initTilt(card) {
+  card.addEventListener("mousemove", function (e) {
+    var r = card.getBoundingClientRect();
+    var x = (e.clientX - r.left) / r.width - 0.5;
+    var y = (e.clientY - r.top) / r.height - 0.5;
+    card.style.transform = "perspective(600px) rotateX(" + (y * -6) + "deg) rotateY(" + (x * 6) + "deg) translateZ(2px)";
+  });
+  card.addEventListener("mouseleave", function () {
+    card.style.transform = "perspective(600px) rotateX(0deg) rotateY(0deg) translateZ(0)";
+  });
 }
 
 /* ─── Render ─── */
@@ -139,7 +175,7 @@ function renderActive() {
   var p = state.peptides[activeId];
 
   if (!p || !Object.keys(state.peptides).length) {
-    panel.innerHTML = '<div class="empty-tracker"><p>No peptides yet.</p><button class="big-add-btn" onclick="openAddForm()">+ Add your first peptide</button></div>';
+    panel.innerHTML = '<div class="empty-tracker" style="animation:fadeSlide 0.5s ease-out"><p>No peptides yet.</p><button class="big-add-btn" onclick="openAddForm()">+ Add your first peptide</button></div>';
     return;
   }
 
@@ -151,7 +187,7 @@ function renderActive() {
   // ─── Log bar ───
   var dose = p.doseMg || 0;
   var halfDose = (dose / 2).toFixed(2);
-  var html = '<div class="log-bar">' +
+  var html = '<div class="log-bar" data-tilt>' +
     '<span class="pep-name" id="pep_name_display" onclick="startRename(\'' + activeId + '\')">' + escHtml(p.name) + '</span>' +
     '<span class="sep">|</span>';
 
@@ -162,6 +198,15 @@ function renderActive() {
 
   html += '<input class="dose-input" id="custom_dose" type="number" step="0.01" min="0.01" placeholder="mg" onkeydown="if(event.key===\'Enter\')logDoseCustom(\'' + activeId + '\')">' +
     '<button class="quick-btn" onclick="logDoseCustom(\'' + activeId + '\')">Log</button>' +
+    '<button class="bd-toggle" onclick="toggleBackdate()">←</button>' +
+    '</div>';
+
+  // ─── Backdate row (hidden) ───
+  html += '<div class="bd-row" id="bd_row" style="display:none">' +
+    '<input type="date" id="bd_date">' +
+    '<input type="time" id="bd_time">' +
+    '<input type="number" id="bd_dose" step="0.01" min="0.01" placeholder="mg" class="dose-input">' +
+    '<button class="quick-btn primary" onclick="logDoseBackdated(\'' + activeId + '\')">Save</button>' +
     '</div>';
 
   // ─── Insights ───
@@ -183,17 +228,17 @@ function renderActive() {
   }
 
   html += '<div class="insights">' +
-    '<div class="insight-card"><div class="val">' + weekTotal.toFixed(1) + '</div><div class="lbl">Week total</div></div>' +
-    '<div class="insight-card"><div class="val">' + compliance + '%</div><div class="lbl">' + actual + '/' + expected + ' doses</div></div>' +
-    '<div class="insight-card"><div class="val">' + lastStr + '</div><div class="lbl">Last dose</div></div>' +
-    '<div class="insight-card"><div class="val">' + (allLogs.length) + '</div><div class="lbl">Total logs</div></div>' +
+    '<div class="insight-card" data-tilt><div class="val">' + weekTotal.toFixed(1) + '</div><div class="lbl">Week total</div></div>' +
+    '<div class="insight-card" data-tilt><div class="val">' + compliance + '%</div><div class="lbl">' + actual + '/' + expected + ' doses</div></div>' +
+    '<div class="insight-card" data-tilt><div class="val">' + lastStr + '</div><div class="lbl">Last dose</div></div>' +
+    '<div class="insight-card" data-tilt><div class="val">' + (allLogs.length) + '</div><div class="lbl">Total logs</div></div>' +
     '</div>';
 
   // ─── Chart ───
-  html += '<div class="chart-wrap"><canvas id="dose_chart"></canvas></div>';
+  html += '<div class="chart-wrap" data-tilt><canvas id="dose_chart"></canvas></div>';
 
   // ─── Logs list ───
-  html += '<div class="logs-section"><div class="logs-head">' +
+  html += '<div class="logs-section" data-tilt><div class="logs-head">' +
     '<h3>Dose history</h3>' +
     '<div class="week-nav"><button onclick="weekOffset(-1)">←</button><span>' + (weekOff === 0 ? "This week" : weekKey) + '</span><button onclick="weekOffset(1)">→</button></div>' +
     '<div class="l-actions">' +
@@ -222,6 +267,10 @@ function renderActive() {
 
   html += '</div></div>';
   panel.innerHTML = html;
+
+  // ─── Init tilt on tilt-enabled children ───
+  var tiltEls = panel.querySelectorAll("[data-tilt]");
+  for (var ti = 0; ti < tiltEls.length; ti++) initTilt(tiltEls[ti]);
 
   // ─── Render chart ───
   renderChart(activeId, logs);
@@ -261,20 +310,34 @@ function renderChart(pepId, weekLogs) {
   var pp = state.peptides[activeId];
   var color = pp ? pp.color : "#d93838";
 
+  // Dim background bars
+  ctx.fillStyle = "rgba(255,255,255,0.03)";
+  for (var kk = 0; kk < days.length; kk++) {
+    var x = pad + kk * barW;
+    ctx.beginPath();
+    ctx.roundRect(x + 3, 4, barW - 6, h - 14, [3, 3, 0, 0]);
+    ctx.fill();
+  }
+
   for (var k = 0; k < days.length; k++) {
     var x = pad + k * barW;
     var barH = (days[k].val / maxVal) * (h - 28);
     var y = h - 8 - barH;
 
-    ctx.fillStyle = days[k].val > 0 ? color : "rgba(255,255,255,0.04)";
+    // Brighter bar with glow
+    ctx.shadowColor = color;
+    ctx.shadowBlur = days[k].val > 0 ? 8 : 0;
+    ctx.fillStyle = days[k].val > 0 ? color : "transparent";
     ctx.beginPath();
-    ctx.roundRect(x + 3, y, barW - 6, Math.max(barH, 0), [3, 3, 0, 0]);
+    ctx.roundRect(x + 3, y, barW - 6, Math.max(barH, 0), [4, 4, 0, 0]);
     ctx.fill();
+    ctx.shadowBlur = 0;
 
-    ctx.fillStyle = days[k].val > 0 ? "rgba(255,255,255,0.4)" : "rgba(255,255,255,0.1)";
-    ctx.font = "8px system-ui";
+    // Day label — bright white when data exists
+    ctx.fillStyle = days[k].val > 0 ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.15)";
+    ctx.font = "9px 'Inter', system-ui, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(days[k].key.slice(-2), x + barW / 2, h - 1);
+    ctx.fillText(days[k].key.slice(-2), x + barW / 2, h - 2);
   }
 }
 
@@ -298,8 +361,7 @@ function exportCSV(pepId) {
   }
   allLogs.sort(function (a, b) { return a.timestamp.localeCompare(b.timestamp); });
   for (var j = 0; j < allLogs.length; j++) rows.push([allLogs[j].date, allLogs[j].time, allLogs[j].dose, p.name]);
-  var csv = rows.map(function (r) { return r.join(","); }).join("\n");
-  download(csv, "peptide_logs_" + p.name + ".csv", "text/csv");
+  download(rows.map(function (r) { return r.join(","); }).join("\n"), "peptide_logs_" + p.name + ".csv", "text/csv");
 }
 
 function exportJSON() { download(JSON.stringify(state, null, 2), "peptide_tracker_backup.json", "application/json"); }

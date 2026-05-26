@@ -244,6 +244,60 @@
 
     .log-bar .dose-input:focus { border-color: var(--primary); }
 
+    .log-bar .bd-toggle {
+      background: none;
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-sm);
+      color: var(--ink-tertiary);
+      width: 32px; height: 32px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .log-bar .bd-toggle:hover { border-color: var(--primary); color: var(--primary); }
+
+    .bd-row {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      margin: -8px 0 14px;
+      background: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-top: none;
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      flex-wrap: wrap;
+    }
+
+    .bd-row input {
+      height: 34px;
+      padding: 0 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--hairline);
+      background: var(--surface-2);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      outline: none;
+    }
+
+    .bd-row input:focus { border-color: var(--primary); }
+
+    .bd-row input[type="date"] { width: 130px; }
+    .bd-row input[type="time"] { width: 85px; }
+
+    /* ─── 3D Tilt ─── */
+    .tracker-page { transform-style: preserve-3d; }
+
+    [data-tilt] {
+      transition: transform 0.1s ease-out;
+      transform-style: preserve-3d;
+    }
+
     .log-bar .now-btn {
       background: none;
       border: none;
