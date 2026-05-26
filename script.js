@@ -7,6 +7,7 @@ var RECENT_KEY = 'peptide_recent_searches';
 (function initParticles() {
   var canvas = document.getElementById('particles');
   if (!canvas) return;
+  if (window.innerWidth < 480) { canvas.style.display = 'none'; return; }
   var ctx = canvas.getContext('2d');
   var particles = [];
   var w, h;

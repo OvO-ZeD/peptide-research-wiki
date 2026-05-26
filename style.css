@@ -1483,6 +1483,47 @@ body::before {
   .install-btn { font-size: 0.75rem; padding: 5px 14px; }
 }
 
+/* ─── Touch Feedback — active states ─── */
+.nav-btn:active { transform: scale(0.95); }
+.search-btn:active { transform: scale(0.96); box-shadow: none; }
+.theme-toggle:active { transform: scale(0.9); }
+.quick-btn:active { transform: scale(0.95); }
+.install-btn:active { transform: scale(0.95); }
+.big-add-btn:active { transform: scale(0.96); }
+.copy-btn:active { transform: scale(0.93); }
+.tab-btn:active { transform: scale(0.95); }
+.tab-add:active { transform: scale(0.9); }
+.source-link:active { transform: scale(0.97); }
+.recent-chip:active { transform: scale(0.95); }
+.fav-chip:active { transform: scale(0.95); }
+.save-btn:active { transform: scale(0.9); }
+.logs-head .week-nav button:active { transform: scale(0.93); }
+.logs-head .l-actions button:active { transform: scale(0.93); }
+.bd-toggle:active { transform: scale(0.9); }
+
+/* ─── Subtle glass hover — panels ─── */
+.panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--transition);
+  background: linear-gradient(135deg, rgba(217,56,56,0.02) 0%, transparent 50%);
+}
+.panel { position: relative; }
+.panel:hover::after { opacity: 1; }
+
+/* ─── Page transition (fade between pages) ─── */
+.page {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.page.fade-out {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
 /* ─── PWA Standalone Mode (homescreen) — notch / home bar ─── */
 @media all and (display-mode: standalone) {
   body {

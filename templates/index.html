@@ -84,6 +84,18 @@
   </div>
   <script src="script.js?v={{ cache_bust }}"></script>
   <script>
+    // ─── Page transitions ───
+    function navigateTo(url) {
+      var page = document.querySelector('.page');
+      if (page) page.classList.add('fade-out');
+      setTimeout(function () { window.location.href = url; }, 180);
+    }
+    document.querySelectorAll('.nav-btn').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        if (el.getAttribute('href')) { e.preventDefault(); navigateTo(el.getAttribute('href')); }
+      });
+    });
+
     // ─── Toast ───
     function showToast(msg, icon) {
       var c = document.getElementById('toast_container');
@@ -99,9 +111,9 @@
     document.addEventListener('keydown', function (e) {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.key === 's' || e.key === 'S') { e.preventDefault(); var inp = document.getElementById('term_input'); if (inp) inp.focus(); }
-      if (e.key === '1') { window.location.href = '/'; }
-      if (e.key === '2') { window.location.href = '/stacks'; }
-      if (e.key === '3') { window.location.href = '/tracker'; }
+      if (e.key === '1') { navigateTo('/'); }
+      if (e.key === '2') { navigateTo('/stacks'); }
+      if (e.key === '3') { navigateTo('/tracker'); }
     });
 
     // ─── Swipe between pages ───
@@ -115,8 +127,8 @@
         var pages = ['/', '/stacks', '/tracker'];
         var idx = pages.indexOf(window.location.pathname);
         if (idx < 0) return;
-        if (dx < 0 && idx < pages.length - 1) { showToast('→ ' + pages[idx + 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker') || 'Search'); setTimeout(function () { window.location.href = pages[idx + 1]; }, 200); }
-        if (dx > 0 && idx > 0) { showToast('← ' + pages[idx - 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker') || 'Home'); setTimeout(function () { window.location.href = pages[idx - 1]; }, 200); }
+        if (dx < 0 && idx < pages.length - 1) { showToast('→ ' + pages[idx + 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker') || 'Search'); setTimeout(function () { navigateTo(pages[idx + 1]); }, 200); }
+        if (dx > 0 && idx > 0) { showToast('← ' + pages[idx - 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker') || 'Home'); setTimeout(function () { navigateTo(pages[idx - 1]); }, 200); }
       }, { passive: true });
     })();
 
