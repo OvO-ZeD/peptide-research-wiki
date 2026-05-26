@@ -27,6 +27,15 @@
       </span>
     </nav>
 
+    <nav class="bottom-nav">
+      <div class="bottom-nav-inner">
+        <a href="/" class="bottom-nav-btn active"><span class="bn-icon">&#128269;</span>Search</a>
+        <a href="/stacks" class="bottom-nav-btn"><span class="bn-icon">&#128230;</span>Stacks</a>
+        <a href="/tracker" class="bottom-nav-btn"><span class="bn-icon">&#128203;</span>Tracker</a>
+        <button class="bottom-nav-btn" onclick="var b=document.getElementById('theme_btn');if(b)b.click();"><span class="bn-icon" style="font-size:1.15rem">&#9790;</span>Theme</button>
+      </div>
+    </nav>
+
     <header class="hero">
       <div class="hero-brand">
         <span class="brand-spike">+</span>
@@ -43,7 +52,7 @@
       <div class="search-row">
         <div class="search-field">
           <label for="term_input">Peptide</label>
-          <input id="term_input" type="text" placeholder="e.g., retatrutide, semaglutide, bpc-157" autofocus list="peptide-list">
+          <input id="term_input" type="text" placeholder="e.g., retatrutide, semaglutide, bpc-157" autofocus list="peptide-list" enterkeyhint="search" onkeydown="if(event.key==='Enter') searchPeptide()">
           <datalist id="peptide-list">
             {% for p in all_peptides %}
             <option value="{{ p }}">
@@ -52,7 +61,7 @@
         </div>
         <div class="search-field">
           <label for="compare_input">Compare (optional)</label>
-          <input id="compare_input" type="text" placeholder="e.g., tesa" list="peptide-list-compare">
+          <input id="compare_input" type="text" placeholder="e.g., tesa" list="peptide-list-compare" enterkeyhint="search" onkeydown="if(event.key==='Enter') searchPeptide()">
           <datalist id="peptide-list-compare">
             {% for p in all_peptides %}
             <option value="{{ p }}">
@@ -69,12 +78,21 @@
     </section>
 
     <div class="search-filter-wrap" id="results_filter_wrap" style="display:none">
-      <input class="search-filter-input" id="results_filter" type="text" placeholder="Filter results by keyword…">
+      <input class="search-filter-input" id="results_filter" type="text" placeholder="Filter results by keyword…" enterkeyhint="done">
     </div>
     <main id="results" class="results"></main>
   </div>
 
   <div id="tilt-elements" aria-hidden="true"></div>
+  <div class="sheet-overlay" id="sheet_overlay" onclick="closeSheet()"></div>
+  <div class="sheet-container" id="sheet_container">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2 id="sheet_title">Results</h2>
+      <button class="sheet-dismiss" onclick="closeSheet()">&#10005;</button>
+    </div>
+    <div class="sheet-body" id="sheet_body"></div>
+  </div>
   <div class="progress-bar" id="progress_bar"></div>
   <div class="toast-container" id="toast_container"></div>
   <div class="install-banner" id="install_banner">

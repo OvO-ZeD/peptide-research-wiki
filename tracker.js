@@ -455,12 +455,14 @@ function renderActive() {
     for (var li2 = 0; li2 < sorted.length; li2++) {
       var l = sorted[li2];
       var origIdx = logs.indexOf(l);
-      html += '<div class="log-row" oncontextmenu="showContextMenu(event,\'' + activeId + '\',\'' + weekKey + '\',' + origIdx + ')">' +
+      html += '<div class="log-row-wrap">' +
+        '<div class="log-row" oncontextmenu="showContextMenu(event,\'' + activeId + '\',\'' + weekKey + '\',' + origIdx + ')">' +
         '<div class="l-left"><span class="dot" style="background:' + p.color + '"></span>' +
         '<span class="date">' + escHtml(l.date) + '</span>' +
         '<span class="time">' + escHtml(l.time) + '</span></div>' +
         '<span class="dose">' + l.dose.toFixed(2) + ' mg</span>' +
-        '<button class="del" onclick="deleteLog(\'' + activeId + '\',\'' + weekKey + '\',' + origIdx + ')">✕</button></div>';
+        '<button class="del" onclick="deleteLog(\'' + activeId + '\',\'' + weekKey + '\',' + origIdx + ')">✕</button></div>' +
+        '<button class="swipe-del" onclick="deleteLog(\'' + activeId + '\',\'' + weekKey + '\',' + origIdx + ')">Delete</button></div>';
     }
   }
 
@@ -680,6 +682,54 @@ function download(content, filename, mime) {
   URL.revokeObjectURL(a.href);
 }
 
+/* ─── Swipe to Delete ─── */
+var _swipeTarget = null;
+var _swipeStartX = 0;
+var _swipeStartY = 0;
+
+function initSwipeDelete() {
+  document.addEventListener('touchstart', function (e) {
+    var row = e.target.closest('.log-row');
+    if (!row || row.closest('.swiped')) return;
+    if (e.target.closest('.del')) return;
+    _swipeTarget = row;
+    _swipeStartX = e.touches[0].clientX;
+    _swipeStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function (e) {
+    if (!_swipeTarget) return;
+    var dx = e.touches[0].clientX - _swipeStartX;
+    var dy = e.touches[0].clientY - _swipeStartY;
+    if (Math.abs(dy) > Math.abs(dx) || dx > 0) return;
+    _swipeTarget.style.transition = 'none';
+    _swipeTarget.style.transform = 'translateX(' + Math.max(-80, dx) + 'px)';
+  }, { passive: true });
+
+  document.addEventListener('touchend', function () {
+    if (!_swipeTarget) return;
+    var dx = parseFloat(_swipeTarget.style.transform.replace('translateX(','').replace('px)','')) || 0;
+    _swipeTarget.style.transition = 'transform 0.2s ease';
+    if (dx < -40) {
+      _swipeTarget.style.transform = 'translateX(-80px)';
+      _swipeTarget.closest('.log-row-wrap').classList.add('swiped');
+    } else {
+      _swipeTarget.style.transform = 'translateX(0)';
+      _swipeTarget.closest('.log-row-wrap').classList.remove('swiped');
+    }
+    _swipeTarget = null;
+  }, { passive: true });
+
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.swipe-del, .log-row')) return;
+    document.querySelectorAll('.log-row-wrap.swiped').forEach(function (w) {
+      w.classList.remove('swiped');
+      var r = w.querySelector('.log-row');
+      if (r) { r.style.transition = 'transform 0.2s ease'; r.style.transform = 'translateX(0)'; }
+    });
+  });
+}
+
 /* ─── Init ─── */
 document.addEventListener("DOMContentLoaded", function () {
   var keys = Object.keys(state.peptides);
@@ -687,6 +737,7 @@ document.addEventListener("DOMContentLoaded", function () {
   renderAll();
   calcUnits();
   initPullToRefresh();
+  initSwipeDelete();
 
   // Click outside closes context menu
   document.addEventListener('click', function (e) {

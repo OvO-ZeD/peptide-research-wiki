@@ -486,12 +486,88 @@ async function searchPeptide() {
 
     document.getElementById('results_filter_wrap').style.display = 'block';
     setStatus('Results loaded successfully.', 'success');
+    if (window.innerWidth < 480 && typeof openSheet === 'function') openSheet(term + (compare ? ' vs ' + compare : ''));
   } catch (error) {
     resultsRoot.innerHTML = '';
     setStatus(error.message || 'Unable to load peptide research results.', 'error');
   } finally {
     document.getElementById('search_button').disabled = false;
   }
+}
+
+/* ─── Pull to Refresh (Search) ─── */
+var _pullSearchY = 0;
+var _pullingSearch = false;
+function initPullToRefreshSearch() {
+  var page = document.querySelector('.page');
+  if (!page) return;
+  page.addEventListener('touchstart', function (e) {
+    if (window.scrollY > 0 || document.querySelector('.sheet-container.open')) return;
+    _pullSearchY = e.touches[0].clientY;
+    _pullingSearch = true;
+  }, { passive: true });
+  page.addEventListener('touchmove', function (e) {
+    if (!_pullingSearch || window.scrollY > 0 || document.querySelector('.sheet-container.open')) return;
+    if (e.touches[0].clientY - _pullSearchY > 70) {
+      _pullingSearch = false;
+      if (document.getElementById('term_input') && document.getElementById('term_input').value.trim()) searchPeptide();
+    }
+  }, { passive: true });
+  page.addEventListener('touchend', function () { _pullingSearch = false; }, { passive: true });
+}
+
+/* ─── Bottom Sheet (Search Results) ─── */
+var _sheetStartY = 0;
+var _sheetDragging = false;
+
+function initBottomSheet() {
+  var container = document.getElementById('sheet_container');
+  if (!container) return;
+
+  var handle = container.querySelector('.sheet-handle');
+  if (!handle) return;
+
+  handle.addEventListener('touchstart', function (e) {
+    _sheetStartY = e.touches[0].clientY;
+    _sheetDragging = true;
+    container.style.transition = 'none';
+  }, { passive: true });
+
+  handle.addEventListener('touchmove', function (e) {
+    if (!_sheetDragging) return;
+    var dy = e.touches[0].clientY - _sheetStartY;
+    if (dy > 0) container.style.transform = 'translateY(' + dy + 'px)';
+  }, { passive: true });
+
+  handle.addEventListener('touchend', function () {
+    if (!_sheetDragging) return;
+    _sheetDragging = false;
+    container.style.transition = 'transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)';
+    var dy = parseFloat(container.style.transform.replace('translateY(','').replace('px)','')) || 0;
+    if (dy > 80) closeSheet();
+    else container.style.transform = 'translateY(0)';
+  }, { passive: true });
+}
+
+function openSheet(title) {
+  var container = document.getElementById('sheet_container');
+  var overlay = document.getElementById('sheet_overlay');
+  var body = document.getElementById('sheet_body');
+  var titleEl = document.getElementById('sheet_title');
+  if (!container || !body) return;
+  if (titleEl) titleEl.textContent = title || 'Results';
+  body.innerHTML = resultsRoot ? resultsRoot.innerHTML : '';
+  container.classList.add('open');
+  if (overlay) overlay.classList.add('open');
+  container.style.transform = '';
+  document.body.classList.add('sheet-capable');
+}
+
+function closeSheet() {
+  var container = document.getElementById('sheet_container');
+  var overlay = document.getElementById('sheet_overlay');
+  if (container) container.classList.remove('open');
+  if (overlay) overlay.classList.remove('open');
 }
 
 /* ─── Enter key & Init ─── */
@@ -518,4 +594,6 @@ document.addEventListener('DOMContentLoaded', function () {
   initSearchFilter();
   renderFavBar();
   initPwaInstall();
+  initPullToRefreshSearch();
+  initBottomSheet();
 });

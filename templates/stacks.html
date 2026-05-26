@@ -529,6 +529,15 @@
       </span>
     </nav>
 
+    <nav class="bottom-nav">
+      <div class="bottom-nav-inner">
+        <a href="/" class="bottom-nav-btn"><span class="bn-icon">&#128269;</span>Search</a>
+        <a href="/stacks" class="bottom-nav-btn active"><span class="bn-icon">&#128230;</span>Stacks</a>
+        <a href="/tracker" class="bottom-nav-btn"><span class="bn-icon">&#128203;</span>Tracker</a>
+        <button class="bottom-nav-btn" onclick="var b=document.getElementById('theme_btn');if(b)b.click();"><span class="bn-icon" style="font-size:1.15rem">&#9790;</span>Theme</button>
+      </div>
+    </nav>
+
     <div class="disclaimer">Educational research context only. Not medical advice. Always consult a qualified healthcare provider.</div>
 
     <section class="goal-section" style="padding:20px 22px 18px">
@@ -544,7 +553,7 @@
       </div>
     </section>
 
-    <input class="stack-filter" id="stack_filter" type="text" placeholder="Filter stacks by peptide..." style="display:none">
+    <input class="stack-filter" id="stack_filter" type="text" placeholder="Filter stacks by peptide..." style="display:none" enterkeyhint="done">
     <div id="stack_results" style="margin-top:6px"></div>
 
     <div class="tier-legend">
