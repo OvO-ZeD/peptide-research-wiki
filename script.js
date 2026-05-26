@@ -127,6 +127,15 @@ function makePanel(title, content) {
 }
 
 /* ─── Renderers ─── */
+function renderSnapshot(snapshot) {
+  if (!snapshot) return '';
+  var keys = ['primary_effect', 'mechanism_pathway', 'expected_body_outcomes', 'clinical_context'];
+  var labels = { primary_effect: 'Primary effect', mechanism_pathway: 'Mechanism / pathway', expected_body_outcomes: 'Expected outcomes', clinical_context: 'Clinical context' };
+  return '<div class="snapshot-grid">' + keys.map(function (k) {
+    return '<div class="snapshot-item"><strong>' + escapeHtml(labels[k]) + '</strong><p>' + escapeHtml(snapshot[k] || '') + '</p></div>';
+  }).join('') + '</div>';
+}
+
 function renderTrials(trials) {
   if (!trials || !trials.length) return '<p class="empty">No clinical trials found.</p>';
   return '<div class="trial-list">' + trials.slice(0, 4).map(function (t) {
@@ -153,8 +162,29 @@ function renderSources(sources) {
 
 /* ─── Build Response ─── */
 function buildResponse(response, title) {
+  var score = response.evidence_score ? response.evidence_score.score : 'N/A';
+  var tier = (response.evidence_score ? response.evidence_score.tier : 'N/A') || 'N/A';
   var topTerm = response.peptide_name || response.normalized_term || title || 'Peptide';
+  var summary = response.plain_summary || response.medical_definition || 'No summary available.';
+  var dotClass = tier === 'HIGH' ? 'dot-high' : tier === 'MEDIUM' ? 'dot-medium' : 'dot-low';
+
   var html = '';
+
+  // Overview card
+  html += '<section class="panel overview-card">' +
+    '<h3>' + escapeHtml(topTerm) + '</h3>' +
+    '<p>' + escapeHtml(summary) + '</p>' +
+    '<div class="metric-row">' +
+      '<span class="metric-tag"><span class="dot ' + dotClass + '"></span>Score: ' + escapeHtml(String(score)) + '</span>' +
+      '<span class="metric-tag">Tier: ' + escapeHtml(String(tier)) + '</span>' +
+      '<span class="metric-tag">Reliability: ' + escapeHtml(response.reliability || 'Unknown') + '</span>' +
+    '</div>' +
+  '</section>';
+
+  // Clinical snapshot
+  if (response.clinical_snapshot) {
+    html += makePanel('Clinical Snapshot', renderSnapshot(response.clinical_snapshot));
+  }
 
   // Clinical Trials
   if (response.clinical_trials && response.clinical_trials.length) {

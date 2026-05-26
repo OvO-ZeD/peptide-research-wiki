@@ -379,6 +379,106 @@ body::before {
   box-shadow: 0 0 8px var(--primary-glow-soft);
 }
 
+/* ─── Overview Card ─── */
+.overview-card {
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.overview-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  opacity: 0.4;
+}
+
+.overview-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.overview-card p {
+  margin: 0;
+  color: var(--ink-subtle);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.metric-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.metric-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.metric-tag .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot-high { background: var(--success); box-shadow: 0 0 6px rgba(39, 166, 68, 0.4); }
+.dot-medium { background: var(--warning); box-shadow: 0 0 6px rgba(245, 166, 35, 0.4); }
+.dot-low { background: var(--error); box-shadow: 0 0 6px rgba(229, 72, 77, 0.4); }
+
+/* ─── Snapshot Grid ─── */
+.snapshot-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.snapshot-item {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  transition: all var(--transition);
+}
+
+.snapshot-item:hover {
+  border-color: rgba(217, 56, 56, 0.15);
+}
+
+.snapshot-item strong {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #ff6b6b;
+}
+
+.snapshot-item p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  line-height: 1.55;
+}
+
 /* ─── Clinical Trials ─── */
 .trial-list {
   display: grid;
