@@ -164,6 +164,61 @@
 
     .stack-card.open .stack-chevron { transform: rotate(180deg); }
 
+    /* ─── Save button ─── */
+    .save-btn {
+      flex-shrink: 0;
+      font-size: 1.2rem;
+      line-height: 1;
+      cursor: pointer;
+      color: var(--ink-tertiary);
+      transition: color 0.2s, transform 0.2s;
+      padding: 2px;
+    }
+
+    .save-btn:hover { color: #f0b34b; transform: scale(1.15); }
+    .save-btn.saved { color: #f0b34b; }
+
+    /* ─── Saved stacks section ─── */
+    .saved-section {
+      margin-bottom: 20px;
+    }
+
+    .saved-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 4px;
+    }
+
+    .saved-title {
+      margin: 0;
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #f0b34b;
+    }
+
+    .saved-count {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--ink-tertiary);
+      background: var(--surface-2);
+      padding: 1px 7px;
+      border-radius: var(--radius-pill);
+    }
+
+    .results-header {
+      padding: 10px 4px;
+    }
+
+    .results-title {
+      margin: 0;
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+    }
+
     /* ─── Body ─── */
     .stack-body { display: none; border-top: 1px solid var(--hairline); }
     .stack-card.open .stack-body { display: block; }
