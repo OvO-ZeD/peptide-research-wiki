@@ -1842,6 +1842,7 @@ def build_stack_candidates(goal_key, priority_peptide):
         score = 0
         reasons = []
         tier_tags = []
+        has_relevance = False
         for pep in stack:
             meta = STACK_KNOWLEDGE.get(pep)
             if not meta:
@@ -1853,10 +1854,13 @@ def build_stack_candidates(goal_key, priority_peptide):
             overlaps = [x for x in goal.get("primary_targets", []) if x in effects]
             if overlaps:
                 score += len(overlaps) * 7
+                has_relevance = True
                 reasons.append(f"{pep} aligns with {', '.join(overlaps)}")
             optional = [x for x in goal.get("optional_support", []) if x in effects]
             if optional:
                 score += len(optional) * 3
+        if not has_relevance:
+            continue
         unique_stack = list(dict.fromkeys(stack))
         if len(unique_stack) >= 2:
             score += 5
