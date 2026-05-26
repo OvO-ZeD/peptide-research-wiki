@@ -2532,7 +2532,7 @@ def stack_protocol():
 @app.route('/stack-recommend')
 def stack_recommend():
     goal = (request.args.get("goal") or "fat_loss").strip().lower()
-    priority = (request.args.get("priority") or "retatrutide").strip().lower()
+    priority = (request.args.get("priority") or "").strip().lower()
     if goal not in GOAL_BLUEPRINTS:
         return jsonify({"error": "Unsupported goal."}), 400
     candidates = build_stack_candidates(goal, priority)
