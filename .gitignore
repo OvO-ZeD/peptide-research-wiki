@@ -5,3 +5,4 @@ gateway.log
 .DS_Store
 order_requests.jsonl
 autodeploy.log
+*.log

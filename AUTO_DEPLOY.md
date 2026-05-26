@@ -18,7 +18,7 @@ Press `Ctrl + C` in the terminal where it is running.
 
 ```bash
 cd /home/foruse/CODES/peptide_db
-nohup INTERVAL_SECONDS=8 ./auto_deploy.sh > /dev/null 2>&1 &
+nohup env INTERVAL_SECONDS=8 ./auto_deploy.sh > /dev/null 2>&1 &
 ```
 
 ## View activity log
