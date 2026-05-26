@@ -531,10 +531,30 @@
 
     <nav class="bottom-nav">
       <div class="bottom-nav-inner">
-        <a href="/" class="bottom-nav-btn"><span class="bn-icon">&#128269;</span>Search</a>
-        <a href="/stacks" class="bottom-nav-btn active"><span class="bn-icon">&#128230;</span>Stacks</a>
-        <a href="/tracker" class="bottom-nav-btn"><span class="bn-icon">&#128203;</span>Tracker</a>
-        <button class="bottom-nav-btn" onclick="var b=document.getElementById('theme_btn');if(b)b.click();"><span class="bn-icon" style="font-size:1.15rem">&#9790;</span>Theme</button>
+        <a href="/" class="bottom-nav-btn">
+          <div class="bn-icon-wrap">
+            <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="7"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
+          </div>
+          <span class="bn-label">Search</span>
+        </a>
+        <a href="/stacks" class="bottom-nav-btn active">
+          <div class="bn-icon-wrap">
+            <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M6 10 V8a2 2 0 0 1 2-2 h8a2 2 0 0 1 2 2 v2"/></svg>
+          </div>
+          <span class="bn-label">Stacks</span>
+        </a>
+        <a href="/tracker" class="bottom-nav-btn">
+          <div class="bn-icon-wrap">
+            <svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="14" rx="2"/><line x1="8" y1="4" x2="8" y2="8"/><line x1="16" y1="4" x2="16" y2="8"/><polyline points="9,13 11.5,15.5 16,11" fill="none"/></svg>
+          </div>
+          <span class="bn-label">Tracker</span>
+        </a>
+        <button class="bottom-nav-btn" onclick="var b=document.getElementById('theme_btn');if(b)b.click();">
+          <div class="bn-icon-wrap">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="2.5" x2="12" y2="4.5"/><line x1="12" y1="19.5" x2="12" y2="21.5"/><line x1="4" y1="12" x2="2.5" y2="12"/><line x1="21.5" y1="12" x2="20" y2="12"/><line x1="6.3" y1="6.3" x2="5.2" y2="5.2"/><line x1="18.8" y1="18.8" x2="17.7" y2="17.7"/><line x1="6.3" y1="17.7" x2="5.2" y2="18.8"/><line x1="18.8" y1="5.2" x2="17.7" y2="6.3"/></svg>
+          </div>
+          <span class="bn-label">Theme</span>
+        </button>
       </div>
     </nav>
 
