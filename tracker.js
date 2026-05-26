@@ -215,10 +215,10 @@ function renderActive() {
   }
 
   html += '<div class="insights">' +
-    '<div class="insight-card"><div class="val">' + weekTotal.toFixed(1) + '</div><div class="lbl">Week total</div></div>' +
-    '<div class="insight-card"><div class="val">' + compliance + '%</div><div class="lbl">' + actual + '/' + expected + ' doses</div></div>' +
-    '<div class="insight-card"><div class="val">' + lastStr + '</div><div class="lbl">Last dose</div></div>' +
-    '<div class="insight-card"><div class="val">' + (allLogs.length) + '</div><div class="lbl">Total logs</div></div>' +
+    '<div class="insight-card"><div class="val" style="color:' + p.color + '">' + weekTotal.toFixed(1) + '</div><div class="lbl">Week total</div></div>' +
+    '<div class="insight-card"><div class="val" style="color:' + p.color + '">' + compliance + '%</div><div class="lbl">' + actual + '/' + expected + ' doses</div></div>' +
+    '<div class="insight-card"><div class="val" style="color:' + p.color + '">' + lastStr + '</div><div class="lbl">Last dose</div></div>' +
+    '<div class="insight-card"><div class="val" style="color:' + p.color + '">' + (allLogs.length) + '</div><div class="lbl">Total logs</div></div>' +
     '</div>';
 
   // ─── Chart ───
