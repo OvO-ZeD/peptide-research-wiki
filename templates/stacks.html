@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#010102">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -487,6 +487,31 @@
       .stack-trigger { padding: 14px 16px; }
       .stack-body-inner { padding: 16px 16px 18px; }
       .goal-section { padding: 14px 14px !important; }
+    }
+    @media (max-width: 480px) {
+      .stack-trigger { padding: 12px 14px; gap: 8px; }
+      .stack-trigger-left { gap: 6px; }
+      .stack-name { font-size: 0.9rem; white-space: normal; }
+      .stack-body-inner { padding: 12px 14px 16px; gap: 10px; }
+      .section-block { padding: 10px 12px; }
+      .section-block p, .section-block li { font-size: 0.78rem; }
+      .goal-section { padding: 14px 12px !important; }
+      .goal-section h2 { font-size: 1.05rem !important; }
+      .goal-section p { font-size: 0.78rem !important; }
+      .goal-select { height: 48px; font-size: 16px; padding: 0 14px; background-position: right 14px center; padding-right: 40px; }
+      .protocol-phase { padding: 10px 12px; }
+      .phase-desc { font-size: 0.78rem; }
+      .cycle-meta { font-size: 0.72rem; padding: 8px 12px; gap: 10px; }
+      .sources-mini { grid-template-columns: 1fr; }
+      .source-chip { font-size: 0.68rem; padding: 5px 9px; }
+      .disclaimer { font-size: 0.7rem; padding: 8px 12px; }
+      .tier-legend { gap: 8px; padding: 8px 12px; }
+      .tier-legend-item { font-size: 0.64rem; }
+      .save-btn { font-size: 1rem; }
+      .badge { font-size: 0.55rem; padding: 1px 6px; }
+      .mech-item { flex-direction: column; gap: 2px; padding: 4px 0; }
+      .stack-card .stack-chevron { width: 14px; height: 14px; }
+      .post-cycle-block { padding: 10px 12px; }
     }
   </style>
 </head>

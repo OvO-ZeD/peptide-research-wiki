@@ -1370,3 +1370,135 @@ body::before {
 @media (max-width: 640px) {
   .theme-toggle { width: 36px; height: 36px; font-size: 1rem; }
 }
+
+/* ─── iPhone / Small Phone — PWA-friendly ─── */
+@media (max-width: 480px) {
+  html { -webkit-text-size-adjust: 100%; }
+  body { overflow-x: hidden; }
+
+  .page {
+    width: 100%;
+    padding: 10px 12px 24px;
+    padding-top: env(safe-area-inset-top, 10px);
+    padding-bottom: env(safe-area-inset-bottom, 24px);
+    padding-left: max(12px, env(safe-area-inset-left, 12px));
+    padding-right: max(12px, env(safe-area-inset-right, 12px));
+  }
+
+  .nav-bar {
+    padding: 5px 5px 5px 12px;
+    gap: 3px;
+    border-radius: var(--radius-lg);
+    flex-wrap: nowrap;
+    min-height: 44px;
+  }
+
+  .nav-brand { font-size: 0.85rem; }
+
+  .nav-btn {
+    padding: 6px 10px;
+    font-size: 0.72rem;
+    border-radius: var(--radius-md);
+  }
+
+  .nav-links { gap: 3px; }
+
+  .theme-toggle { width: 32px; height: 32px; font-size: 0.85rem; min-width: 32px; }
+
+  .hero {
+    padding: 12px 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .hero-copy h1 { font-size: 1.05rem; }
+  .hero-desc { width: 100%; order: 10; font-size: 0.78rem; }
+  .hero-badge { font-size: 0.6rem; padding: 2px 8px; }
+
+  .brand-spike { width: 28px; height: 28px; font-size: 16px; }
+
+  .search-section { padding: 14px 12px; }
+  .search-row { flex-direction: column; gap: 10px; }
+  .search-field input { height: 44px; font-size: 16px; }
+  .search-btn { width: 100%; justify-content: center; height: 44px; font-size: 16px; }
+
+  .compare-wrapper { grid-template-columns: 1fr; }
+  .snapshot-grid { grid-template-columns: 1fr; }
+  .source-grid { grid-template-columns: 1fr; }
+
+  .panel { padding: 16px; }
+  .panel h2 { font-size: 0.85rem; }
+  .overview-card { padding: 16px; }
+  .overview-card h3 { font-size: 1rem; }
+  .overview-card p { font-size: 0.82rem; }
+
+  .metric-row { gap: 5px; }
+  .metric-tag { font-size: 0.7rem; padding: 4px 8px; }
+
+  .snapshot-item { padding: 12px; }
+  .snapshot-item p { font-size: 0.8rem; }
+
+  .trial-item { padding: 8px 12px; }
+  .trial-item h3 { font-size: 0.78rem; }
+
+  .article-list li { padding: 6px 10px; }
+  .article-list a { font-size: 0.78rem; }
+
+  .pdb-item { padding: 6px 10px; font-size: 0.76rem; }
+
+  .source-link { padding: 6px 10px; font-size: 0.74rem; }
+  .source-grid { grid-template-columns: 1fr 1fr; }
+
+  .status-message { font-size: 0.75rem; }
+
+  .recent-chip { font-size: 0.68rem; padding: 3px 8px; }
+  .fav-chip { font-size: 0.68rem; padding: 3px 8px; }
+
+  .suggestions-dropdown { max-height: 140px; }
+  .suggestion-item { font-size: 0.78rem; padding: 7px 12px; }
+
+  .toast-container {
+    bottom: max(16px, env(safe-area-inset-bottom, 16px));
+    left: 12px;
+    right: 12px;
+    transform: none;
+    width: auto;
+  }
+  .toast { white-space: normal; word-break: break-word; font-size: 0.78rem; padding: 8px 16px; }
+
+  .install-banner {
+    bottom: max(60px, env(safe-area-inset-bottom, 60px));
+    left: 12px;
+    right: 12px;
+    transform: none;
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    white-space: normal;
+    padding: 10px 14px;
+    gap: 8px;
+    border-radius: var(--radius-lg);
+  }
+  .install-banner span { font-size: 0.78rem; }
+  .install-btn { font-size: 0.75rem; padding: 5px 14px; }
+}
+
+/* ─── PWA Standalone Mode (homescreen) — notch / home bar ─── */
+@media all and (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .progress-bar {
+    top: env(safe-area-inset-top, 0px);
+  }
+  /* Full bleed on narrow screens in standalone */
+  @media (max-width: 480px) {
+    .page {
+      padding-left: max(8px, env(safe-area-inset-left, 8px));
+      padding-right: max(8px, env(safe-area-inset-right, 8px));
+      padding-top: max(10px, env(safe-area-inset-top, 10px));
+      padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
+    }
+  }
+}

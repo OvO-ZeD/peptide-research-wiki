@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#010102">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -664,6 +664,44 @@
     @media (max-width: 640px) {
       .log-bar { flex-direction: column; align-items: stretch; }
       .log-bar .dose-input { width: 100%; }
+    }
+    @media (max-width: 480px) {
+      .tracker-page .page { padding-left: max(10px, env(safe-area-inset-left, 10px)); padding-right: max(10px, env(safe-area-inset-right, 10px)); }
+      .tracker-h2 { font-size: 1.05rem; }
+      .tab-bar { gap: 3px; padding: 3px; min-height: 38px; border-radius: var(--radius-lg); }
+      .tab-btn { font-size: 0.72rem; padding: 5px 10px; }
+      .tab-add { font-size: 0.9rem; padding: 4px 8px; }
+      .log-bar { padding: 10px 12px; gap: 6px; }
+      .log-bar .pep-name { font-size: 0.8rem; }
+      .quick-btn { font-size: 0.72rem; padding: 5px 10px; min-height: 36px; }
+      .bd-row { padding: 8px 12px; gap: 6px; }
+      .bd-row input[type="date"] { width: 120px; font-size: 16px; }
+      .bd-row input[type="time"] { width: 80px; font-size: 16px; }
+      .insights { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .insight-card { padding: 14px 10px 12px; }
+      .insight-card .val { font-size: 0.85rem; }
+      .insight-card .lbl { font-size: 0.52rem; }
+      .calc-card { padding: 14px 12px; }
+      .calc-card h3 { font-size: 0.88rem; }
+      .calc-grid { grid-template-columns: 1fr; gap: 8px; }
+      .calc-field { padding: 12px 14px; }
+      .calc-field input { height: 36px; font-size: 16px; }
+      .calc-result-row { padding: 14px 16px; gap: 8px; }
+      .calc-result { font-size: 1.3rem; }
+      .calc-result-label { font-size: 0.68rem; }
+      .logs-head { padding: 8px 12px; flex-wrap: wrap; gap: 6px; }
+      .logs-head h3 { font-size: 0.75rem; }
+      .logs-head .week-nav span { font-size: 0.72rem; min-width: 50px; }
+      .log-row { padding: 6px 12px; }
+      .log-row .date { font-size: 0.72rem; }
+      .log-row .dose { font-size: 0.76rem; }
+      .empty-tracker { padding: 32px 16px; }
+      .big-add-btn { padding: 10px 20px; font-size: 0.85rem; }
+      .inline-add { padding: 14px 14px; }
+      .inline-add .field input { font-size: 16px; }
+      .rename-input { width: 120px; font-size: 0.8rem; }
+      .context-menu { min-width: 120px; }
+      .context-menu-item { font-size: 0.74rem; padding: 6px 12px; }
     }
   </style>
 </head>
