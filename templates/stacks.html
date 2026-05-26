@@ -14,98 +14,94 @@
 
     .stack-page { max-width: 900px; margin: 0 auto; }
 
-    /* Dropdown */
-    .goal-picker {
-      margin-bottom: 16px;
-    }
+    /* ─── Goal picker ─── */
+    .goal-picker { margin-bottom: 12px; }
 
     .goal-picker label {
       display: block;
-      margin-bottom: 6px;
-      font-size: 0.75rem;
+      margin-bottom: 4px;
+      font-size: 0.7rem;
       font-weight: 600;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.04em;
       text-transform: uppercase;
-      color: var(--ink-subtle);
+      color: var(--ink-tertiary);
     }
 
     .goal-select {
       width: 100%;
-      height: 48px;
-      padding: 0 16px;
-      border-radius: var(--radius-md);
+      height: 44px;
+      padding: 0 14px;
+      border-radius: var(--radius-sm);
       border: 1px solid var(--hairline);
       background: var(--surface-1);
       color: var(--ink);
-      font-size: 0.92rem;
+      font-size: 0.88rem;
       font-weight: 500;
       font-family: inherit;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.01em;
       cursor: pointer;
-      transition: all var(--transition);
+      transition: border-color 0.2s;
       outline: none;
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
       background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23888898' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
       background-repeat: no-repeat;
-      background-position: right 16px center;
-      padding-right: 44px;
+      background-position: right 14px center;
+      padding-right: 40px;
     }
 
     .goal-select:hover { border-color: var(--hairline-strong); }
 
     .goal-select:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px var(--primary-glow-soft), 0 0 20px rgba(217, 56, 56, 0.06);
+      box-shadow: 0 0 0 2px var(--primary-glow-soft);
     }
 
     .goal-select option {
       background: var(--surface-2);
       color: var(--ink);
-      padding: 8px;
+      padding: 6px;
     }
 
-    /* Results area */
-    .stack-results {
-      display: grid;
-      gap: 8px;
-    }
+    /* ─── Results grid ─── */
+    .stack-results { display: grid; gap: 10px; }
 
-    /* Stack accordion — compact */
+    /* ─── Stack card ─── */
     .stack-card {
       background: var(--surface-1);
       border: 1px solid var(--hairline);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-md);
       overflow: hidden;
-      transition: all var(--transition);
-      animation: fadeSlide 0.4s ease-out both;
+      transition: border-color 0.2s;
+      animation: fadeSlide 0.35s ease-out both;
     }
 
     .stack-card:nth-child(1) { animation-delay: 0s; }
-    .stack-card:nth-child(2) { animation-delay: 0.04s; }
-    .stack-card:nth-child(3) { animation-delay: 0.08s; }
-    .stack-card:nth-child(4) { animation-delay: 0.12s; }
+    .stack-card:nth-child(2) { animation-delay: 0.03s; }
+    .stack-card:nth-child(3) { animation-delay: 0.06s; }
+    .stack-card:nth-child(4) { animation-delay: 0.09s; }
 
     .stack-card:hover { border-color: rgba(217, 56, 56, 0.18); }
 
+    /* ─── Trigger bar ─── */
     .stack-trigger {
       display: flex;
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      padding: 14px 18px;
+      padding: 12px 16px;
       background: transparent;
       border: none;
       color: var(--ink);
       font-family: inherit;
-      font-size: 0.92rem;
+      font-size: 0.88rem;
       font-weight: 500;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.01em;
       cursor: pointer;
-      transition: all var(--transition);
+      transition: background 0.15s;
       text-align: left;
-      gap: 12px;
+      gap: 8px;
     }
 
     .stack-trigger:hover { background: var(--surface-2); }
@@ -113,113 +109,114 @@
     .stack-trigger-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
       min-width: 0;
     }
 
-    .stack-name {
-      font-weight: 600;
-      white-space: nowrap;
-    }
+    .stack-name { font-weight: 600; white-space: nowrap; }
 
-    .stack-badges {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-    }
+    .stack-badges { display: flex; gap: 3px; flex-wrap: wrap; }
 
     .badge {
       display: inline-flex;
       align-items: center;
-      padding: 2px 8px;
+      padding: 1px 7px;
       border-radius: var(--radius-pill);
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       font-weight: 600;
       letter-spacing: 0.04em;
       text-transform: uppercase;
       line-height: 1.3;
     }
 
-    .badge-score {
-      background: var(--primary-soft);
-      color: var(--primary);
-    }
+    .badge-score { background: var(--primary-soft); color: var(--primary); }
 
-    .badge-tier-a { background: rgba(39,166,68,0.15); color: #4cd964; }
-    .badge-tier-b { background: rgba(90,200,250,0.15); color: #5ac8fa; }
-    .badge-tier-c { background: rgba(245,166,35,0.15); color: #f5a623; }
-    .badge-tier-d { background: rgba(229,72,77,0.15); color: #e5484d; }
+    .badge-tier-a { background: rgba(39,166,68,0.12); color: #4cd964; }
+    .badge-tier-b { background: rgba(90,200,250,0.12); color: #5ac8fa; }
+    .badge-tier-c { background: rgba(245,166,35,0.12); color: #f5a623; }
+    .badge-tier-d { background: rgba(229,72,77,0.12); color: #e5484d; }
 
     .stack-chevron {
       flex-shrink: 0;
-      width: 18px;
-      height: 18px;
+      width: 16px; height: 16px;
       color: var(--ink-tertiary);
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.25s ease;
     }
 
     .stack-card.open .stack-chevron { transform: rotate(180deg); }
 
-    /* Stack body */
-    .stack-body {
-      display: none;
-      border-top: 1px solid var(--hairline);
-    }
-
+    /* ─── Body ─── */
+    .stack-body { display: none; border-top: 1px solid var(--hairline); }
     .stack-card.open .stack-body { display: block; }
 
     .stack-body-inner {
-      padding: 16px 18px;
+      padding: 14px 16px 16px;
       display: grid;
       gap: 10px;
     }
 
+    /* ─── Section block ─── */
     .section-block {
       padding: 12px 14px;
-      border-radius: var(--radius-sm);
+      border-radius: 4px;
       background: var(--surface-2);
       border: 1px solid var(--hairline);
     }
 
     .section-block h4 {
-      margin: 0 0 6px;
-      font-size: 0.7rem;
+      margin: 0 0 4px;
+      font-size: 0.65rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
       color: var(--primary);
     }
 
-    .section-block p,
-    .section-block li {
+    .section-block p, .section-block li {
       margin: 0;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--ink-muted);
       line-height: 1.5;
     }
 
-    .section-block ul {
-      margin: 4px 0 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .section-block ul li {
-      padding: 2px 0;
-    }
-
+    .section-block ul { margin: 2px 0 0; padding: 0; list-style: none; }
+    .section-block ul li { padding: 1px 0; }
     .section-block ul li::before {
-      content: '—';
+      content: '\2014';
       color: var(--ink-tertiary);
-      margin-right: 6px;
+      margin-right: 5px;
     }
 
-    /* Protocol phases */
+    /* ─── Mechanism items ─── */
+    .mech-item {
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .mech-item:last-child { border-bottom: none; }
+
+    .mech-name {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--ink);
+      flex-shrink: 0;
+    }
+
+    .mech-desc {
+      font-size: 0.76rem;
+      color: var(--ink-muted);
+      line-height: 1.4;
+    }
+
+    /* ─── Protocol phases ─── */
     .protocol-phase {
-      padding: 10px 12px;
+      padding: 10px 12px 10px 14px;
       margin-bottom: 6px;
-      border-radius: var(--radius-sm);
+      border-radius: 4px;
       background: var(--surface-3);
       border-left: 2px solid var(--primary);
     }
@@ -229,181 +226,133 @@
     .phase-head {
       display: flex;
       align-items: baseline;
-      gap: 8px;
-      margin-bottom: 4px;
+      gap: 6px;
+      margin-bottom: 3px;
     }
 
     .phase-label {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       color: var(--primary);
     }
 
-    .phase-weeks {
-      font-size: 0.7rem;
-      color: var(--ink-tertiary);
-    }
+    .phase-weeks { font-size: 0.68rem; color: var(--ink-tertiary); }
 
     .phase-desc {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--ink-muted);
       line-height: 1.45;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
 
     .phase-meta {
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       color: var(--ink-subtle);
       line-height: 1.4;
     }
 
-    .phase-meta strong {
-      color: var(--ink-muted);
-      font-weight: 500;
-    }
+    .phase-meta strong { color: var(--ink-muted); font-weight: 500; }
 
+    /* ─── Post-cycle ─── */
     .post-cycle-block {
-      padding: 10px 12px;
+      padding: 10px 12px 10px 14px;
       margin-top: 6px;
-      border-radius: var(--radius-sm);
-      background: rgba(245,166,35,0.06);
+      border-radius: 4px;
+      background: rgba(245,166,35,0.05);
       border: 1px solid rgba(245,166,35,0.12);
     }
 
-    .post-cycle-block .phase-label {
-      color: var(--warning);
-    }
+    .post-cycle-block .phase-label { color: var(--warning); }
+    .post-cycle-block .phase-desc { color: var(--ink-subtle); }
 
-    .post-cycle-block .phase-desc {
-      color: var(--ink-subtle);
-    }
-
+    /* ─── Cycle meta ─── */
     .cycle-meta {
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
-      margin-top: 8px;
+      margin-bottom: 8px;
       padding: 8px 12px;
-      border-radius: var(--radius-sm);
+      border-radius: 4px;
       background: var(--surface-3);
       border: 1px solid var(--hairline);
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       color: var(--ink-subtle);
     }
 
-    .cycle-meta strong {
-      color: var(--ink-muted);
-      font-weight: 500;
-    }
+    .cycle-meta strong { color: var(--ink-muted); font-weight: 500; }
 
+    /* ─── Evidence note ─── */
     .evidence-note {
       padding: 10px 12px;
-      border-radius: var(--radius-sm);
-      background: rgba(245,166,35,0.04);
-      border: 1px solid rgba(245,166,35,0.1);
+      border-radius: 4px;
+      background: rgba(245,166,35,0.03);
+      border: 1px solid rgba(245,166,35,0.08);
     }
 
-    .evidence-note .phase-desc {
-      font-size: 0.76rem;
-    }
+    .evidence-note .phase-desc { font-size: 0.74rem; }
 
-    /* Mechanism list */
-    .mech-item {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      padding: 6px 0;
-      border-bottom: 1px solid var(--hairline);
-    }
-
-    .mech-item:last-child { border-bottom: none; }
-
-    .mech-name {
-      font-size: 0.82rem;
-      font-weight: 500;
-      color: var(--ink);
-      flex-shrink: 0;
-    }
-
-    .mech-desc {
-      font-size: 0.78rem;
-      color: var(--ink-muted);
-      line-height: 1.4;
-    }
-
-    /* Sources grid */
+    /* ─── Source chips ─── */
     .sources-mini {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 4px;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 3px;
     }
 
     .source-chip {
       display: block;
       padding: 6px 10px;
-      border-radius: var(--radius-sm);
+      border-radius: 4px;
       background: var(--surface-2);
       border: 1px solid var(--hairline);
       color: var(--ink-subtle);
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 500;
       text-decoration: none;
-      transition: all var(--transition);
+      transition: border-color 0.15s;
     }
 
     .source-chip:hover {
       border-color: var(--primary);
       color: var(--primary-hover);
-      background: rgba(217, 56, 56, 0.05);
+      background: rgba(217, 56, 56, 0.04);
     }
 
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--ink-tertiary);
-    }
+    /* ─── Empty state ─── */
+    .empty-state { text-align: center; padding: 32px 16px; color: var(--ink-tertiary); }
+    .empty-state p { margin: 3px 0; font-size: 0.82rem; }
 
-    .empty-state p {
-      margin: 4px 0;
-      font-size: 0.85rem;
-    }
-
+    /* ─── Disclaimer ─── */
     .disclaimer {
-      padding: 10px 16px;
-      border-radius: var(--radius-md);
-      background: rgba(245,166,35,0.06);
-      border: 1px solid rgba(245,166,35,0.15);
-      font-size: 0.75rem;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      background: rgba(245,166,35,0.05);
+      border: 1px solid rgba(245,166,35,0.12);
+      font-size: 0.72rem;
       color: var(--warning);
       text-align: center;
-      margin-top: 16px;
+      margin-bottom: 10px;
     }
 
+    /* ─── Tier legend ─── */
     .tier-legend {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
       justify-content: center;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     .tier-legend-item {
       display: flex;
       align-items: center;
-      gap: 5px;
-      font-size: 0.7rem;
+      gap: 4px;
+      font-size: 0.65rem;
       color: var(--ink-tertiary);
     }
 
-    .tier-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-    }
-
+    .tier-dot { width: 5px; height: 5px; border-radius: 50%; }
     .tier-dot.a { background: #4cd964; }
     .tier-dot.b { background: #5ac8fa; }
     .tier-dot.c { background: #f5a623; }
@@ -413,12 +362,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 40px 0;
+      padding: 32px 0;
     }
 
     @media (max-width: 820px) {
-      .stack-trigger { padding: 12px 14px; }
-      .stack-body-inner { padding: 12px 14px; }
+      .stack-trigger { padding: 10px 14px; }
+      .stack-body-inner { padding: 12px 14px 14px; }
     }
   </style>
 </head>
@@ -433,9 +382,9 @@
 
     <div class="disclaimer">Educational research context only. Not medical advice. Always consult a qualified healthcare provider.</div>
 
-    <section class="goal-section" style="padding:16px 20px">
-      <h2 style="margin:0 0 2px;font-size:0.95rem;letter-spacing:-0.02em">Stack Recommendations</h2>
-      <p style="margin:0 0 12px;font-size:0.8rem;color:var(--ink-subtle)">Select your goal to see evidence-backed peptide stacks.</p>
+    <section class="goal-section" style="padding:12px 16px">
+      <h2 style="margin:0 0 1px;font-size:0.92rem;letter-spacing:-0.02em;font-weight:600">Stack Recommendations</h2>
+      <p style="margin:0 0 10px;font-size:0.78rem;color:var(--ink-subtle)">Select your goal to see evidence-backed peptide stacks.</p>
       <div class="goal-picker">
         <label for="goal_select">Goal</label>
         <select id="goal_select" class="goal-select">
@@ -446,7 +395,7 @@
       </div>
     </section>
 
-    <div id="stack_results"></div>
+    <div id="stack_results" style="margin-top:4px"></div>
 
     <div class="tier-legend">
       <span class="tier-legend-item"><span class="tier-dot a"></span> A — Trial-heavy</span>

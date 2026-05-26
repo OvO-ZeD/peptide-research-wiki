@@ -145,7 +145,7 @@ function renderStacks(data) {
       // Protocol sources
       var protoSources = protocol.sources || [];
       if (protoSources.length) {
-        html += '<div style="margin-top:8px"><h4 style="font-size:0.68rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink-tertiary);margin:0 0 4px">Protocol sources</h4><ul>';
+        html += '<div style="margin-top:6px"><h4 style="font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-tertiary);margin:0 0 3px">Protocol sources</h4><ul>';
         for (var s = 0; s < protoSources.length; s++) {
           html += '<li style="font-size:0.72rem;color:var(--ink-tertiary);margin-bottom:2px">' + escapeHtml(protoSources[s]) + '</li>';
         }
