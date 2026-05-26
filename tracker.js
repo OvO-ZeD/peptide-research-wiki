@@ -330,7 +330,7 @@ function calcUnits() {
   var water = parseFloat(document.getElementById("calc_water").value) || 1;
   var dose = parseFloat(document.getElementById("calc_dose").value) || 0;
   var units = dose / (vial / water) * 100;
-  document.getElementById("calc_result").textContent = "= " + Math.round(units) + " units";
+  document.getElementById("calc_result").textContent = Math.round(units);
 }
 
 /* ─── Export / Import ─── */
