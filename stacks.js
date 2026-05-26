@@ -3,6 +3,7 @@ var resultsRoot = document.getElementById('stack_results');
 var SAVED_STACKS_KEY = 'peptide_saved_stacks';
 var _lastResponse = null;
 var _lastGoal = '';
+var _lastGoalLabel = '';
 
 /* ─── Saved stacks (localStorage) ─── */
 function loadSavedStacks() {
@@ -57,6 +58,7 @@ async function fetchStacks(goal) {
     if (!res.ok) throw new Error('Failed to load.');
     var data = await res.json();
     _lastResponse = data;
+    _lastGoalLabel = data.goal_label || goal;
     renderStacks(data, goal);
   } catch (err) {
     resultsRoot.innerHTML = '<div class="empty-state"><p>Could not load recommendations.</p></div>';
@@ -210,7 +212,7 @@ function renderStacks(data, currentGoal) {
   if (!recs.length) {
     html += '<div class="empty-state"><p>No stacks found for this goal.</p></div>';
   } else {
-    html += '<div class="results-header"><h3 class="results-title">' + escapeHtml(currentGoal || '') + ' Stacks</h3></div>';
+    html += '<div class="results-header"><h3 class="results-title">' + escapeHtml(_lastGoalLabel || currentGoal || '') + '</h3></div>';
     for (var i = 0; i < recs.length; i++) {
       html += renderStackCard(recs[i]);
     }
