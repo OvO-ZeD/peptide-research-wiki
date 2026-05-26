@@ -21,40 +21,64 @@ ALIASES = {
 
 SNAPSHOT_LIBRARY = {
     "tesamorelin": {
-        "primary_effect": "Primarily investigated to reduce excess visceral abdominal fat and improve selected metabolic markers in specific clinical populations.",
-        "mechanism_pathway": "Mimics growth hormone-releasing hormone signaling and increases endogenous GH with downstream IGF-1 activity, a pathway associated with lipid mobilization and visceral fat metabolism.",
-        "expected_body_outcomes": "May reduce central abdominal fat burden and support improvements in metabolic risk signals in studied groups.",
-        "clinical_context": "Most established in HIV-associated lipodystrophy studies and related metabolic research settings.",
+        "primary_effect": "Tesamorelin is mainly studied to help reduce stubborn belly fat (visceral fat) that sits deep around your internal organs. It is not for general weight loss — it targets the unhealthy fat that wraps around your liver and intestines.",
+        "mechanism_pathway": "Think of tesamorelin as a nudge to your brain's pituitary gland. It mimics a natural hormone called GHRH that tells your body to release more growth hormone. Higher growth hormone then signals your body to break down stored fat for energy, especially the deep belly fat.",
+        "expected_body_outcomes": "People who take tesamorelin in studies often lose inches around their waist from the inside out (visceral fat). It may also improve some metabolic blood markers. Effects take weeks to months and work best alongside healthy lifestyle habits.",
+        "clinical_context": "Tesamorelin is FDA-approved for reducing visceral fat in people with HIV-related lipodystrophy (a condition where fat shifts to the belly). Outside of that specific group, it is used off-label based on the same fat-burning mechanism, but the strongest evidence comes from HIV studies.",
     },
     "retatrutide": {
-        "primary_effect": "Investigated for clinically meaningful body-weight reduction and glycemic improvement in obesity and type 2 diabetes programs.",
-        "mechanism_pathway": "Acts as a multi-receptor agonist across glucagon, GLP-1, and GIP pathways, influencing appetite signaling, energy expenditure balance, gastric dynamics, and glucose regulation.",
-        "expected_body_outcomes": "Can be associated with reduced calorie intake, improved metabolic control, and substantial fat-mass reduction in responsive trial populations.",
-        "clinical_context": "Large interventional programs are ongoing to define long-term efficacy and safety across metabolic phenotypes.",
+        "primary_effect": "Retatrutide is being studied as a powerful weight-loss and blood-sugar-lowering medication. Early results suggest it may cause more weight loss than older similar drugs, making it a next-generation metabolic treatment.",
+        "mechanism_pathway": "Retatrutide is like a three-key activator. It turns on three different body signals at once: glucagon (tells your liver to release stored energy), GLP-1 (tells your brain you are full and slows stomach emptying), and GIP (helps your body handle sugar better). This triple action is what makes it potentially stronger than two-key drugs.",
+        "expected_body_outcomes": "In studies, people taking retatrutide lose significant body weight — often more than with single or dual hormone mimickers. Blood sugar levels improve, appetite drops noticeably, and fat burning increases. Nausea is a common side effect, especially when starting.",
+        "clinical_context": "Retatrutide is still in clinical trials (not yet FDA approved for general use). It is being tested in large Phase 2 and Phase 3 programs for obesity and type 2 diabetes. Since it is not yet publicly available, access is currently through clinical trials only.",
     },
     "semaglutide": {
-        "primary_effect": "Used for glycemic control and weight management depending on indication and formulation.",
-        "mechanism_pathway": "GLP-1 receptor agonism supports glucose-dependent insulin signaling, lowers glucagon tone, delays gastric emptying, and enhances satiety signaling.",
-        "expected_body_outcomes": "Often linked with improved glucose metrics and progressive weight reduction through appetite and intake modulation.",
-        "clinical_context": "Supported by large randomized trial programs in diabetes, obesity, and cardiometabolic outcomes.",
+        "primary_effect": "Semaglutide is used to lower blood sugar in type 2 diabetes and to help with weight loss. It is one of the most well-studied peptides in its class and is available as a prescription medication under brand names like Ozempic, Wegovy, and Rybelsus.",
+        "mechanism_pathway": "Semaglutide mimics a natural hormone called GLP-1 that your gut releases when you eat. It works in three main ways: it tells your pancreas to release more insulin when blood sugar is high, it tells your liver to stop making extra sugar, and it signals your brain that you are full so you eat less.",
+        "expected_body_outcomes": "Most people experience noticeably reduced appetite and eat smaller portions. Blood sugar levels improve within weeks. Weight loss is gradual but steady — often 10-15% of body weight over months. Some people feel nauseous at first, which usually improves over time.",
+        "clinical_context": "Semaglutide is FDA approved and widely prescribed. Ozempic is for type 2 diabetes, Wegovy is for weight management, and Rybelsus is an oral tablet form. It has been studied in large trials with thousands of participants, giving it one of the strongest evidence bases among metabolic peptides.",
     },
     "tirzepatide": {
-        "primary_effect": "Used or investigated for strong glycemic improvement and weight reduction in metabolic disease care.",
-        "mechanism_pathway": "Dual GIP and GLP-1 receptor agonism modulates insulin dynamics, satiety pathways, and postprandial metabolic responses.",
-        "expected_body_outcomes": "Can lead to significant HbA1c reduction and body-weight decline in eligible patient populations.",
-        "clinical_context": "Evidence base includes major phase programs in type 2 diabetes and obesity-related metabolic disease.",
+        "primary_effect": "Tirzepatide is used for type 2 diabetes and weight management. It is often described as stronger than semaglutide for weight loss because it targets two hormones instead of one, leading to greater appetite suppression and better blood sugar control.",
+        "mechanism_pathway": "Tirzepatide activates two gut hormone receptors at once: GIP and GLP-1. Think of it as turning on two different dials. The GLP-1 part slows digestion and tells your brain you are full. The GIP part improves how your body uses sugar and may add extra fat-burning effects that single-target drugs do not have.",
+        "expected_body_outcomes": "Users typically experience reduced hunger, earlier fullness when eating, and fewer food cravings. Weight loss is often substantial — many people lose 15-25% of their body weight in clinical trials. Blood sugar and HbA1c levels improve significantly. Like similar drugs, nausea and digestive issues are possible when starting.",
+        "clinical_context": "Tirzepatide is FDA approved as Mounjaro for type 2 diabetes and Zepbound for weight management. It is currently one of the most effective available options for weight loss based on clinical trial results. It is a prescription medication available through healthcare providers.",
     },
     "bpc-157": {
-        "primary_effect": "Discussed mainly in experimental contexts for tissue-repair and inflammation-related hypotheses.",
-        "mechanism_pathway": "Proposed pathways are still investigational and not fully established in rigorous human therapeutic frameworks.",
-        "expected_body_outcomes": "Potential effects remain uncertain in high-quality human evidence contexts.",
-        "clinical_context": "Human interventional evidence is comparatively limited versus approved metabolic therapeutics.",
+        "primary_effect": "BPC-157 is discussed mainly in experimental and bodybuilding communities for its potential to speed up healing of injuries — tendons, ligaments, muscles, and gut lining. It is not FDA approved and has not been tested in large human trials.",
+        "mechanism_pathway": "BPC-157 is thought to help the body repair itself by promoting blood vessel growth (angiogenesis) to injured areas, increasing collagen production (the building block of tendons and connective tissue), and reducing inflammation. It also activates growth hormone receptors in healing tissues. However, these effects have mostly been shown in animal and lab studies, not in large human trials.",
+        "expected_body_outcomes": "Anecdotal reports from users describe faster recovery from joint and tendon injuries, reduced pain, and improved gut health. However, because high-quality human studies are missing, it is hard to predict what will happen in any specific person. Effects likely vary and expectations should be cautious.",
+        "clinical_context": "BPC-157 is not approved by any major regulatory agency (FDA, EMA) for medical use. It is sold as a research chemical, not a medication. There is much less human safety data compared to approved metabolic peptides. Anyone considering it should understand that long-term safety is unknown.",
     },
     "cjc-1295": {
-        "primary_effect": "Investigated in growth-hormone-axis research and endocrine signaling contexts.",
-        "mechanism_pathway": "Acts as a growth hormone-releasing hormone analog designed to prolong GH-axis stimulation.",
-        "expected_body_outcomes": "May increase GH/IGF-1 signaling activity, with downstream effects dependent on dose, population, and treatment context.",
-        "clinical_context": "Evidence remains more limited than established approved therapies and requires careful contextual interpretation.",
+        "primary_effect": "CJC-1295 is studied for its ability to raise growth hormone and IGF-1 levels in the body. It is commonly discussed in anti-aging and bodybuilding circles for its potential to improve body composition, recovery, and vitality.",
+        "mechanism_pathway": "CJC-1295 is a synthetic version of GHRH (growth hormone releasing hormone). It binds to the pituitary gland and stimulates it to release more growth hormone in natural pulses. Unlike natural GHRH which breaks down quickly, CJC-1295 has been modified to last much longer in the body through a technology called Drug Affinity Complex (DAC).",
+        "expected_body_outcomes": "Users may experience improved sleep quality, faster recovery from exercise, and changes in body composition (more lean mass, less fat). These effects come from increased growth hormone signaling. Results develop gradually over weeks to months. Side effects may include water retention, joint pain, and numbness/tingling in hands.",
+        "clinical_context": "CJC-1295 has been studied in small human trials for growth hormone deficiency but is not FDA approved for general use. It is classified as a research chemical and is not a prescription medication. The evidence base is much smaller than for approved peptides like semaglutide or tirzepatide.",
+    },
+    "ipamorelin": {
+        "primary_effect": "Ipamorelin is a growth hormone secretagogue — meaning it triggers the body to release its own growth hormone. It is popular in anti-aging and fitness contexts for supporting recovery, lean muscle, and fat loss.",
+        "mechanism_pathway": "Ipamorelin mimics ghrelin, the hunger hormone, but in a selective way. It binds to ghrelin receptors in the pituitary gland, which causes a pulse of growth hormone release. Unlike natural ghrelin, it does not strongly stimulate appetite, making it attractive for body composition goals without increased hunger.",
+        "expected_body_outcomes": "Users commonly report better sleep quality, faster recovery between workouts, improved skin elasticity, and gradual fat loss. Effects are subtle compared to prescribed hormones — think of it as giving your natural growth hormone production a gentle nudge rather than a flood. Results accumulate over months of consistent use.",
+        "clinical_context": "Ipamorelin has been studied for conditions like postoperative recovery and frailty in older adults, but it is not FDA approved for general use. It is widely available as a research peptide. Its safety profile for long-term, non-medical use is not well established.",
+    },
+    "mots-c": {
+        "primary_effect": "MOTS-c is a mitochondrial peptide — it works inside your cells' energy factories (mitochondria) to regulate metabolism. It is investigated for improving metabolic flexibility (the ability to switch between burning sugar and fat for fuel).",
+        "mechanism_pathway": "MOTS-c is unique because it is encoded in mitochondrial DNA, not nuclear DNA. It acts like a cellular signal that tells your body to become more efficient at using energy. It activates AMPK (a master metabolic switch) and helps skeletal muscles take up glucose more effectively, mimicking some effects of exercise at the cellular level.",
+        "expected_body_outcomes": "Potential effects include better endurance, improved insulin sensitivity, and increased fat oxidation (burning fat for energy). In animal studies, it prevented age-related weight gain and improved exercise capacity. Human evidence is very early-stage, so real-world effects are less well understood.",
+        "clinical_context": "MOTS-c is an early-stage research peptide with limited human studies. It was discovered relatively recently (2015). Most evidence comes from animal and cell studies. It is sold as a research chemical and has not been evaluated by the FDA for any medical use.",
+    },
+    "epitalon": {
+        "primary_effect": "Epitalon is a synthetic peptide researched for its potential effects on aging and circadian rhythm regulation. It is thought to influence the pineal gland and restore youthful patterns of melatonin secretion.",
+        "mechanism_pathway": "Epitalon (also called epithalon or Epithalamin) is made of four amino acids. It is believed to activate the telomerase enzyme, which helps maintain the protective caps (telomeres) at the ends of chromosomes. Longer telomeres are associated with slower cellular aging. It also influences the pineal gland to produce more regular nightly melatonin pulses, which helps regulate sleep-wake cycles.",
+        "expected_body_outcomes": "Users and animal studies suggest improved sleep quality, more regular circadian rhythms, and potential anti-aging effects at the cellular level. Some research in older adults showed improved immune function and better daily activity rhythms. Effects are subtle and take months to develop.",
+        "clinical_context": "Epitalon was developed by Russian scientists and has been studied primarily in animal models and small human trials in Russia and Ukraine. It is not FDA approved and is sold as a research chemical. The human evidence base is small compared to mainstream medications.",
+    },
+    "ghk-cu": {
+        "primary_effect": "GHK-Cu (copper peptide) is a naturally occurring small peptide that binds copper ions. It is best known for skin regeneration and wound healing — it is a common ingredient in high-end skin care products for anti-aging and collagen support.",
+        "mechanism_pathway": "GHK-Cu is a tripeptide (three amino acids: glycine-histidine-lysine) with a copper ion attached. It signals skin cells to produce more collagen and elastin (the proteins that keep skin firm and youthful), reduces inflammation, and acts as an antioxidant. It also promotes blood vessel growth to injured tissues, which aids wound healing. The copper ion is essential for these effects.",
+        "expected_body_outcomes": "Topical application may improve skin firmness, reduce fine lines and wrinkles, and support wound healing. Injected forms are discussed for tissue repair, hair growth, and anti-aging, though injection use has less formal study than topical. Effects on skin typically appear after weeks to months of consistent use.",
+        "clinical_context": "GHK-Cu is widely used in cosmetic skin care products and has been studied in clinical settings for wound healing. It is not FDA approved as a drug (it is a cosmetic ingredient). Injectable forms are available as research chemicals. The safety of long-term injection use is not as well established as topical application.",
     },
 }
 
@@ -738,28 +762,119 @@ def fetch_openfda(term):
 
 
 def build_medical_definition(name, trials, fda_data, wiki_summary):
-    if trials:
-        phase = trials[0].get("methods", "")
-        return (
-            f"{name} is a bioactive peptide under clinical evaluation with evidence from interventional studies. "
-            f"Current trial metadata indicates structured therapeutic investigation parameters. {phase}"
+    has_trials = bool(trials)
+    has_fda = bool(fda_data)
+    trial_count = len(trials) if trials else 0
+
+    parts = [f"{name} is a peptide — a short chain of amino acids that acts like a signaling molecule in the body."]
+
+    if has_trials:
+        top = trials[0]
+        phases = []
+        phase_text = top.get("methods", "")
+        if "Phase 3" in phase_text or "Phase3" in phase_text or "PHASE3" in phase_text:
+            phases.append("late-stage human testing (Phase 3)")
+        elif "Phase 2" in phase_text or "Phase2" in phase_text:
+            phases.append("mid-stage human testing (Phase 2)")
+        elif "Phase 1" in phase_text or "Phase1" in phase_text:
+            phases.append("early human safety testing (Phase 1)")
+        status = top.get("status", "").replace("_", " ").title()
+        parts.append(
+            f"It has been studied in {trial_count} clinical trial{'s' if trial_count != 1 else ''} on humans. "
+            f"The main study, '{top.get('title', 'N/A')}', is currently listed as {status}."
         )
+        if phases:
+            parts.append(f"This places it in {phases[0]} — meaning it has{'already' if 'late' in phases[0] else ''} been tested in people to see if it works and is safe.")
+    elif has_fda:
+        parts.append(
+            f"It is linked to regulated drug labeling through the FDA, meaning it has undergone formal regulatory review "
+            f"for safety and intended use in at least one medical context."
+        )
+
     if fda_data:
-        return (
-            f"{name} is a peptide-associated therapeutic entity with publicly indexed regulatory labeling context. "
-            f"Indications include: {fda_data['indications']}"
-        )
-    return f"{name} is a peptide with publicly indexed biomedical literature. Core context: {wiki_summary}"
+        ind = fda_data.get("indications", "")
+        if ind and ind != "No FDA indication text available.":
+            parts.append(f"From FDA sources, its approved or investigated use involves: {ind[:400]}")
+
+    if wiki_summary and "No encyclopedia" not in wiki_summary and "No summary" not in wiki_summary:
+        # Add wikipedia context in simple terms
+        short_wiki = wiki_summary[:500]
+        parts.append(f"General background: {short_wiki}")
+
+    if not has_trials and not has_fda:
+        parts.append(f"Currently, detailed human study data is limited in public research databases. Core background: {wiki_summary[:400]}")
+
+    return " ".join(parts)
 
 
-def build_plain_summary(wiki_summary, trials):
+def build_plain_summary(wiki_summary, trials, fda_data=None, pubchem=None):
+    parts = []
+
     if trials:
         first = trials[0]
-        return (
-            f"In simple terms, this peptide has human studies. One key trial is '{first['title']}' ({first['nct_id']}) "
-            f"with status {first['status']}. The study summary says: {first['lay_summary']}"
+        total = len(trials)
+        phases_found = set()
+        statuses = set()
+        for t in trials:
+            m = t.get("methods", "")
+            s = t.get("status", "")
+            statuses.add(s)
+            if "Phase 3" in m: phases_found.add("Phase 3")
+            elif "Phase 2" in m: phases_found.add("Phase 2")
+            elif "Phase 1" in m: phases_found.add("Phase 1")
+        status_summary = ", ".join(s.replace("_", " ").title() for s in sorted(statuses) if s)
+
+        parts.append(
+            f"In everyday language: {first['title']}. "
+            f"This peptide has been looked at in {total} human stud{'ies' if total != 1 else 'y'} "
+            f"available on ClinicalTrials.gov"
         )
-    return f"In simple terms: {wiki_summary}"
+        if phases_found:
+            parts.append(f"through {' and '.join(sorted(phases_found))} testing")
+        parts.append(".")
+        if status_summary:
+            parts.append(f" Study statuses include: {status_summary}.")
+        parts.append(f" Here's what one study summary says: {first['lay_summary']}")
+
+    elif fda_data:
+        ind = fda_data.get("indications", "No FDA information available")
+        parts.append(
+            "In simple terms: This peptide has information in FDA drug labeling systems. "
+            f"Its documented medical use involves: {ind[:500]}"
+        )
+        warn = fda_data.get("warnings", "")
+        if warn and warn != "No FDA warnings text available.":
+            parts.append(f" Safety note from regulators: {warn[:300]}")
+    else:
+        parts.append(f"In simple terms: {wiki_summary[:600]}")
+
+    if pubchem:
+        mw = pubchem.get("molecular_weight")
+        formula = pubchem.get("formula")
+        iupac = pubchem.get("iupac")
+        log_p = pubchem.get("log_p")
+        if formula or mw:
+            chem = "Chemically, "
+            if formula: chem += f"its molecular formula is {formula}"
+            if formula and mw: chem += " and "
+            if mw: chem += f"it weighs about {mw} g/mol (a measure of molecular size)"
+            chem += "."
+            parts.append(chem)
+        if iupac:
+            parts.append(f"Its official chemical name is: {iupac[:200]}")
+        if log_p:
+            lp = float(log_p)
+            if lp < 0:
+                parts.append(f"Its LogP value is {log_p}, meaning it dissolves easily in water (not fatty tissues).")
+            elif lp < 3:
+                parts.append(f"Its LogP value is {log_p}, meaning it has a balanced mix of water and fat solubility.")
+            else:
+                parts.append(f"Its LogP value is {log_p}, meaning it is more attracted to fatty tissues than water.")
+
+    if not trials and not fda_data and not pubchem:
+        parts.append(wiki_summary[:600])
+
+    return " ".join(parts)
 
 
 def build_benefits_and_cons(trials, fda_data):
@@ -838,30 +953,62 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
     expected_body_outcomes = base.get("expected_body_outcomes")
     clinical_context = base.get("clinical_context")
 
+    trial_count = len(trials) if trials else 0
+
     if not primary_effect:
         if trials:
             top = trials[0]
+            status = top.get('status', '').replace('_', ' ').title()
             primary_effect = (
-                f"Under clinical investigation with human-study signals, including trial {top.get('nct_id', 'N/A')} "
-                f"currently listed as {top.get('status', 'Not specified').replace('_', ' ').title()}."
+                f"This peptide is being studied in humans to see what health effects it has. "
+                f"So far, {trial_count} trial{'s' if trial_count != 1 else ''} {'have' if trial_count != 1 else 'has'} been registered. "
+                f"The main study is called '{top.get('title', 'N/A')}' and its current status is '{status}'. "
+                f"In simple terms, researchers are running this study to find out whether the peptide works for a specific health purpose "
+                f"and whether it is safe for people to take."
             )
         elif fda_data:
-            primary_effect = "Linked to publicly indexed regulatory labeling context, with therapeutic use and safety text available."
+            ind = fda_data.get('indications', '')
+            primary_effect = (
+                f"This peptide is mentioned in official FDA drug records, meaning it has some level of regulatory review behind it. "
+                f"According to the FDA, its documented medical purpose is: {ind[:400] if ind else 'Available in drug labeling databases.'}"
+            )
         else:
-            primary_effect = "Public biomedical sources indicate scientific interest, but high-quality clinical characterization may be limited."
+            primary_effect = (
+                f"Based on public research databases, this peptide is known to scientists and has been written about in research papers. "
+                f"The exact effects on the human body depend on more detailed clinical studies. Current public data gives us a starting point but does not yet provide a complete picture."
+            )
 
     if not mechanism_pathway:
         if trials:
-            methods = trials[0].get("methods", "")
-            mechanism_pathway = f"Current mechanism context is inferred from trial design metadata: {methods}"
+            top = trials[0]
+            methods = top.get("methods", "")
+            mechanism_pathway = (
+                f"A mechanism is how a peptide works inside your body at the cellular level. "
+                f"While detailed mechanism data is still being studied, here is what we know from the clinical trial setup: {methods}"
+            )
         else:
-            mechanism_pathway = f"Mechanism details are not consistently established in available public records. Context summary: {wiki_summary}"
+            mechanism_pathway = (
+                f"A peptide's mechanism is the specific way it interacts with cells and signals in the body. "
+                f"Detailed mechanism information is not yet widely available in public databases for this specific peptide. "
+                f"For context: {wiki_summary[:300]}"
+            )
 
     if not expected_body_outcomes:
-        expected_body_outcomes = "Body-level outcomes depend on indication, patient profile, dosing strategy, and duration of exposure in controlled studies."
+        expected_body_outcomes = (
+            "What might happen in your body depends on many factors: the specific peptide, how much is taken (dose), "
+            "how long it is used, the person's health status, and whether it is combined with other treatments. "
+            "People may experience different effects. For the most reliable picture of what to expect, "
+            "look at the completed clinical trials below — they show what happened to actual study participants."
+        )
 
     if not clinical_context:
-        clinical_context = "Interpretation should be anchored to trial population, study design quality, and regulatory status."
+        clinical_context = (
+            "To make sense of this information, it helps to know how reliable the evidence is. "
+            "Randomized, controlled trials (where one group gets the peptide and another gets a placebo) "
+            "give the strongest evidence. Early-phase studies (Phase 1) mainly test safety, while later phases (Phase 2-3) "
+            "test effectiveness. Keep in mind that results in a tightly controlled study may not always match what happens "
+            "in everyday use — real people have different health conditions, ages, and lifestyles than study participants."
+        )
 
     evidence_points = int(bool(trials)) + int(bool(pubmed)) + int(bool(fda_data))
     evidence_strength = "HIGH" if evidence_points >= 2 else "MODERATE" if evidence_points == 1 else "LIMITED"
@@ -902,7 +1049,7 @@ def search():
     pubchem = fetch_pubchem(term)
     rcsb = fetch_rcsb_pdb(term)
     medical_definition = build_medical_definition(wiki["title"], trials, fda_data, wiki["summary"])
-    plain_summary = build_plain_summary(wiki["summary"], trials)
+    plain_summary = build_plain_summary(wiki["summary"], trials, fda_data, pubchem)
     benefits, cons = build_benefits_and_cons(trials, fda_data)
     timeline = build_timeline(trials)
     claims = build_evidence_claims(trials, pubmed, fda_data)
