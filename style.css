@@ -54,16 +54,18 @@ body::before {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 60% 50% at 20% 10%, rgba(217, 56, 56, 0.08) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 35% at 80% 80%, rgba(217, 56, 56, 0.05) 0%, transparent 45%);
-  animation: atmosphereDrift 10s ease-in-out infinite alternate;
+    radial-gradient(ellipse 80% 60% at 15% 5%, rgba(217, 56, 56, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 85% 85%, rgba(200, 40, 40, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 45% at 50% 40%, rgba(180, 30, 30, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 40% at 30% 70%, rgba(220, 60, 60, 0.06) 0%, transparent 45%);
+  animation: atmosphereDrift 12s ease-in-out infinite alternate;
   pointer-events: none;
 }
 
 @keyframes atmosphereDrift {
-  0%   { opacity: 0.6; }
-  50%  { opacity: 1; }
-  100% { opacity: 0.7; }
+  0%   { opacity: 0.5; transform: scale(1); }
+  50%  { opacity: 1; transform: scale(1.05); }
+  100% { opacity: 0.7; transform: scale(0.95); }
 }
 
 /* ─── Particles Canvas ─── */
@@ -327,76 +329,6 @@ body::before {
   animation: fadeSlide 0.6s ease-out;
 }
 
-/* ─── Tab Bar ─── */
-.tab-bar {
-  display: flex;
-  gap: 4px;
-  padding: 6px;
-  background: var(--surface-1);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-lg);
-  overflow-x: auto;
-  flex-shrink: 0;
-  animation: fadeSlide 0.6s ease-out;
-  position: relative;
-}
-
-.tab-bar::-webkit-scrollbar { display: none; }
-
-.tab-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--ink-subtle);
-  font-size: 0.8rem;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all var(--transition);
-  white-space: nowrap;
-  flex-shrink: 0;
-  position: relative;
-}
-
-.tab-btn:hover {
-  color: var(--ink-muted);
-  background: var(--surface-2);
-}
-
-.tab-btn.active {
-  background: var(--surface-3);
-  color: var(--ink);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  text-shadow: 0 0 12px rgba(217, 56, 56, 0.15);
-}
-
-.tab-container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.tab-content {
-  display: none;
-  animation: fadeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.tab-content.active {
-  display: block;
-}
-
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
 /* ─── Compare Grid ─── */
 .compare-wrapper {
   display: grid;
@@ -445,131 +377,6 @@ body::before {
   background: var(--primary);
   flex-shrink: 0;
   box-shadow: 0 0 8px var(--primary-glow-soft);
-}
-
-/* ─── Overview Hero Card ─── */
-.overview-card {
-  padding: 24px;
-  position: relative;
-  overflow: hidden;
-}
-
-.overview-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
-  opacity: 0.4;
-}
-
-.overview-card h3 {
-  margin: 0 0 8px;
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-}
-
-.overview-card p {
-  margin: 0;
-  color: var(--ink-subtle);
-  font-size: 0.88rem;
-  line-height: 1.6;
-}
-
-.metric-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
-}
-
-.metric-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: var(--radius-pill);
-  background: var(--surface-2);
-  border: 1px solid var(--hairline);
-  color: var(--ink-muted);
-  font-size: 0.78rem;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.metric-tag .dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.dot-high { background: var(--success); box-shadow: 0 0 6px rgba(39, 166, 68, 0.4); }
-.dot-medium { background: var(--warning); box-shadow: 0 0 6px rgba(245, 166, 35, 0.4); }
-.dot-low { background: var(--error); box-shadow: 0 0 6px rgba(229, 72, 77, 0.4); }
-
-/* ─── Snapshot Grid ─── */
-.snapshot-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.snapshot-item {
-  padding: 16px;
-  border-radius: var(--radius-md);
-  background: var(--surface-2);
-  border: 1px solid var(--hairline);
-  transition: all var(--transition);
-}
-
-.snapshot-item:hover {
-  border-color: rgba(217, 56, 56, 0.15);
-}
-
-.snapshot-item strong {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #ff6b6b;
-}
-
-.snapshot-item p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: var(--ink-muted);
-  line-height: 1.55;
-}
-
-/* ─── Data List ─── */
-.data-list {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  display: grid;
-  gap: 8px;
-}
-
-.data-list li {
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
-  background: var(--surface-2);
-  border: 1px solid var(--hairline);
-  font-size: 0.88rem;
-  color: var(--ink-muted);
-  line-height: 1.5;
-  transition: all var(--transition);
-}
-
-.data-list li:hover {
-  border-color: rgba(217, 56, 56, 0.12);
-  background: var(--surface-3);
 }
 
 /* ─── Clinical Trials ─── */
@@ -758,7 +565,6 @@ body::before {
   .search-btn { width: 100%; justify-content: center; }
   .compare-wrapper { grid-template-columns: 1fr; }
   .snapshot-grid { grid-template-columns: 1fr; }
-  .tab-btn { padding: 6px 12px; font-size: 0.75rem; }
   .source-grid { grid-template-columns: 1fr; }
 }
 

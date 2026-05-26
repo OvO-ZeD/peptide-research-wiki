@@ -126,23 +126,7 @@ function makePanel(title, content) {
   return '<section class="panel"><h2>' + escapeHtml(title) + '</h2>' + content + '</section>';
 }
 
-function buildItemList(items) {
-  if (!items || !items.length) return '<p class="empty">No data available.</p>';
-  return '<ul class="data-list">' + items.map(function (item) {
-    return '<li>' + escapeHtml(item) + '</li>';
-  }).join('') + '</ul>';
-}
-
 /* ─── Renderers ─── */
-function renderSnapshot(snapshot) {
-  if (!snapshot) return '<p class="empty">No clinical snapshot available.</p>';
-  var keys = ['primary_effect', 'mechanism_pathway', 'expected_body_outcomes', 'clinical_context'];
-  var labels = { primary_effect: 'Primary effect', mechanism_pathway: 'Mechanism / pathway', expected_body_outcomes: 'Expected outcomes', clinical_context: 'Clinical context' };
-  return '<div class="snapshot-grid">' + keys.map(function (k) {
-    return '<div class="snapshot-item"><strong>' + escapeHtml(labels[k]) + '</strong><p>' + escapeHtml(snapshot[k] || '') + '</p></div>';
-  }).join('') + '</div>';
-}
-
 function renderTrials(trials) {
   if (!trials || !trials.length) return '<p class="empty">No clinical trials found.</p>';
   return '<div class="trial-list">' + trials.slice(0, 4).map(function (t) {
@@ -167,108 +151,27 @@ function renderSources(sources) {
   }).join('') + '</div>';
 }
 
-/* ─── Tab System ─── */
-function buildTabs(sections) {
-  if (!sections || !sections.length) return '';
-  var tabIds = sections.map(function (_, i) { return 'tab-' + i; });
-
-  var tabBar = '<div class="tab-bar" role="tablist">' +
-    sections.map(function (s, i) {
-      return '<button class="tab-btn' + (i === 0 ? ' active' : '') + '" data-tab="' + tabIds[i] + '" role="tab" onclick="switchTab(\'' + tabIds[i] + '\')">' + escapeHtml(s.label) + '</button>';
-    }).join('') +
-  '</div>';
-
-  var panels = sections.map(function (s, i) {
-    return '<div class="tab-content' + (i === 0 ? ' active' : '') + '" id="' + tabIds[i] + '" role="tabpanel">' + s.html + '</div>';
-  }).join('');
-
-  return tabBar + panels;
-}
-
-function switchTab(tabId) {
-  var container = document.querySelector('.tab-container');
-  if (!container) return;
-  container.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
-  container.querySelectorAll('.tab-content').forEach(function (c) { c.classList.remove('active'); });
-  var btn = container.querySelector('[data-tab="' + tabId + '"]');
-  var content = document.getElementById(tabId);
-  if (btn) btn.classList.add('active');
-  if (content) {
-    content.classList.add('active');
-    // re-trigger animation
-    content.style.animation = 'none';
-    requestAnimationFrame(function () {
-      content.style.animation = '';
-    });
-  }
-}
-
 /* ─── Build Response ─── */
 function buildResponse(response, title) {
-  var score = response.evidence_score ? response.evidence_score.score : 'N/A';
-  var tier = (response.evidence_score ? response.evidence_score.tier : 'N/A') || 'N/A';
   var topTerm = response.peptide_name || response.normalized_term || title || 'Peptide';
-  var summary = response.plain_summary || response.medical_definition || 'No summary available.';
+  var html = '';
 
-  var dotClass = tier === 'HIGH' ? 'dot-high' : tier === 'MEDIUM' ? 'dot-medium' : 'dot-low';
-
-  var sections = [];
-
-  sections.push({
-    label: 'Overview',
-    html: '<div class="panel overview-card">' +
-      '<h3>' + escapeHtml(topTerm) + '</h3>' +
-      '<p>' + escapeHtml(summary) + '</p>' +
-      '<div class="metric-row">' +
-        '<span class="metric-tag"><span class="dot ' + dotClass + '"></span>Score: ' + escapeHtml(String(score)) + '</span>' +
-        '<span class="metric-tag">Tier: ' + escapeHtml(String(tier)) + '</span>' +
-        '<span class="metric-tag">Reliability: ' + escapeHtml(response.reliability || 'Unknown') + '</span>' +
-      '</div></div>'
-  });
-
-  if (response.clinical_snapshot) {
-    sections.push({
-      label: 'Snapshot',
-      html: makePanel('Clinical Snapshot', renderSnapshot(response.clinical_snapshot))
-    });
-  }
-
-  if (response.benefits && response.benefits.length) {
-    sections.push({
-      label: 'Benefits',
-      html: makePanel('Benefits', buildItemList(response.benefits))
-    });
-  }
-
-  if (response.cons && response.cons.length) {
-    sections.push({
-      label: 'Concerns',
-      html: makePanel('Concerns', buildItemList(response.cons))
-    });
-  }
-
+  // Clinical Trials
   if (response.clinical_trials && response.clinical_trials.length) {
-    sections.push({
-      label: 'Trials',
-      html: makePanel('Clinical Trials', renderTrials(response.clinical_trials))
-    });
+    html += makePanel('Clinical Trials', renderTrials(response.clinical_trials));
   }
 
+  // PubMed
   if (response.top_pubmed_articles || response.pubmed_articles) {
-    sections.push({
-      label: 'PubMed',
-      html: makePanel('PubMed Articles', renderArticles(response.top_pubmed_articles || response.pubmed_articles))
-    });
+    html += makePanel('PubMed Articles', renderArticles(response.top_pubmed_articles || response.pubmed_articles));
   }
 
+  // Sources
   if (response.sources && response.sources.length) {
-    sections.push({
-      label: 'Sources',
-      html: makePanel('Sources', renderSources(response.sources))
-    });
+    html += makePanel('Sources', renderSources(response.sources));
   }
 
-  return '<div class="tab-container">' + buildTabs(sections) + '</div>';
+  return html;
 }
 
 /* ─── Fetch ─── */
