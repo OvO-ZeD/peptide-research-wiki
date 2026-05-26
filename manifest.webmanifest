@@ -1,6 +1,6 @@
 {
-  "name": "Peptide Tracker",
-  "short_name": "Tracker",
+  "name": "Peptide Research Wiki",
+  "short_name": "Research Wiki",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0b1224",

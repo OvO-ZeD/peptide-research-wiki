@@ -1,74 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b1224">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Peptide Tracker">
-  <title>Peptide Tracker</title>
+  <meta name="apple-mobile-web-app-title" content="Peptide Research Wiki">
+  <title>Peptide Research Wiki</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="manifest.webmanifest">
 </head>
-<body class="theme-dark density-clinical">
-  <div class="bg-particles" id="bg_particles"></div>
+<body class="theme-dark">
   <div class="page">
-    <div class="top-controls panel">
-      <button id="theme_toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
-      <div class="app-label">Tracker</div>
-    </div>
-    <h1>Peptide Tracker</h1>
-    <p class="subtitle">Simple weekly peptide tracking with dose planning and unit calculation.</p>
-    <p class="privacy-note">Saved only on your device. Your cycles are private to this browser.</p>
+    <header class="hero panel">
+      <div class="hero-copy">
+        <span class="hero-badge">Research</span>
+        <h1>Peptide Research Wiki</h1>
+        <p>Search a peptide and get public research, trial details, plain-language summaries, methods, and source links.</p>
+      </div>
+      <button id="theme_toggle" class="hero-button" onclick="toggleTheme()">Toggle Dark Mode</button>
+    </header>
 
-    <div id="tracker_mode" class="panel">
-      <h2>Peptide Cycle Tracker</h2>
-      <p class="subtitle">Track doses, frequency, weekly administrations, and vial unit conversions.</p>
-      <div class="tracker-controls">
-        <input id="new_peptide_name" type="text" placeholder="New peptide tab name">
-        <button id="add_peptide_btn" onclick="addPeptideTab()">Add Tab</button>
-        <input id="rename_peptide_name" type="text" placeholder="Rename selected tab">
-        <button id="rename_peptide_btn" onclick="renameCurrentPeptideTab()">Rename Tab</button>
-      </div>
-      <div id="tracker_tabs" class="tracker-tabs"></div>
-      <div class="tracker-grid">
-        <div class="tracker-card">
-          <h3>Schedule</h3>
-          <label>Peptide Name</label>
-          <input id="tracker_peptide_name" type="text" placeholder="Peptide">
-          <label>Dose (mg)</label>
-          <input id="tracker_dose_mg" type="number" min="0" step="0.01" placeholder="e.g. 1.5">
-          <label>Frequency (per week)</label>
-          <input id="tracker_frequency" type="number" min="1" step="1" placeholder="e.g. 3">
-          <button onclick="saveTrackerDetails()">Save Tracker Details</button>
-          <p id="tracker_weekly_total"></p>
+    <section class="search-panel panel">
+      <div class="search-header">
+        <div>
+          <label for="term_input">Search Peptide</label>
+          <input id="term_input" type="text" placeholder="e.g., retatrutide, semaglutide, bpc-157">
         </div>
-        <div class="tracker-card">
-          <h3>Vial Unit Calculator</h3>
-          <label>Dose to inject (mg)</label>
-          <input id="calc_dose_mg" type="number" min="0" step="0.01" placeholder="e.g. 1.5">
-          <label>Total vial peptide (mg)</label>
-          <input id="calc_vial_mg" type="number" min="0" step="0.01" placeholder="e.g. 10">
-          <label>Bac water added (ml)</label>
-          <input id="calc_bac_ml" type="number" min="0" step="0.01" placeholder="e.g. 2">
-          <button onclick="calculateUnits()">Calculate Units</button>
-          <p id="calc_result"></p>
-        </div>
-        <div class="tracker-card">
-          <h3>Weekly Administration Log</h3>
-          <button onclick="logAdministrationNow()">Log Dose Now</button>
-          <button onclick="clearWeeklyLogs()">Clear This Week</button>
-          <p id="tracker_log_count"></p>
-          <ul id="tracker_logs"></ul>
-        </div>
+        <button id="search_button" onclick="searchPeptide()">Search</button>
       </div>
-      <div class="mobile-quick-actions">
-        <button onclick="logAdministrationNow()">Log Dose</button>
-        <button onclick="saveTrackerDetails()">Save</button>
-        <button onclick="addPeptideTab()">Add Tab</button>
+      <div class="search-extra">
+        <label for="compare_input">Compare with (optional)</label>
+        <input id="compare_input" type="text" placeholder="e.g., tesa">
       </div>
-    </div>
+      <div id="status_message" class="status-message">Enter a peptide name and press Search.</div>
+    </section>
 
+    <main id="results" class="results"></main>
   </div>
 
   <script src="script.js"></script>
