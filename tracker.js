@@ -132,19 +132,6 @@ function getCurrentWeekKey() {
   return { key: getWeekKey(d), start: d };
 }
 
-/* ─── 3D Tilt ─── */
-function initTilt(card) {
-  card.addEventListener("mousemove", function (e) {
-    var r = card.getBoundingClientRect();
-    var x = (e.clientX - r.left) / r.width - 0.5;
-    var y = (e.clientY - r.top) / r.height - 0.5;
-    card.style.transform = "perspective(600px) rotateX(" + (y * -6) + "deg) rotateY(" + (x * 6) + "deg) translateZ(2px)";
-  });
-  card.addEventListener("mouseleave", function () {
-    card.style.transform = "perspective(600px) rotateX(0deg) rotateY(0deg) translateZ(0)";
-  });
-}
-
 /* ─── Render ─── */
 function renderAll() { renderTabs(); renderActive(); }
 
@@ -187,7 +174,7 @@ function renderActive() {
   // ─── Log bar ───
   var dose = p.doseMg || 0;
   var halfDose = (dose / 2).toFixed(2);
-  var html = '<div class="log-bar" data-tilt>' +
+  var html = '<div class="log-bar">' +
     '<span class="pep-name" id="pep_name_display" onclick="startRename(\'' + activeId + '\')">' + escHtml(p.name) + '</span>' +
     '<span class="sep">|</span>';
 
@@ -228,17 +215,17 @@ function renderActive() {
   }
 
   html += '<div class="insights">' +
-    '<div class="insight-card" data-tilt><div class="val">' + weekTotal.toFixed(1) + '</div><div class="lbl">Week total</div></div>' +
-    '<div class="insight-card" data-tilt><div class="val">' + compliance + '%</div><div class="lbl">' + actual + '/' + expected + ' doses</div></div>' +
-    '<div class="insight-card" data-tilt><div class="val">' + lastStr + '</div><div class="lbl">Last dose</div></div>' +
-    '<div class="insight-card" data-tilt><div class="val">' + (allLogs.length) + '</div><div class="lbl">Total logs</div></div>' +
+    '<div class="insight-card"><div class="val">' + weekTotal.toFixed(1) + '</div><div class="lbl">Week total</div></div>' +
+    '<div class="insight-card"><div class="val">' + compliance + '%</div><div class="lbl">' + actual + '/' + expected + ' doses</div></div>' +
+    '<div class="insight-card"><div class="val">' + lastStr + '</div><div class="lbl">Last dose</div></div>' +
+    '<div class="insight-card"><div class="val">' + (allLogs.length) + '</div><div class="lbl">Total logs</div></div>' +
     '</div>';
 
   // ─── Chart ───
-  html += '<div class="chart-wrap" data-tilt><canvas id="dose_chart"></canvas></div>';
+  html += '<div class="chart-wrap"><canvas id="dose_chart"></canvas></div>';
 
   // ─── Logs list ───
-  html += '<div class="logs-section" data-tilt><div class="logs-head">' +
+  html += '<div class="logs-section"><div class="logs-head">' +
     '<h3>Dose history</h3>' +
     '<div class="week-nav"><button onclick="weekOffset(-1)">←</button><span>' + (weekOff === 0 ? "This week" : weekKey) + '</span><button onclick="weekOffset(1)">→</button></div>' +
     '<div class="l-actions">' +
@@ -267,10 +254,6 @@ function renderActive() {
 
   html += '</div></div>';
   panel.innerHTML = html;
-
-  // ─── Init tilt on tilt-enabled children ───
-  var tiltEls = panel.querySelectorAll("[data-tilt]");
-  for (var ti = 0; ti < tiltEls.length; ti++) initTilt(tiltEls[ti]);
 
   // ─── Render chart ───
   renderChart(activeId, logs);
