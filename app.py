@@ -1609,10 +1609,15 @@ def fetch_uniprot(term):
                 result["biotechnology"] = texts[0].get("value")
         elif ctype == "DISEASE":
             diseases = []
-            for d in comment.get("disease", []):
-                diseases.append(d.get("diseaseId"))
-            if diseases:
-                result["diseases"] = diseases
+            disease_data = comment.get("disease")
+            if disease_data:
+                if isinstance(disease_data, list):
+                    for d in disease_data:
+                        if isinstance(d, dict) and "diseaseId" in d:
+                            diseases.append(d["diseaseId"])
+                elif isinstance(disease_data, dict) and "diseaseId" in disease_data:
+                    diseases.append(disease_data["diseaseId"])
+            result["diseases"] = diseases
     result["keywords"] = [kw.get("name") for kw in entry.get("keywords", [])]
     return result
 
@@ -2193,13 +2198,17 @@ def build_plain_summary(wiki_summary, trials, fda_data=None, pubchem=None, unipr
         if iupac:
             parts.append(f"Its official chemical name is: {iupac[:200]}")
         if log_p:
-            lp = float(log_p)
-            if lp < 0:
-                parts.append(f"Its LogP value is {log_p}, meaning it dissolves easily in water (not fatty tissues).")
-            elif lp < 3:
-                parts.append(f"Its LogP value is {log_p}, meaning it has a balanced mix of water and fat solubility.")
-            else:
-                parts.append(f"Its LogP value is {log_p}, meaning it is more attracted to fatty tissues than water.")
+            try:
+                lp = float(log_p)
+                if lp < 0:
+                    parts.append(f"Its LogP value is {log_p}, meaning it dissolves easily in water (not fatty tissues).")
+                elif lp < 3:
+                    parts.append(f"Its LogP value is {log_p}, meaning it has a balanced mix of water and fat solubility.")
+                else:
+                    parts.append(f"Its LogP value is {log_p}, meaning it is more attracted to fatty tissues than water.")
+            except (ValueError, TypeError):
+                # Skip LogP info if value is non-numeric
+                pass
 
     if not trials and not fda_data and not pubchem and not (uniprot_data and uniprot_data.get("function")):
         parts.append(wiki_summary[:600])
