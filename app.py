@@ -224,6 +224,48 @@ SNAPSHOT_LIBRARY = {
     },
 }
 
+REGULATORY_STATUS = {
+    "tesamorelin": "fda_approved",
+    "retatrutide": "investigational",
+    "semaglutide": "fda_approved",
+    "tirzepatide": "fda_approved",
+    "bpc-157": "research_chemical",
+    "cjc-1295": "research_chemical",
+    "ipamorelin": "research_chemical",
+    "mots-c": "research_chemical",
+    "epitalon": "research_chemical",
+    "ghk-cu": "research_chemical",
+    "liraglutide": "fda_approved",
+    "sermorelin": "fda_approved",
+    "mk-677": "research_chemical",
+    "hexarelin": "research_chemical",
+    "ghrp-6": "research_chemical",
+    "ghrp-2": "research_chemical",
+    "tb-500": "research_chemical",
+    "pt-141": "fda_approved",
+    "thymosin-alpha-1": "research_chemical",
+    "igf-1-lr3": "research_chemical",
+    "aod-9604": "investigational",
+    "semax": "research_chemical",
+    "selank": "research_chemical",
+    "dsip": "research_chemical",
+    "ss-31": "investigational",
+    "humanin": "research_chemical",
+    "cagrilintide": "investigational",
+    "mazdutide": "investigational",
+    "survodutide": "investigational",
+    "melanotan-2": "research_chemical",
+    "peg-mgf": "research_chemical",
+    "thymulin": "research_chemical",
+    "dihexa": "research_chemical",
+    "follistatin-344": "research_chemical",
+    "pinealon": "research_chemical",
+    "vilon": "research_chemical",
+    "kpv": "research_chemical",
+    "igf-1-des": "research_chemical",
+    "kisspeptin-10": "research_chemical",
+}
+
 ORDER_CATALOG = [
     {"id": "tesamorelin-5mg", "name": "Tesamorelin", "variant": "5mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
     {"id": "retatrutide-10mg", "name": "Retatrutide", "variant": "10mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
@@ -232,6 +274,199 @@ ORDER_CATALOG = [
     {"id": "cjc1295-5mg", "name": "CJC-1295", "variant": "5mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
     {"id": "bpc157-5mg", "name": "BPC-157", "variant": "5mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
 ]
+
+INTERACTION_MATRIX = {
+    ("bpc-157", "tb-500"): {
+        "type": "synergistic",
+        "note": "Commonly stacked for healing; both promote angiogenesis and tissue repair.",
+        "evidence": "Anecdotal community reports, limited formal study.",
+    },
+    ("ghk-cu", "bpc-157"): {
+        "type": "synergistic",
+        "note": "Both support tissue repair through different mechanisms.",
+        "evidence": "Theoretical synergy based on complementary mechanisms.",
+    },
+    ("ghk-cu", "tb-500"): {
+        "type": "synergistic",
+        "note": "Collagen synthesis + angiogenesis for comprehensive tissue repair.",
+        "evidence": "Anecdotal community reports.",
+    },
+    ("cjc-1295", "ipamorelin"): {
+        "type": "synergistic",
+        "note": "Standard GHRH + GHRP stack for synergistic GH pulse.",
+        "evidence": "Well-documented in research peptide community.",
+    },
+    ("cjc-1295", "ghrp-2"): {
+        "type": "synergistic",
+        "note": "GHRH + GHRP stack with stronger GH pulse.",
+        "evidence": "Common research protocol.",
+    },
+    ("cjc-1295", "ghrp-6"): {
+        "type": "synergistic",
+        "note": "GHRH + GHRP stack with appetite increase from GHRP-6.",
+        "evidence": "Common research protocol.",
+    },
+    ("tesamorelin", "ipamorelin"): {
+        "type": "synergistic",
+        "note": "GHRH + GHRP produces synergistic GH pulse larger than either alone.",
+        "evidence": "Clinical data supports tesamorelin alone; combo is standard practice.",
+    },
+    ("semaglutide", "tirzepatide"): {
+        "type": "contraindicated",
+        "note": "Both are incretin mimetics. Stacking increases side effect risk with no benefit.",
+        "evidence": "Clinical guidelines recommend monotherapy only.",
+    },
+    ("semaglutide", "retatrutide"): {
+        "type": "contraindicated",
+        "note": "Overlapping metabolic pathways. Retatrutide already includes GLP-1 agonism.",
+        "evidence": "Theoretical contraindication based on overlapping mechanisms.",
+    },
+    ("semaglutide", "ghrp-6"): {
+        "type": "caution",
+        "note": "Opposing appetite signals may reduce efficacy of either.",
+        "evidence": "Theoretical, based on opposing mechanisms.",
+    },
+    ("semax", "selank"): {
+        "type": "synergistic",
+        "note": "Focus + calm pairing. Semax enhances cognition, Selank reduces anxiety.",
+        "evidence": "Anecdotal community reports.",
+    },
+    ("dsip", "selank"): {
+        "type": "synergistic",
+        "note": "DSIP for deep sleep, Selank for anxiety reduction.",
+        "evidence": "Anecdotal, based on compatible mechanisms.",
+    },
+    ("melanotan-2", "ghk-cu"): {
+        "type": "synergistic",
+        "note": "Skin quality pairing: melanotan-2 for pigmentation, GHK-Cu for collagen.",
+        "evidence": "Anecdotal community reports.",
+    },
+    ("ss-31", "mots-c"): {
+        "type": "synergistic",
+        "note": "Both target mitochondria through different pathways.",
+        "evidence": "Theoretical synergy based on complementary mechanisms.",
+    },
+    ("thymosin-alpha-1", "ghk-cu"): {
+        "type": "synergistic",
+        "note": "Immune support + tissue repair for comprehensive recovery.",
+        "evidence": "Anecdotal, based on compatible mechanisms.",
+    },
+    ("semaglutide", "cagrilintide"): {
+        "type": "synergistic",
+        "note": "CagriSema — under active clinical investigation for weight loss.",
+        "evidence": "Phase 2 trials show greater weight loss than either alone.",
+    },
+}
+
+DOSAGE_REFERENCE = {
+    "retatrutide": {"typical_dose": "1-12 mg weekly (titrated)", "route": "SubQ injection", "half_life": "~6 days", "notes": "Titrate over weeks. Starting 1-2 mg. Still in trials.", "max_safe": "12 mg/week"},
+    "tesamorelin": {"typical_dose": "1-2 mg daily", "route": "SubQ injection", "half_life": "~30 min", "notes": "Evening, empty stomach. 5 on, 2 off cycling.", "max_safe": "2 mg/day"},
+    "semaglutide": {"typical_dose": "0.25-2.4 mg weekly (titrated)", "route": "SubQ injection", "half_life": "~7 days", "notes": "Start 0.25 mg/wk x4. Wegovy max 2.4 mg, Ozempic max 1.0 mg.", "max_safe": "2.4 mg/week"},
+    "tirzepatide": {"typical_dose": "2.5-15 mg weekly (titrated)", "route": "SubQ injection", "half_life": "~5 days", "notes": "Start 2.5 mg x4 wk, +2.5 mg every 4 wk.", "max_safe": "15 mg/week"},
+    "liraglutide": {"typical_dose": "0.6-3.0 mg daily (titrated)", "route": "SubQ injection", "half_life": "~13 hours", "notes": "Victoza max 1.8 mg. Saxenda max 3.0 mg.", "max_safe": "3.0 mg/day"},
+    "cagrilintide": {"typical_dose": "0.3-2.4 mg weekly", "route": "SubQ injection", "half_life": "~8 days", "notes": "Investigational. Dosing in trials.", "max_safe": "2.4 mg/week"},
+    "sermorelin": {"typical_dose": "0.5-2.0 mg daily", "route": "SubQ injection", "half_life": "~15 min", "notes": "Evening, empty stomach.", "max_safe": "2 mg/day"},
+    "ipamorelin": {"typical_dose": "200-300 mcg daily", "route": "SubQ injection", "half_life": "~2 hours", "notes": "Evening. Can combine with GHRH in same syringe.", "max_safe": "300 mcg/day"},
+    "cjc-1295": {"typical_dose": "1-2 mg 2x/week (DAC) or 100 mcg daily", "route": "SubQ injection", "half_life": "~6-8 days (DAC)", "notes": "DAC 2x/week. Non-DAC daily.", "max_safe": "2 mg 2x/week"},
+    "ghrp-2": {"typical_dose": "100-200 mcg 2-3x daily", "route": "SubQ injection", "half_life": "~30 min", "notes": "Stronger GH pulse than ipamorelin.", "max_safe": "200 mcg/dose"},
+    "ghrp-6": {"typical_dose": "100-200 mcg 2-3x daily", "route": "SubQ injection", "half_life": "~30 min", "notes": "Strong appetite effect.", "max_safe": "200 mcg/dose"},
+    "hexarelin": {"typical_dose": "100-200 mcg daily", "route": "SubQ injection", "half_life": "~30 min", "notes": "Most potent GHRP, fastest desensitization.", "max_safe": "200 mcg/day"},
+    "mk-677": {"typical_dose": "10-25 mg daily", "route": "Oral", "half_life": "~24 hours", "notes": "Oral. Before bed. Monitor glucose.", "max_safe": "25 mg/day"},
+    "bpc-157": {"typical_dose": "200-500 mcg daily", "route": "SubQ injection or oral", "half_life": "~4 hours", "notes": "Local or systemic injection. Oral for gut.", "max_safe": "500 mcg/day"},
+    "tb-500": {"typical_dose": "2.5-5 mg 2x/week (loading)", "route": "SubQ injection", "half_life": "~4-6 hours", "notes": "Loading 2-4 weeks.", "max_safe": "10 mg/week"},
+    "ghk-cu": {"typical_dose": "1-5 mg daily or topical", "route": "SubQ injection or topical", "half_life": "~3 hours", "notes": "Cycle to avoid copper buildup.", "max_safe": "5 mg/day"},
+    "aod-9604": {"typical_dose": "300-600 mcg daily", "route": "SubQ injection", "half_life": "~1 hour", "notes": "Empty stomach. Mixed trial results.", "max_safe": "600 mcg/day"},
+    "semax": {"typical_dose": "400-1200 mcg daily", "route": "Intranasal", "half_life": "~20 min", "notes": "Intranasal drops/spray. Effects 4-6 hr.", "max_safe": "1200 mcg/day"},
+    "selank": {"typical_dose": "400-900 mcg daily", "route": "Intranasal", "half_life": "~20 min", "notes": "Calming within 15-30 min. Up to 3x daily.", "max_safe": "900 mcg/day"},
+    "dsip": {"typical_dose": "100-400 mcg daily", "route": "SubQ or intranasal", "half_life": "~30 min", "notes": "Before bed. Effects may take days.", "max_safe": "400 mcg/day"},
+    "ss-31": {"typical_dose": "10-40 mg daily", "route": "SubQ injection", "half_life": "~2 hours", "notes": "Investigational. Mitochondrial support.", "max_safe": "40 mg/day"},
+    "mots-c": {"typical_dose": "10-20 mg daily or EOD", "route": "SubQ injection", "half_life": "~1 hour", "notes": "Early-stage. Cycle 5 on, 2 off.", "max_safe": "20 mg/day"},
+    "pt-141": {"typical_dose": "0.75-1.75 mg as needed", "route": "SubQ injection", "half_life": "~2 hours", "notes": "Max 1 injection per 24 hr. Nausea common.", "max_safe": "1.75 mg/24hr"},
+    "thymosin-alpha-1": {"typical_dose": "1.5-6 mg twice weekly", "route": "SubQ injection", "half_life": "~2 hours", "notes": "2x/week dosing.", "max_safe": "6 mg 2x/week"},
+    "igf-1-lr3": {"typical_dose": "20-60 mcg daily or post-workout", "route": "SubQ injection", "half_life": "~20-30 hours", "notes": "Long half-life. Risk of hypoglycemia.", "max_safe": "60 mcg/day"},
+    "melanotan-2": {"typical_dose": "0.25-1.0 mg daily or EOD", "route": "SubQ injection", "half_life": "~36 hours", "notes": "Start 0.25 mg. Nausea common.", "max_safe": "1 mg/day"},
+}
+
+SAFETY_NOTES = {
+    "general": {
+        "title": "General Safety Considerations",
+        "points": [
+            "Peptides discussed on this site are for educational research purposes only.",
+            "Always consult a qualified healthcare provider before starting any peptide protocol.",
+            "Research chemical peptides are not regulated — purity, sterility, and accurate dosing are not guaranteed.",
+            "Start with the lowest effective dose and titrate slowly.",
+        ],
+    },
+    "bpc-157": {
+        "title": "BPC-157 Safety",
+        "points": [
+            "No long-term human safety data available.",
+            "Theoretical concern: angiogenesis could promote cancer cell growth.",
+            "Research-grade vials may not be sterile — filter before injection.",
+            "Not FDA approved for any medical use.",
+        ],
+    },
+    "semaglutide": {
+        "title": "Semaglutide Safety",
+        "points": [
+            "Prescription medication — use only under medical supervision.",
+            "Common: nausea, vomiting, diarrhea, constipation.",
+            "Risk of gallbladder disease, pancreatitis, thyroid C-cell tumors.",
+            "Do not use with family history of medullary thyroid carcinoma.",
+        ],
+    },
+    "tirzepatide": {
+        "title": "Tirzepatide Safety",
+        "points": [
+            "Prescription medication — medical supervision required.",
+            "Black box warning for thyroid C-cell tumors in rodents.",
+            "Do not combine with other GLP-1 or GIP receptor agonists.",
+        ],
+    },
+    "retatrutide": {
+        "title": "Retatrutide Safety",
+        "points": [
+            "Investigational — only available through clinical trials.",
+            "Heart rate increase observed in some participants.",
+            "Long-term safety beyond 12 months not established.",
+        ],
+    },
+    "gh-secretagogues": {
+        "title": "GH Secretagogue Safety (GHRPs + GHRHs)",
+        "points": [
+            "Not FDA approved — all are research chemicals.",
+            "Long-term GH/IGF-1 elevation may accelerate aging processes.",
+            "Potential pituitary desensitization — cycle on/off required.",
+            "MK-677 can cause insulin resistance — monitor glucose.",
+        ],
+    },
+    "melanotan-2": {
+        "title": "Melanotan-2 Safety",
+        "points": [
+            "Not FDA approved — research chemical.",
+            "Nausea very common at higher doses.",
+            "May darken existing moles — monitor for changes.",
+            "Long-term skin cancer risk not adequately studied.",
+        ],
+    },
+    "ghk-cu": {
+        "title": "GHK-Cu Safety",
+        "points": [
+            "Topical use is well-studied in cosmetics.",
+            "Injectable form is a research chemical.",
+            "Copper accumulation with prolonged high-dose use.",
+        ],
+    },
+    "pt-141": {
+        "title": "PT-141 (Bremelanotide) Safety",
+        "points": [
+            "FDA approved as Vyleesi for HSDD.",
+            "Nausea in ~40% of users, flushing, headache.",
+            "May increase blood pressure — avoid if uncontrolled hypertension.",
+        ],
+    },
+}
+
 
 STACK_KNOWLEDGE = {
     "retatrutide": {
@@ -3308,6 +3543,59 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
 
 CACHE_BUST = str(int(time.time()))
 
+
+# ── Evidence cache for Ask AI live data ──
+EVIDENCE_CACHE = {}
+MAX_CACHE_AGE = 300  # 5 minutes
+
+
+def fetch_peptide_evidence(pep):
+    now = time.time()
+    cached = EVIDENCE_CACHE.get(pep)
+    if cached and (now - cached["cached_at"]) < MAX_CACHE_AGE:
+        return cached
+
+    term = normalize_term(pep)
+    wiki = fetch_wikipedia_summary(term)
+    trials = fetch_clinical_trials(term)
+    pubmed_raw = fetch_pubmed(term)
+    pubmed = rank_pubmed(pubmed_raw) if pubmed_raw else []
+    fda_data = fetch_openfda(term)
+    evidence_score = build_evidence_score(trials, pubmed, fda_data, wiki)
+    claims = build_evidence_claims(trials, pubmed, fda_data)
+
+    result = {
+        "peptide": pep,
+        "trials": trials or [],
+        "trial_count": len(trials) if trials else 0,
+        "completed_trials": sum(1 for t in (trials or []) if (t.get("status") or "") == "COMPLETED"),
+        "pubmed": pubmed or [],
+        "pubmed_count": len(pubmed) if pubmed else 0,
+        "fda_data": fda_data,
+        "wiki": wiki,
+        "evidence_score": evidence_score,
+        "claims": claims or [],
+        "cached_at": now,
+    }
+    EVIDENCE_CACHE[pep] = result
+    return result
+
+
+def tier_badge_html(tier):
+    labels = {"A": "Trial-heavy", "B": "Observational", "C": "Mechanistic", "D": "Anecdotal"}
+    l = labels.get(tier, "Unknown")
+    return f'<span class="badge badge-tier-{tier.lower()}">{tier} — {l}</span>'
+
+
+def regulatory_badge_html(status):
+    styles = {
+        "fda_approved": '<span class="badge badge-fda">FDA Approved</span>',
+        "investigational": '<span class="badge badge-investigational">In Clinical Trials</span>',
+        "research_chemical": '<span class="badge badge-research">Research Chemical</span>',
+    }
+    return styles.get(status, '<span class="badge">Unknown</span>')
+
+
 @app.context_processor
 def inject_cache_bust():
     return dict(cache_bust=CACHE_BUST)
@@ -3529,7 +3817,7 @@ def stack_recommend():
                 "research_only": True,
                 "medical_note": "Educational research context only. Not medical advice.",
                 "evidence_tiers": {
-                    "A": "Human trial-heavy",
+                    "A": "Trial-heavy (human trials)",
                     "B": "Observational/review-weighted",
                     "C": "Mechanistic or limited human evidence",
                     "D": "Mostly anecdotal/preclinical",
@@ -3666,6 +3954,359 @@ def symptom_search():
         "total_peptides_matched": len(results),
         "total_stacks_matched": len(relevant_stacks),
     }), 200
+
+
+@app.route('/ask')
+def ask_page():
+    all_peptides = sorted(set(ALIASES.values()) | set(STACK_KNOWLEDGE.keys()))
+    return render_template('ask.html', all_peptides=all_peptides)
+
+
+@app.route('/api/ask', methods=['POST'])
+def api_ask():
+    data = request.get_json(silent=True) or {}
+    question = (data.get("question") or "").strip()
+    if not question:
+        return jsonify({"error": "Please ask a question."}), 400
+
+    q = question.lower().strip()
+    stop_words = {
+        "a","an","the","for","and","or","to","of","in","with","that",
+        "is","it","on","at","by","i","me","my","we","our","you",
+        "your","he","she","they","them","their","this","that","these",
+        "those","am","are","was","were","be","been","being","have",
+        "has","had","do","does","did","but","if","because","as",
+        "until","while","about","between","through","during","before",
+        "after","above","below","up","down","out","off","over","under",
+        "again","further","then","once","here","there","when","where",
+        "why","how","all","each","every","both","few","more","most",
+        "other","some","such","no","nor","not","only","own","same",
+        "so","than","too","very","just","get","something","need",
+        "help","want","looking","good","best","treat","treatment",
+        "peptide","peptides","can","what","any","anything","tell",
+        "know","does","work","use","used","using",
+    }
+    tokens = re.findall(r'[a-z]+', q)
+    tokens = [t for t in tokens if t not in stop_words and len(t) > 1]
+    if not tokens:
+        tokens = [q]
+
+    matched_peptides = set()
+    matched_conditions = []
+    matched_goals = []
+
+    # ── Search symptom/condition map ──
+    scored_conditions = []
+    for cond_key, entry in SYMPTOM_CONDITION_MAP.items():
+        score = 0
+        if q == cond_key:
+            score += 100
+        elif cond_key in q or q in cond_key:
+            score += 60
+        for t in tokens:
+            if t in cond_key:
+                score += 20
+        if score > 0:
+            scored_conditions.append((cond_key, score, entry))
+    scored_conditions.sort(key=lambda x: x[1], reverse=True)
+
+    for cond_key, score, entry in scored_conditions[:5]:
+        matched_conditions.append({
+            "condition": cond_key,
+            "description": entry["description"],
+            "category": entry.get("category", "General"),
+            "peptides": entry["peptides"],
+        })
+        for pep in entry["peptides"]:
+            pep = normalize_term(pep)
+            if pep in STACK_KNOWLEDGE:
+                matched_peptides.add(pep)
+
+    # ── Search STACK_KNOWLEDGE directly ──
+    for pep_name, meta in STACK_KNOWLEDGE.items():
+        pep_lower = pep_name.lower()
+        if pep_lower in q or q in pep_lower:
+            matched_peptides.add(pep_name)
+        else:
+            for t in tokens:
+                if t in pep_lower:
+                    matched_peptides.add(pep_name)
+                    break
+
+    # ── Search goals ──
+    for gk, gv in GOAL_BLUEPRINTS.items():
+        label = gv["label"].lower()
+        for t in tokens:
+            if t in label or label in t:
+                matched_goals.append(gk)
+                break
+
+    # ── Attach full data to matched peptides ──
+    peptide_data = {}
+    for pep in matched_peptides:
+        sk = STACK_KNOWLEDGE.get(pep, {})
+        snap = SNAPSHOT_LIBRARY.get(pep, {})
+        peptide_data[pep] = {
+            "summary": sk.get("summary", ""),
+            "effects": sk.get("effects", []),
+            "tier": sk.get("tier", "D"),
+            "primary_effect": snap.get("primary_effect", ""),
+            "mechanism": snap.get("mechanism_pathway", ""),
+            "outcomes": snap.get("expected_body_outcomes", ""),
+        }
+
+    # ── Find relevant stacks ──
+    relevant_stacks = []
+    for stack_key, proto in STACK_PROTOCOLS.items():
+        stack_peps = stack_key.split("+")
+        overlap = [p for p in stack_peps if p in matched_peptides]
+        if overlap:
+            relevant_stacks.append({
+                "key": stack_key,
+                "name": proto.get("name", stack_key),
+                "goal": proto.get("goal", ""),
+                "cycle_weeks": proto.get("cycle_weeks", 0),
+                "matched_peptides": overlap,
+            })
+
+    # ── Check community notes ──
+    community_matches = []
+    for ck, note in COMMUNITY_NOTES.items():
+        for t in tokens:
+            if t in ck:
+                community_matches.append((ck, note))
+                break
+
+    # ── Build answer (HTML format with badges) ──
+    answer_parts = []
+
+    if matched_conditions:
+        for mc in matched_conditions[:2]:
+            title = mc["condition"].replace("_", " ").title()
+            answer_parts.append("**" + title + "**")
+            answer_parts.append(mc["description"])
+            if mc["peptides"]:
+                pep_list = ", ".join(mc["peptides"])
+                answer_parts.append("Related peptides: " + pep_list + ".")
+
+    if peptide_data:
+        answer_parts.append("")
+        sorted_peps = sorted(peptide_data.items(),
+                             key=lambda x: {"A": 0, "B": 1, "C": 2, "D": 3}.get(x[1]["tier"], 4))
+        shown = set()
+        answered_peps = 0
+        for pep, pd in sorted_peps:
+            if pep in shown:
+                continue
+            shown.add(pep)
+
+            # Fetch live evidence for top peptides
+            ev = None
+            if answered_peps < 2:
+                try:
+                    ev = fetch_peptide_evidence(pep)
+                except Exception:
+                    ev = None
+
+            answer_parts.append("")
+            # Name + tier badge HTML
+            tier = pd.get("tier", "D")
+            tier_html = tier_badge_html(tier)
+            answer_parts.append("**" + pep.title() + "** " + tier_html)
+
+            # Regulatory badge
+            reg_status = REGULATORY_STATUS.get(pep, "research_chemical")
+            reg_html = regulatory_badge_html(reg_status)
+            answer_parts.append(reg_html)
+
+            # Evidence score from live data
+            if ev and ev.get("evidence_score"):
+                es = ev["evidence_score"]
+                score = es.get("score", 0)
+                tier_label = es.get("tier", "LOW")
+                answer_parts.append(
+                    "**Evidence Score**: " + str(score) + "/100 (" + tier_label + ")"
+                )
+
+            # Clinical trials count
+            if ev:
+                tc = ev.get("trial_count", 0)
+                cc = ev.get("completed_trials", 0)
+                pc = ev.get("pubmed_count", 0)
+                if tc > 0:
+                    answer_parts.append("**Clinical Trials**: " + str(tc) + " registered, " + str(cc) + " completed")
+                if pc > 0:
+                    answer_parts.append("**PubMed Articles**: " + str(pc) + " indexed")
+
+            # FDA data
+            if ev and ev.get("fda_data"):
+                fda = ev["fda_data"]
+                parts = []
+                if fda.get("indications"):
+                    parts.append("Indication: " + fda["indications"][:200])
+                if fda.get("warnings"):
+                    parts.append("Warning: " + fda["warnings"][:200])
+                if fda.get("adverse"):
+                    parts.append("Adverse reactions: " + fda["adverse"][:200])
+                if parts:
+                    answer_parts.append("**FDA Data**: " + " | ".join(parts))
+
+            # Primary effect, mechanism, outcomes from local data
+            if pd.get("summary"):
+                answer_parts.append(pd["summary"])
+            if pd.get("primary_effect"):
+                answer_parts.append("**Primary effect**: " + pd["primary_effect"])
+            if pd.get("mechanism"):
+                answer_parts.append("**Mechanism**: " + pd["mechanism"])
+            if pd.get("outcomes"):
+                answer_parts.append("**Expected outcomes**: " + pd["outcomes"])
+            if pd.get("effects"):
+                effect_str = ", ".join(e.replace("_", " ").title() for e in pd["effects"])
+                answer_parts.append("**Effect profile**: " + effect_str)
+
+            # Evidence breakdown
+            if ev and ev.get("evidence_score"):
+                bd = ev["evidence_score"].get("breakdown", {})
+                breakdown_items = []
+                if bd.get("trials"):
+                    breakdown_items.append("Trial data: " + str(bd["trials"]) + " pts")
+                if bd.get("pubmed"):
+                    breakdown_items.append("PubMed quality: " + str(bd["pubmed"]) + " pts")
+                if bd.get("fda"):
+                    breakdown_items.append("FDA records: " + str(bd["fda"]) + " pts")
+                if bd.get("encyclopedia"):
+                    breakdown_items.append("Encyclopedia: " + str(bd["encyclopedia"]) + " pts")
+                if breakdown_items:
+                    answer_parts.append("**Evidence breakdown**: " + " | ".join(breakdown_items))
+
+            # Distinguish approved vs research
+            if reg_status == "fda_approved":
+                answer_parts.append("*This peptide is FDA-approved for specific medical indications.*")
+            elif reg_status == "investigational":
+                answer_parts.append("*This peptide is under clinical investigation but not yet FDA-approved.*")
+            elif reg_status == "research_chemical":
+                answer_parts.append("*This peptide is a research chemical — not FDA-approved. Long-term safety data is limited.*")
+
+            answered_peps += 1
+            if answered_peps >= 3:
+                break
+
+    if relevant_stacks:
+        answer_parts.append("")
+        answer_parts.append("**Relevant Stack Protocols**")
+        for rs in relevant_stacks[:3]:
+            answer_parts.append("- **" + rs["name"] + "**: " + rs["goal"] +
+                               " (" + str(rs["cycle_weeks"]) + " week cycle)")
+        answer_parts.append("*Tap a stack link below for full protocol details.*")
+
+    if matched_goals:
+        goal_labels = [GOAL_BLUEPRINTS[gk]["label"] for gk in matched_goals[:3]]
+        answer_parts.append("")
+        answer_parts.append("**Related Goals**: " + ", ".join(goal_labels))
+
+    if not answer_parts or all(p.strip() == "" for p in answer_parts):
+        answer_parts = [
+            "I couldn't find specific information about \"" + question + "\" in the local database.",
+            "Try searching for a specific peptide or condition, or rephrase your question.",
+            "You can also browse the **Stacks** tab for protocol recommendations.",
+        ]
+
+    answer = "\n".join(answer_parts).strip()
+
+    # ── Build evidence dict for frontend ──
+    evidence_data = {}
+    for pep in list(peptide_data.keys())[:8]:
+        try:
+            ev = fetch_peptide_evidence(pep)
+            if ev:
+                es = ev.get("evidence_score") or {}
+                evidence_data[pep] = {
+                    "tier": STACK_KNOWLEDGE.get(pep, {}).get("tier", "D"),
+                    "score": es.get("score", 0),
+                    "tier_label": es.get("tier", "LOW"),
+                    "trial_count": ev.get("trial_count", 0),
+                    "completed_trials": ev.get("completed_trials", 0),
+                    "pubmed_count": ev.get("pubmed_count", 0),
+                    "has_fda": bool(ev.get("fda_data")),
+                    "regulatory_status": REGULATORY_STATUS.get(pep, "research_chemical"),
+                }
+        except Exception:
+            pass
+
+    # ── Build citations ──
+    citations = []
+    for pep in sorted(matched_peptides)[:8]:
+        citations.append({
+            "source": pep,
+            "label": pep.title(),
+            "peptide": pep,
+        })
+    if community_matches:
+        for ck, note in community_matches[:2]:
+            parts = ck.split("+")
+            for p in parts:
+                if p not in {c["source"] for c in citations}:
+                    citations.append({
+                        "source": p,
+                        "label": p.title(),
+                        "peptide": p,
+                    })
+
+    # ── Stack links ──
+    stacks = [rs["key"] for rs in relevant_stacks[:5]]
+
+    return jsonify({
+        "answer": answer,
+        "citations": citations,
+        "stacks": stacks,
+        "evidence": evidence_data,
+        "matched_conditions": [mc["condition"] for mc in matched_conditions],
+        "matched_peptides": list(matched_peptides)[:10],
+    }), 200
+
+
+@app.route('/api/interactions', methods=['POST'])
+def api_interactions():
+    data = request.get_json(silent=True) or {}
+    peptides = [normalize_term(p.strip().lower()) for p in data.get("peptides", []) if p.strip()]
+    if len(peptides) < 2:
+        return jsonify({"interactions": []})
+
+    results = []
+    for i in range(len(peptides)):
+        for j in range(i + 1, len(peptides)):
+            a, b = sorted([peptides[i], peptides[j]])
+            interaction = INTERACTION_MATRIX.get((a, b))
+            if interaction:
+                results.append({
+                    "peptide_a": a,
+                    "peptide_b": b,
+                    "type": interaction["type"],
+                    "note": interaction["note"],
+                    "evidence": interaction.get("evidence", ""),
+                })
+
+    return jsonify({"interactions": results})
+
+
+@app.route('/api/dosage/<path:peptide>')
+def api_dosage(peptide):
+    pep = normalize_term(peptide.strip().lower())
+    data = DOSAGE_REFERENCE.get(pep)
+    if not data:
+        return jsonify({"error": "No dosage data for this peptide."}), 404
+    return jsonify({"peptide": pep, "dosage": data})
+
+
+@app.route('/api/safety/<path:peptide>')
+def api_safety(peptide):
+    pep = normalize_term(peptide.strip().lower())
+    data = SAFETY_NOTES.get(pep)
+    if data:
+        return jsonify({"peptide": pep, "safety": data})
+    # Return general safety if no specific notes
+    general = SAFETY_NOTES.get("general", {})
+    return jsonify({"peptide": pep, "safety": general})
 
 
 if __name__ == '__main__':
