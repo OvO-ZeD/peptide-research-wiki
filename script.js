@@ -432,6 +432,59 @@ function buildResponse(response, title) {
     html += makePanel('Sources', renderSources(response.sources), 'panel-compact');
   }
 
+  // Protocol section (for solo peptide protocols)
+  if (response.protocol) {
+    var proto = response.protocol;
+    var protoHtml = '';
+
+    if (proto.cycle_weeks > 0 || proto.off_weeks > 0) {
+      protoHtml += '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;padding:8px 12px;border-radius:6px;background:var(--surface-2);font-size:0.78rem;color:var(--ink-subtle)">';
+      if (proto.cycle_weeks > 0) protoHtml += '<span><strong style="color:var(--ink-muted)">Cycle:</strong> ' + proto.cycle_weeks + ' weeks</span>';
+      if (proto.off_weeks > 0) protoHtml += '<span><strong style="color:var(--ink-muted)">Off:</strong> ' + proto.off_weeks + ' weeks</span>';
+      if (proto.goal) protoHtml += '<span><strong style="color:var(--ink-muted)">Goal:</strong> ' + escapeHtml(proto.goal) + '</span>';
+      protoHtml += '</div>';
+    }
+
+    var phases = proto.phases || [];
+    for (var ph = 0; ph < phases.length; ph++) {
+      var p = phases[ph];
+      protoHtml += '<div style="padding:10px 12px;margin-bottom:6px;border-radius:6px;background:var(--surface-3);border-left:3px solid var(--primary)">' +
+        '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px">' +
+          '<span style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:var(--primary)">Phase ' + (p.phase || (ph + 1)) + '</span>' +
+          '<span style="font-size:0.72rem;color:var(--ink-tertiary)">Weeks ' + escapeHtml(p.weeks || '') + '</span>' +
+        '</div>' +
+        '<p style="margin:0;font-size:0.8rem;color:var(--ink-muted);line-height:1.5">' + escapeHtml(p.protocol || '') + '</p>' +
+        (p.dosing_details ? '<p style="margin:4px 0 0;font-size:0.76rem;color:var(--ink-subtle)"><strong>Dosing:</strong> ' + escapeHtml(p.dosing_details) + '</p>' : '') +
+        (p.timing ? '<p style="margin:2px 0 0;font-size:0.76rem;color:var(--ink-subtle)"><strong>Timing:</strong> ' + escapeHtml(p.timing) + '</p>' : '') +
+      '</div>';
+    }
+
+    if (proto.evidence_summary) {
+      protoHtml += '<div style="padding:10px 12px;border-radius:6px;background:rgba(245,166,35,0.04);border:1px solid rgba(245,166,35,0.08)">' +
+        '<p style="margin:0;font-size:0.78rem;color:var(--ink-subtle)"><strong style="color:var(--warning)">Evidence:</strong> ' + escapeHtml(proto.evidence_summary) + '</p></div>';
+    }
+
+    html += makePanel('Protocol', protoHtml, 'panel-compact');
+  }
+
+  // Stack pairings section
+  if (response.stack_pairings && response.stack_pairings.length) {
+    var pairHtml = '<div style="display:grid;gap:8px">';
+    for (var sp = 0; sp < response.stack_pairings.length; sp++) {
+      var pair = response.stack_pairings[sp];
+      pairHtml += '<div style="padding:10px 14px;border-radius:6px;background:var(--surface-2);border:1px solid var(--hairline)">' +
+        '<div style="display:flex;align-items:baseline;gap:8px">' +
+          '<strong style="font-size:0.84rem;color:var(--ink)">' + escapeHtml(pair.name) + '</strong>' +
+          '<span style="font-size:0.68rem;color:var(--ink-tertiary)">' + escapeHtml(pair.goal || '') + '</span>' +
+          (pair.cycle_weeks ? '<span class="badge" style="background:var(--surface-3);color:var(--ink-subtle)">' + pair.cycle_weeks + ' wk cycle</span>' : '') +
+        '</div>' +
+        (pair.summary ? '<p style="margin:4px 0 0;font-size:0.76rem;color:var(--ink-subtle)">' + escapeHtml(pair.summary) + '</p>' : '') +
+      '</div>';
+    }
+    pairHtml += '</div>';
+    html += makePanel('Stack Pairings', pairHtml, 'panel-compact');
+  }
+
   return html;
 }
 

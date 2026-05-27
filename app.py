@@ -1483,6 +1483,939 @@ GOAL_BLUEPRINTS = {
     },
 }
 
+SYMPTOM_CONDITION_MAP = {
+    # ─── Metabolic / Weight Management ───
+    "obesity": {
+        "peptides": ["retatrutide", "semaglutide", "tirzepatide", "liraglutide", "cagrilintide"],
+        "description": "Excess body fat accumulation. Incretin-based peptides (GLP-1/GIP/glucagon agonists) are the most studied class for significant weight reduction.",
+        "category": "Metabolic/Weight Management",
+    },
+    "weight loss": {
+        "peptides": ["retatrutide", "semaglutide", "tirzepatide", "liraglutide", "cagrilintide", "aod-9604", "mazdutide", "survodutide"],
+        "description": "Reducing overall body weight through appetite suppression, metabolic acceleration, or fat breakdown signaling.",
+        "category": "Metabolic/Weight Management",
+    },
+    "fat loss": {
+        "peptides": ["retatrutide", "semaglutide", "tirzepatide", "tesamorelin", "aod-9604", "liraglutide", "mazdutide", "survodutide", "cagrilintide"],
+        "description": "Reducing body fat stores. Multiple peptide classes target fat loss through distinct mechanisms including incretin signaling, GH-axis activation, and lipolysis.",
+        "category": "Metabolic/Weight Management",
+    },
+    "belly fat": {
+        "peptides": ["tesamorelin", "retatrutide", "semaglutide", "tirzepatide"],
+        "description": "Visceral (deep belly) fat surrounding internal organs. Tesamorelin specifically targets visceral fat reduction through GH-axis signaling.",
+        "category": "Metabolic/Weight Management",
+    },
+    "visceral fat": {
+        "peptides": ["tesamorelin", "retatrutide"],
+        "description": "Deep abdominal fat surrounding internal organs linked to metabolic disease. Tesamorelin has the most targeted evidence for visceral fat reduction.",
+        "category": "Metabolic/Weight Management",
+    },
+    "diabetes": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "mazdutide"],
+        "description": "Type 2 diabetes involves insulin resistance and elevated blood sugar. GLP-1 and dual GIP/GLP-1 agonists are FDA-approved for glycemic control.",
+        "category": "Metabolic/Weight Management",
+    },
+    "type 2 diabetes": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "mazdutide"],
+        "description": "Characterized by insulin resistance and relative insulin deficiency. Incretin-based therapies are first-line treatments in many guidelines.",
+        "category": "Metabolic/Weight Management",
+    },
+    "insulin resistance": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "humanin"],
+        "description": "Reduced cellular sensitivity to insulin leading to high blood sugar. Incretin therapies improve glycemic control; humanin has proposed insulin-sensitizing effects.",
+        "category": "Metabolic/Weight Management",
+    },
+    "high blood sugar": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide"],
+        "description": "Elevated glucose levels. GLP-1 agonists and dual/triple incretins improve glycemic control through insulin secretion and reduced glucagon.",
+        "category": "Metabolic/Weight Management",
+    },
+    "prediabetes": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "aod-9604"],
+        "description": "Blood sugar levels higher than normal but not yet diabetic. Early intervention with incretin therapies can prevent progression to type 2 diabetes.",
+        "category": "Metabolic/Weight Management",
+    },
+    "metabolic syndrome": {
+        "peptides": ["retatrutide", "semaglutide", "tirzepatide", "tesamorelin", "liraglutide", "mots-c", "mazdutide"],
+        "description": "Cluster of conditions including high blood pressure, high blood sugar, excess body fat, and abnormal cholesterol. Multiple peptide classes address different components.",
+        "category": "Metabolic/Weight Management",
+    },
+    "high cholesterol": {
+        "peptides": ["retatrutide", "semaglutide", "tirzepatide"],
+        "description": "Elevated lipid levels. GLP-1 and dual agonists show modest improvements in lipid profiles in clinical trials, though not their primary indication.",
+        "category": "Metabolic/Weight Management",
+    },
+    "fatty liver": {
+        "peptides": ["retatrutide", "survodutide", "mazdutide", "semaglutide", "tirzepatide"],
+        "description": "NAFLD and MASH involve fat accumulation in the liver. Dual GLP-1/glucagon agonists like survodutide show particular promise for liver fat reduction.",
+        "category": "Metabolic/Weight Management",
+    },
+    "nafld": {
+        "peptides": ["retatrutide", "survodutide", "mazdutide", "semaglutide", "tirzepatide"],
+        "description": "Non-alcoholic fatty liver disease. Glucagon-containing dual agonists target hepatic fat metabolism directly.",
+        "category": "Metabolic/Weight Management",
+    },
+    "weight gain": {
+        "peptides": ["retatrutide", "semaglutide", "tirzepatide", "liraglutide", "cagrilintide", "aod-9604"],
+        "description": "Unwanted increase in body weight. Incretin therapies address appetite and metabolic rate for weight reduction.",
+        "category": "Metabolic/Weight Management",
+    },
+    "overweight": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "cagrilintide"],
+        "description": "BMI above healthy range. GLP-1 and dual/triple agonists are indicated for weight management in overweight individuals with related conditions.",
+        "category": "Metabolic/Weight Management",
+    },
+    "appetite control": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "cagrilintide", "ghrp-6", "aod-9604"],
+        "description": "Managing hunger and food intake. GLP-1 agonists slow gastric emptying and signal fullness to the brain. GHRP-6 notably increases appetite.",
+        "category": "Metabolic/Weight Management",
+    },
+    "overeating": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "cagrilintide"],
+        "description": "Excessive food consumption. Incretin-based therapies reduce appetite through multiple signaling pathways.",
+        "category": "Metabolic/Weight Management",
+    },
+    "food cravings": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide"],
+        "description": "Intense desires for specific foods. GLP-1 agonists reduce reward-driven eating by acting on brain reward centers.",
+        "category": "Metabolic/Weight Management",
+    },
+    "slow metabolism": {
+        "peptides": ["tesamorelin", "ipamorelin", "mk-677", "sermorelin", "mots-c", "aod-9604"],
+        "description": "Reduced metabolic rate. GH-axis peptides and mitochondrial support peptides may help optimize metabolic function.",
+        "category": "Metabolic/Weight Management",
+    },
+    "pcos": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "tesamorelin"],
+        "description": "Polycystic ovary syndrome involves insulin resistance, metabolic dysfunction, and hormonal imbalance. Incretin therapies address the metabolic component.",
+        "category": "Metabolic/Weight Management",
+    },
+    "stubborn fat": {
+        "peptides": ["tesamorelin", "aod-9604", "retatrutide"],
+        "description": "Fat deposits resistant to diet and exercise. Targeted GH-axis and lipolysis signaling may help mobilize stubborn fat stores.",
+        "category": "Metabolic/Weight Management",
+    },
+    "abdominal obesity": {
+        "peptides": ["tesamorelin", "retatrutide", "semaglutide", "tirzepatide"],
+        "description": "Excess fat concentrated in the abdominal area. Tesamorelin specifically targets visceral adipose tissue.",
+        "category": "Metabolic/Weight Management",
+    },
+    "hyperglycemia": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "mazdutide"],
+        "description": "High blood glucose levels. Incretin therapies enhance insulin secretion and reduce glucagon release.",
+        "category": "Metabolic/Weight Management",
+    },
+    "glycemic control": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "mazdutide"],
+        "description": "Managing blood sugar levels within healthy range. Multiple incretin-based peptides are proven for glycemic management.",
+        "category": "Metabolic/Weight Management",
+    },
+    "glucose intolerance": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "mots-c"],
+        "description": "Impaired ability to process glucose. Incretin therapies and mitochondrial peptides may improve glucose handling.",
+        "category": "Metabolic/Weight Management",
+    },
+    "diabesity": {
+        "peptides": ["retatrutide", "semaglutide", "tirzepatide", "liraglutide", "cagrilintide"],
+        "description": "Co-occurring obesity and type 2 diabetes. Triple and dual incretin agonists address both conditions simultaneously through shared metabolic pathways.",
+        "category": "Metabolic/Weight Management",
+    },
+    "lipodystrophy": {
+        "peptides": ["tesamorelin", "ghk-cu"],
+        "description": "Abnormal fat distribution or loss. Tesamorelin is FDA-approved for HIV-associated lipodystrophy to reduce visceral fat.",
+        "category": "Metabolic/Weight Management",
+    },
+    "postpartum weight": {
+        "peptides": ["aod-9604", "tesamorelin", "ipamorelin"],
+        "description": "Weight retention after pregnancy. GH-axis peptides may support metabolic recovery, though safety during breastfeeding is not established.",
+        "category": "Metabolic/Weight Management",
+    },
+    "menopause weight gain": {
+        "peptides": ["tesamorelin", "retatrutide", "semaglutide", "tirzepatide", "aod-9604"],
+        "description": "Weight gain associated with hormonal changes during menopause. Metabolic and GH-axis peptides may help counteract age-related metabolic slowing.",
+        "category": "Metabolic/Weight Management",
+    },
+    # ─── Muscle / Performance ───
+    "muscle gain": {
+        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "mk-677", "ghrp-2", "sermorelin", "igf-1-lr3", "igf-1-des", "follistatin-344", "peg-mgf", "hexarelin", "ghrp-6", "mots-c"],
+        "description": "Building skeletal muscle mass. GH-axis peptides increase IGF-1 and protein synthesis signaling. IGF-1 analogs and myostatin inhibitors target anabolic pathways directly.",
+        "category": "Muscle/Performance",
+    },
+    "lean mass": {
+        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "mk-677", "ghrp-2", "sermorelin", "igf-1-lr3", "follistatin-344", "peg-mgf"],
+        "description": "Increasing lean body mass while minimizing fat gain. GH-axis peptides and anabolic signaling peptides support muscle protein synthesis.",
+        "category": "Muscle/Performance",
+    },
+    "muscle mass": {
+        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "mk-677", "igf-1-lr3", "follistatin-344", "ghrp-2", "sermorelin"],
+        "description": "Total body muscle tissue. Multiple peptide pathways can influence muscle protein balance through GH-IGF axis and myostatin regulation.",
+        "category": "Muscle/Performance",
+    },
+    "strength": {
+        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "mk-677", "igf-1-lr3", "follistatin-344", "ghrp-2"],
+        "description": "Muscular strength and power output. GH-axis peptides support the hormonal environment for strength gains from resistance training.",
+        "category": "Muscle/Performance",
+    },
+    "muscle recovery": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "ipamorelin", "cjc-1295", "tesamorelin", "ss-31", "mk-677", "ghrp-2", "peg-mgf"],
+        "description": "Post-exercise muscle repair and regeneration. Recovery peptides support tissue healing through multiple mechanisms including blood flow, collagen synthesis, and GH signaling.",
+        "category": "Muscle/Performance",
+    },
+    "workout recovery": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "ss-31", "ipamorelin", "cjc-1295"],
+        "description": "Faster return to baseline after exercise. Mitochondrial and tissue repair peptides support cellular recovery processes.",
+        "category": "Muscle/Performance",
+    },
+    "muscle loss": {
+        "peptides": ["tesamorelin", "ipamorelin", "mk-677", "cjc-1295", "follistatin-344", "sermorelin", "ghrp-2"],
+        "description": "Preventing or treating sarcopenia and muscle wasting. GH-axis and myostatin-inhibiting peptides address age-related and pathological muscle loss.",
+        "category": "Muscle/Performance",
+    },
+    "sarcopenia": {
+        "peptides": ["mk-677", "tesamorelin", "ipamorelin", "sermorelin", "follistatin-344"],
+        "description": "Age-related muscle loss. MK-677 has been studied specifically in elderly populations for muscle preservation and IGF-1 elevation.",
+        "category": "Muscle/Performance",
+    },
+    "muscle wasting": {
+        "peptides": ["tesamorelin", "ipamorelin", "mk-677", "follistatin-344", "sermorelin", "igf-1-lr3"],
+        "description": "Pathological loss of muscle tissue from disease or disuse. Anabolic and anti-myostatin peptides may help preserve muscle mass.",
+        "category": "Muscle/Performance",
+    },
+    "athletic performance": {
+        "peptides": ["ss-31", "mots-c", "ipamorelin", "tesamorelin", "cjc-1295", "ghrp-2"],
+        "description": "Sports and exercise performance enhancement. Mitochondrial peptides target energy production; GH-axis peptides support recovery and body composition.",
+        "category": "Muscle/Performance",
+    },
+    "exercise performance": {
+        "peptides": ["ss-31", "mots-c", "ipamorelin", "cjc-1295", "ghrp-2"],
+        "description": "Capacity for physical exercise. Mitochondrial support peptides improve cellular energy production and exercise tolerance.",
+        "category": "Muscle/Performance",
+    },
+    "endurance": {
+        "peptides": ["ss-31", "mots-c", "aod-9604", "ipamorelin"],
+        "description": "Sustained physical performance over time. Mitochondrial-targeted peptides support ATP production and metabolic efficiency.",
+        "category": "Muscle/Performance",
+    },
+    "stamina": {
+        "peptides": ["ss-31", "mots-c", "aod-9604"],
+        "description": "Physical and mental energy reserves. Mitochondrial peptides improve cellular energy metabolism.",
+        "category": "Muscle/Performance",
+    },
+    "bodybuilding": {
+        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "ghrp-2", "mk-677", "igf-1-lr3", "follistatin-344", "sermorelin", "hexarelin"],
+        "description": "Muscle growth for physique development. GH-axis peptides are commonly used in bodybuilding for their anabolic and fat-burning effects.",
+        "category": "Muscle/Performance",
+    },
+    "muscle preservation": {
+        "peptides": ["tesamorelin", "ipamorelin", "mk-677", "follistatin-344", "sermorelin", "ghrp-2"],
+        "description": "Maintaining existing muscle mass during caloric deficit or periods of inactivity. GH-axis peptides help offset catabolic states.",
+        "category": "Muscle/Performance",
+    },
+    "protein synthesis": {
+        "peptides": ["igf-1-lr3", "igf-1-des", "tesamorelin", "ipamorelin", "mk-677", "follistatin-344"],
+        "description": "Cellular process of building proteins. IGF-1 analogs directly activate anabolic signaling pathways. GH-axis peptides increase endogenous IGF-1.",
+        "category": "Muscle/Performance",
+    },
+    "myostatin inhibition": {
+        "peptides": ["follistatin-344"],
+        "description": "Blocking myostatin, a negative regulator of muscle growth. Follistatin binds myostatin, potentially allowing increased muscle development.",
+        "category": "Muscle/Performance",
+    },
+    "muscle growth": {
+        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "mk-677", "igf-1-lr3", "follistatin-344", "ghrp-2", "sermorelin", "hexarelin", "peg-mgf"],
+        "description": "Hypertrophy and hyperplasia of muscle tissue. Multiple signaling pathways including GH-IGF axis and myostatin regulation influence muscle growth.",
+        "category": "Muscle/Performance",
+    },
+    "fitness": {
+        "peptides": ["ss-31", "mots-c", "tesamorelin", "ipamorelin", "aod-9604"],
+        "description": "General physical fitness and conditioning. Mitochondrial and metabolic peptides support energy, recovery, and body composition.",
+        "category": "Muscle/Performance",
+    },
+    # ─── Anti-Aging / Longevity ───
+    "anti-aging": {
+        "peptides": ["ghk-cu", "epitalon", "humanin", "ss-31", "mots-c", "pinealon", "thymalin", "dsip", "tesamorelin", "ipamorelin", "mk-677", "aod-9604"],
+        "description": "Reducing or slowing visible and physiological signs of aging. Multiple peptide classes target different aging hallmarks including mitochondrial decline, GH-axis attenuation, and cellular senescence.",
+        "category": "Anti-Aging/Longevity",
+    },
+    "longevity": {
+        "peptides": ["humanin", "ss-31", "epitalon", "mots-c", "ghk-cu"],
+        "description": "Extending healthspan and lifespan. Mitochondrial and cytoprotective peptides target fundamental aging processes at the cellular level.",
+        "category": "Anti-Aging/Longevity",
+    },
+    "aging": {
+        "peptides": ["humanin", "ghk-cu", "ss-31", "epitalon", "mots-c", "tesamorelin", "pinealon"],
+        "description": "Biological aging processes. Peptides targeting mitochondrial function, GH decline, and cellular repair may modulate age-related changes.",
+        "category": "Anti-Aging/Longevity",
+    },
+    "cellular aging": {
+        "peptides": ["humanin", "ss-31", "mots-c", "ghk-cu", "epitalon"],
+        "description": "Age-related decline at the cellular level. Mitochondrial-derived peptides and repair peptides address cellular energy decline and oxidative stress.",
+        "category": "Anti-Aging/Longevity",
+    },
+    "frailty": {
+        "peptides": ["mk-677", "tesamorelin", "sermorelin", "ipamorelin", "ss-31", "mots-c"],
+        "description": "Age-related physical vulnerability. GH-axis peptides have been studied in elderly populations for improving muscle mass and function.",
+        "category": "Anti-Aging/Longevity",
+    },
+    "vitality": {
+        "peptides": ["ss-31", "mots-c", "tesamorelin", "ipamorelin", "ghk-cu", "humanin", "dsip"],
+        "description": "Overall energy, health, and well-being. Mitochondrial support and GH-axis peptides address fundamental drivers of vitality.",
+        "category": "Anti-Aging/Longevity",
+    },
+    "energy decline": {
+        "peptides": ["ss-31", "mots-c", "humanin", "aod-9604", "ghk-cu"],
+        "description": "Age-related reduction in energy levels. Mitochondrial peptides support cellular energy production.",
+        "category": "Anti-Aging/Longevity",
+    },
+    "age-related decline": {
+        "peptides": ["mk-677", "tesamorelin", "ss-31", "humanin", "ghk-cu", "epitalon", "mots-c", "sermorelin"],
+        "description": "General functional decline associated with aging. Multiple peptide classes address different aspects of age-related deterioration.",
+        "category": "Anti-Aging/Longevity",
+    },
+    "healthy aging": {
+        "peptides": ["humanin", "ss-31", "mots-c", "ghk-cu", "epitalon", "tesamorelin", "pinealon"],
+        "description": "Promoting wellness and function in later years. Combination approaches targeting mitochondria, GH axis, and cellular repair show the broadest potential.",
+        "category": "Anti-Aging/Longevity",
+    },
+    "healthspan": {
+        "peptides": ["humanin", "ss-31", "mots-c", "epitalon", "ghk-cu"],
+        "description": "The period of life spent in good health. Mitochondrial and cytoprotective peptides target fundamental aging mechanisms to extend healthspan.",
+        "category": "Anti-Aging/Longevity",
+    },
+    "skin aging": {
+        "peptides": ["ghk-cu", "melanotan-2", "bpc-157"],
+        "description": "Age-related changes in skin including wrinkles, thinning, and loss of elasticity. GHK-Cu is the most studied peptide for skin anti-aging.",
+        "category": "Anti-Aging/Longevity",
+    },
+    # ─── Cognitive / Neurological ───
+    "focus": {
+        "peptides": ["semax", "selank", "dihexa", "noopept"],
+        "description": "Sustained attention and concentration. Semax increases BDNF, selank modulates anxiety for improved focus, dihexa promotes synaptogenesis.",
+        "category": "Cognitive/Neurological",
+    },
+    "concentration": {
+        "peptides": ["semax", "selank", "dihexa"],
+        "description": "Ability to maintain attention on a task. Neurocognitive peptides support different aspects of concentration through BDNF and neurotransmitter modulation.",
+        "category": "Cognitive/Neurological",
+    },
+    "brain fog": {
+        "peptides": ["semax", "selank", "dihexa", "noopept", "bpc-157"],
+        "description": "Mental cloudiness, lack of clarity, and cognitive sluggishness. Neurotropic peptides and anti-inflammatory peptides may help clear brain fog.",
+        "category": "Cognitive/Neurological",
+    },
+    "memory": {
+        "peptides": ["semax", "dihexa", "noopept", "selank"],
+        "description": "Recall and retention of information. Semax and dihexa have shown memory-enhancing effects through BDNF and synaptic plasticity mechanisms.",
+        "category": "Cognitive/Neurological",
+    },
+    "mental clarity": {
+        "peptides": ["semax", "selank", "dihexa"],
+        "description": "Clear thinking and sharp mental function. Peptide nootropics support cognitive function through neurotrophic and neuroplasticity mechanisms.",
+        "category": "Cognitive/Neurological",
+    },
+    "cognitive function": {
+        "peptides": ["semax", "selank", "dihexa", "noopept", "bpc-157", "epitalon"],
+        "description": "General cognitive performance including thinking, learning, and memory. Multiple peptide classes support different cognitive domains.",
+        "category": "Cognitive/Neurological",
+    },
+    "cognitive decline": {
+        "peptides": ["semax", "dihexa", "noopept", "epitalon", "humanin", "bpc-157"],
+        "description": "Age-related reduction in cognitive abilities. Neuroprotective and neuroplasticity-promoting peptides may help slow cognitive decline.",
+        "category": "Cognitive/Neurological",
+    },
+    "adhd": {
+        "peptides": ["semax", "selank", "noopept"],
+        "description": "Attention deficit hyperactivity disorder. Focus-enhancing and anxiety-modulating peptides may help manage ADHD symptoms, though they are not FDA-approved for this indication.",
+        "category": "Cognitive/Neurological",
+    },
+    "attention": {
+        "peptides": ["semax", "selank", "dihexa"],
+        "description": "Ability to selectively focus on relevant stimuli. Neuropeptides that modulate BDNF and neurotransmitter levels can support attention.",
+        "category": "Cognitive/Neurological",
+    },
+    "mental performance": {
+        "peptides": ["semax", "selank", "dihexa", "noopept", "bpc-157"],
+        "description": "Peak cognitive output. Nootropic peptides support multiple cognitive domains through distinct mechanisms.",
+        "category": "Cognitive/Neurological",
+    },
+    "learning": {
+        "peptides": ["semax", "dihexa", "noopept", "selank"],
+        "description": "Acquisition of new knowledge and skills. BDNF-enhancing peptides support neuroplasticity and learning capacity.",
+        "category": "Cognitive/Neurological",
+    },
+    "neuroprotection": {
+        "peptides": ["semax", "dihexa", "bpc-157", "epitalon", "humanin", "noopept"],
+        "description": "Protection of neural tissue from damage. Multiple peptides have demonstrated neuroprotective properties through different mechanisms.",
+        "category": "Cognitive/Neurological",
+    },
+    "alzheimer's": {
+        "peptides": ["humanin", "semax", "dihexa", "epitalon", "bpc-157"],
+        "description": "Progressive neurodegenerative disease. Humanin was discovered for its protective effect against Alzheimer's-related cell death. Other peptides may offer neuroprotective support.",
+        "category": "Cognitive/Neurological",
+    },
+    "alzheimers": {
+        "peptides": ["humanin", "semax", "dihexa", "epitalon", "bpc-157"],
+        "description": "Progressive neurodegenerative condition. Research peptides are being investigated for neuroprotective and cognitive-supportive properties.",
+        "category": "Cognitive/Neurological",
+    },
+    "dementia": {
+        "peptides": ["humanin", "semax", "dihexa", "epitalon"],
+        "description": "Cognitive decline severe enough to interfere with daily life. Neuroprotective peptides may support cognitive function in degenerative conditions.",
+        "category": "Cognitive/Neurological",
+    },
+    "brain health": {
+        "peptides": ["semax", "selank", "dihexa", "bpc-157", "epitalon", "humanin", "noopept"],
+        "description": "Overall cognitive wellness and neurological function. Multiple peptides support different aspects of brain health through complementary mechanisms.",
+        "category": "Cognitive/Neurological",
+    },
+    "neuroplasticity": {
+        "peptides": ["semax", "dihexa", "noopept", "bpc-157"],
+        "description": "The brain's ability to form new neural connections. Dihexa specifically promotes synaptogenesis; semax increases BDNF for enhanced plasticity.",
+        "category": "Cognitive/Neurological",
+    },
+    "cognitive enhancement": {
+        "peptides": ["semax", "selank", "dihexa", "noopept"],
+        "description": "Improving cognitive abilities beyond baseline. Nootropic peptides target different cognitive domains through neurotrophic and neuromodulatory mechanisms.",
+        "category": "Cognitive/Neurological",
+    },
+    "nootropic": {
+        "peptides": ["semax", "selank", "dihexa", "noopept"],
+        "description": "Cognitive-enhancing substances. These peptides are classified as nootropics based on their effects on memory, focus, and mental performance.",
+        "category": "Cognitive/Neurological",
+    },
+    # ─── Anxiety / Calm / Sleep ───
+    "anxiety": {
+        "peptides": ["selank", "semax", "dsip", "ghk-cu", "kpv"],
+        "description": "Feelings of worry, nervousness, or unease. Selank modulates serotonin and enkephalin systems for anxiolytic effects without sedation.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    "stress": {
+        "peptides": ["selank", "dsip", "semax", "kpv", "bpc-157", "ghk-cu"],
+        "description": "Physical or mental tension from demanding circumstances. Peptides targeting HPA axis regulation and neurotransmitter balance can support stress resilience.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    "calm": {
+        "peptides": ["selank", "dsip", "kpv", "ghk-cu"],
+        "description": "State of mental and physical relaxation. Selank provides calm without sedation through anxiolytic peptide mechanisms.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    "relaxation": {
+        "peptides": ["selank", "dsip", "ghk-cu", "kpv"],
+        "description": "Mental and physical unwinding. Calming peptides support relaxation without the sedation associated with conventional anxiolytics.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    "sleep": {
+        "peptides": ["dsip", "pinealon", "selank", "ghk-cu", "kpv", "bpc-157"],
+        "description": "Restorative sleep. DSIP specifically promotes delta wave activity for deep sleep. Pinealon supports circadian rhythm regulation.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    "insomnia": {
+        "peptides": ["dsip", "pinealon", "selank", "ghk-cu"],
+        "description": "Difficulty falling or staying asleep. DSIP targets sleep architecture for deeper, more restorative rest without acting as a sedative.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    "sleep quality": {
+        "peptides": ["dsip", "pinealon", "selank", "kpv"],
+        "description": "Depth and restorative nature of sleep. DSIP increases delta wave activity for more restorative deep sleep stages.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    "deep sleep": {
+        "peptides": ["dsip", "pinealon"],
+        "description": "The most restorative stage of sleep. DSIP specifically promotes delta wave activity, the deepest stage of non-REM sleep.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    "circadian rhythm": {
+        "peptides": ["dsip", "pinealon", "epitalon"],
+        "description": "The body's internal 24-hour clock. Pinealon and epitalon are proposed to support circadian regulation through pineal peptide signaling.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    "mood": {
+        "peptides": ["selank", "semax", "ghk-cu", "kpv", "bpc-157"],
+        "description": "Emotional state and affect regulation. Neuropeptide modulators can influence mood through neurotransmitter and neurotrophic pathways.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    "stress response": {
+        "peptides": ["selank", "dsip", "semax", "kpv"],
+        "description": "The body's reaction to stressors. Peptides targeting HPA axis function and neurotransmitter balance help modulate stress responses.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    "cortisol": {
+        "peptides": ["dsip", "selank", "kpv"],
+        "description": "The primary stress hormone. DSIP has been shown to modulate cortisol and ACTH levels in research settings.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    "sleep onset": {
+        "peptides": ["dsip", "pinealon", "selank"],
+        "description": "The ability to fall asleep. Calming peptides help facilitate the transition from wakefulness to sleep.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    "nervousness": {
+        "peptides": ["selank", "dsip", "kpv"],
+        "description": "Feelings of apprehension or unease. Anxiolytic peptides provide calming effects without typical sedative side effects.",
+        "category": "Anxiety/Calm/Sleep",
+    },
+    # ─── Injury / Healing / Recovery ───
+    "injury recovery": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv", "thymosin-alpha-1", "aod-9604"],
+        "description": "Healing from physical injuries. BPC-157 and TB-500 are the most discussed peptides for accelerating tissue repair through angiogenesis and collagen synthesis.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "tendon injury": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv"],
+        "description": "Damage to tendons connecting muscle to bone. BPC-157 has strong preclinical evidence for tendon healing through increased collagen production.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "ligament injury": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv"],
+        "description": "Damage to ligaments connecting bone to bone. Healing peptides support ligament repair through angiogenesis and extracellular matrix remodeling.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "muscle tear": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv", "igf-1-lr3", "peg-mgf"],
+        "description": "Torn or strained muscle tissue. Repair peptides and growth factor analogs support muscle regeneration after injury.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "wound healing": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv", "thymosin-alpha-1"],
+        "description": "Repair of skin and soft tissue wounds. GHK-Cu has strong clinical evidence for wound healing through collagen synthesis and angiogenesis.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "joint injury": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv"],
+        "description": "Damage to joint structures including cartilage, ligaments, and tendons. Healing peptides support the repair of multiple joint tissue types.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "back pain": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv", "selank"],
+        "description": "Pain in the back often related to muscle, ligament, or disc issues. Healing peptides support tissue repair; selank offers anxiolytic pain modulation.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "sports injury": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv", "igf-1-lr3", "peg-mgf"],
+        "description": "Athletic-related tissue damage. Recovery peptides are commonly used in research settings for accelerated return from sports injuries.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "post-surgery": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv", "thymosin-alpha-1", "ipamorelin"],
+        "description": "Recovery after surgical procedures. Healing and immune-supporting peptides may help accelerate post-surgical tissue repair and reduce recovery time.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "surgical recovery": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "thymosin-alpha-1", "ipamorelin"],
+        "description": "Healing and recuperation after surgery. Multiple peptide classes support different aspects of post-surgical recovery.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "soft tissue injury": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv"],
+        "description": "Damage to muscles, tendons, or ligaments. Healing peptides promote angiogenesis and collagen deposition in damaged soft tissues.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "tendonitis": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu"],
+        "description": "Inflammation of a tendon. BPC-157 and TB-500 target both the inflammatory component and the tissue repair process.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "fracture healing": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv"],
+        "description": "Bone repair after fracture. Angiogenesis-promoting peptides support blood vessel growth into healing bone tissue.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "connective tissue": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv"],
+        "description": "Supporting and repairing connective tissues throughout the body. GHK-Cu and BPC-157 promote collagen synthesis and tissue integrity.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "collagen": {
+        "peptides": ["ghk-cu", "bpc-157", "tb-500"],
+        "description": "The primary structural protein in connective tissue. GHK-Cu is well-documented to stimulate collagen production in skin and connective tissues.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "scar tissue": {
+        "peptides": ["ghk-cu", "bpc-157", "tb-500"],
+        "description": "Fibrous tissue replacing normal tissue after injury. Remodeling peptides may help improve scar quality through collagen modulation.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "chronic pain": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "selank", "kpv"],
+        "description": "Persistent pain lasting beyond normal healing time. Anti-inflammatory and tissue-repair peptides address underlying causes of chronic pain.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "joint pain": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv"],
+        "description": "Pain in articular joints. Healing peptides target tissue repair and inflammation in joint structures.",
+        "category": "Injury/Healing/Recovery",
+    },
+    "arthritis": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv"],
+        "description": "Joint inflammation and degeneration. Peptides with anti-inflammatory and tissue-repair properties may support joint health in arthritic conditions.",
+        "category": "Injury/Healing/Recovery",
+    },
+    # ─── Immune / Inflammation ───
+    "immune support": {
+        "peptides": ["thymosin-alpha-1", "thymulin", "vilon", "kpv", "ghk-cu", "bpc-157"],
+        "description": "Supporting the body's immune defense system. Thymic peptides modulate immune function through T-cell maturation and activity.",
+        "category": "Immune/Inflammation",
+    },
+    "immune system": {
+        "peptides": ["thymosin-alpha-1", "thymulin", "vilon", "kpv", "ghk-cu"],
+        "description": "The body's defense network against pathogens. Thymic peptides support immune cell development and function.",
+        "category": "Immune/Inflammation",
+    },
+    "autoimmune": {
+        "peptides": ["kpv", "thymosin-alpha-1", "selank", "bpc-157"],
+        "description": "Conditions where the immune system attacks the body's own tissues. Immunomodulatory peptides may help regulate immune responses.",
+        "category": "Immune/Inflammation",
+    },
+    "chronic inflammation": {
+        "peptides": ["kpv", "bpc-157", "ghk-cu", "tb-500", "selank"],
+        "description": "Persistent low-grade inflammation throughout the body. Anti-inflammatory peptides target different inflammatory pathways.",
+        "category": "Immune/Inflammation",
+    },
+    "infection": {
+        "peptides": ["thymosin-alpha-1", "thymulin", "vilon"],
+        "description": "Invasion of the body by pathogens. Thymic peptides support immune cell activity against infections, studied in hepatitis and vaccine response contexts.",
+        "category": "Immune/Inflammation",
+    },
+    "immune modulation": {
+        "peptides": ["thymosin-alpha-1", "thymulin", "vilon", "kpv", "ghk-cu"],
+        "description": "Regulating immune system activity. Thymic peptides and anti-inflammatory peptides modulate rather than simply stimulate immune function.",
+        "category": "Immune/Inflammation",
+    },
+    "t-cells": {
+        "peptides": ["thymosin-alpha-1", "thymulin", "vilon"],
+        "description": "Critical immune cells responsible for adaptive immunity. Thymic peptides support T-cell maturation, differentiation, and activity.",
+        "category": "Immune/Inflammation",
+    },
+    "thymus": {
+        "peptides": ["thymosin-alpha-1", "thymulin", "vilon"],
+        "description": "The gland responsible for T-cell maturation. Thymic peptides support thymus function and are named for their thymus-derived origins.",
+        "category": "Immune/Inflammation",
+    },
+    "immunity": {
+        "peptides": ["thymosin-alpha-1", "thymulin", "vilon", "kpv", "ghk-cu"],
+        "description": "Resistance to infection and disease. Thymic peptides and immunomodulatory peptides support overall immune competence.",
+        "category": "Immune/Inflammation",
+    },
+    "frequent colds": {
+        "peptides": ["thymosin-alpha-1", "thymulin", "vilon"],
+        "description": "Recurrent upper respiratory infections. Immune-supporting thymic peptides may help reduce infection frequency.",
+        "category": "Immune/Inflammation",
+    },
+    "inflammatory": {
+        "peptides": ["kpv", "bpc-157", "ghk-cu", "tb-500", "selank"],
+        "description": "Conditions involving inflammation. Multiple peptides with anti-inflammatory properties can target different inflammatory mediators.",
+        "category": "Immune/Inflammation",
+    },
+    # ─── GI / Gut Repair ───
+    "gut health": {
+        "peptides": ["bpc-157", "kpv", "ghk-cu", "thymosin-alpha-1"],
+        "description": "Digestive system wellness and function. BPC-157 has the strongest preclinical evidence for gastrointestinal healing and gut barrier repair.",
+        "category": "GI/Gut Repair",
+    },
+    "leaky gut": {
+        "peptides": ["bpc-157", "kpv", "ghk-cu"],
+        "description": "Increased intestinal permeability. BPC-157 promotes gut barrier integrity through angiogenesis and tight junction regulation in the intestinal lining.",
+        "category": "GI/Gut Repair",
+    },
+    "ibs": {
+        "peptides": ["bpc-157", "kpv", "ghk-cu"],
+        "description": "Irritable bowel syndrome. BPC-157 has been studied in animal models for reducing intestinal inflammation and normalizing gut motility.",
+        "category": "GI/Gut Repair",
+    },
+    "irritable bowel": {
+        "peptides": ["bpc-157", "kpv"],
+        "description": "Functional bowel disorder with abdominal pain and altered bowel habits. Gut-healing peptides may support intestinal barrier function.",
+        "category": "GI/Gut Repair",
+    },
+    "crohn's": {
+        "peptides": ["bpc-157", "kpv", "thymosin-alpha-1"],
+        "description": "Inflammatory bowel disease affecting the digestive tract. BPC-157 has shown protective effects in animal models of intestinal inflammation.",
+        "category": "GI/Gut Repair",
+    },
+    "crohns": {
+        "peptides": ["bpc-157", "kpv", "thymosin-alpha-1"],
+        "description": "Chronic inflammatory bowel condition. Gut-healing and immunomodulatory peptides may support intestinal health in inflammatory conditions.",
+        "category": "GI/Gut Repair",
+    },
+    "ulcerative colitis": {
+        "peptides": ["bpc-157", "kpv", "thymosin-alpha-1"],
+        "description": "Inflammatory bowel disease of the colon. BPC-157 has demonstrated protective effects in colitis animal models.",
+        "category": "GI/Gut Repair",
+    },
+    "ibd": {
+        "peptides": ["bpc-157", "kpv", "thymosin-alpha-1"],
+        "description": "Inflammatory bowel disease. Gut-healing and immunomodulatory peptides target both the inflammatory and tissue-repair aspects of IBD.",
+        "category": "GI/Gut Repair",
+    },
+    "gut healing": {
+        "peptides": ["bpc-157", "kpv", "ghk-cu"],
+        "description": "Repair of the gastrointestinal lining. BPC-157 is the most studied peptide for gastrointestinal tissue repair and barrier function.",
+        "category": "GI/Gut Repair",
+    },
+    "intestinal permeability": {
+        "peptides": ["bpc-157", "kpv"],
+        "description": "Increased leakiness of the gut barrier. BPC-157 promotes tight junction integrity and mucosal healing in the intestinal wall.",
+        "category": "GI/Gut Repair",
+    },
+    "stomach ulcer": {
+        "peptides": ["bpc-157"],
+        "description": "Open sores in the stomach lining. BPC-157 has strong preclinical evidence for accelerating gastric ulcer healing through angiogenesis and growth factor upregulation.",
+        "category": "GI/Gut Repair",
+    },
+    "digestive health": {
+        "peptides": ["bpc-157", "kpv", "ghk-cu"],
+        "description": "Overall digestive system function. Gut-healing peptides support intestinal integrity and digestive wellness.",
+        "category": "GI/Gut Repair",
+    },
+    "gastritis": {
+        "peptides": ["bpc-157", "kpv"],
+        "description": "Inflammation of the stomach lining. BPC-157 has shown gastroprotective and anti-inflammatory effects in the gastric mucosa.",
+        "category": "GI/Gut Repair",
+    },
+    # ─── Skin / Hair ───
+    "skin health": {
+        "peptides": ["ghk-cu", "melanotan-2", "bpc-157", "tb-500", "ghk-cu"],
+        "description": "Overall skin condition and appearance. GHK-Cu is well-documented for skin rejuvenation, collagen synthesis, and wound healing.",
+        "category": "Skin/Hair",
+    },
+    "wrinkles": {
+        "peptides": ["ghk-cu", "ghk-cu"],
+        "description": "Skin folds and creases from aging. GHK-Cu stimulates collagen production and skin remodeling to reduce wrinkle depth.",
+        "category": "Skin/Hair",
+    },
+    "collagen production": {
+        "peptides": ["ghk-cu", "bpc-157", "tb-500"],
+        "description": "Synthesis of collagen, the main structural skin protein. GHK-Cu is one of the most studied peptides for stimulating collagen production.",
+        "category": "Skin/Hair",
+    },
+    "skin elasticity": {
+        "peptides": ["ghk-cu", "ghk-cu"],
+        "description": "The skin's ability to stretch and return to shape. GHK-Cu supports skin matrix remodeling for improved firmness and elasticity.",
+        "category": "Skin/Hair",
+    },
+    "hair growth": {
+        "peptides": ["ghk-cu", "bpc-157", "melanotan-2"],
+        "description": "Stimulation of hair follicle activity. GHK-Cu is studied for hair growth through improved blood flow and follicle health.",
+        "category": "Skin/Hair",
+    },
+    "hair loss": {
+        "peptides": ["ghk-cu", "bpc-157", "melanotan-2"],
+        "description": "Thinning or loss of hair. Copper peptides have been studied for hair follicle support and potential regrowth stimulation.",
+        "category": "Skin/Hair",
+    },
+    "skin regeneration": {
+        "peptides": ["ghk-cu", "bpc-157", "tb-500", "kpv"],
+        "description": "Renewal and repair of skin tissue. Multiple peptides support different aspects of skin regeneration through collagen production, angiogenesis, and cell migration.",
+        "category": "Skin/Hair",
+    },
+    "skin firmness": {
+        "peptides": ["ghk-cu"],
+        "description": "Skin tightness and resistance to sagging. GHK-Cu supports collagen and elastin production for improved skin firmness.",
+        "category": "Skin/Hair",
+    },
+    "tanning": {
+        "peptides": ["melanotan-2", "ghk-cu"],
+        "description": "Skin pigmentation through melanin production. Melanotan II stimulates melanocortin receptors for increased melanin synthesis and UV-independent tanning.",
+        "category": "Skin/Hair",
+    },
+    # ─── Bone / Joint / Connective Tissue ───
+    "osteoporosis": {
+        "peptides": ["ghk-cu", "bpc-157", "tb-500", "mk-677"],
+        "description": "Reduced bone density and increased fracture risk. GHK-Cu supports bone remodeling; MK-677 has been studied for bone turnover in elderly populations.",
+        "category": "Bone/Joint/Connective Tissue",
+    },
+    "bone density": {
+        "peptides": ["ghk-cu", "mk-677", "bpc-157"],
+        "description": "Bone mineral content and structural strength. Peptides supporting collagen synthesis and GH signaling may influence bone metabolism.",
+        "category": "Bone/Joint/Connective Tissue",
+    },
+    "joint health": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv"],
+        "description": "Joint structure and function. Healing and anti-inflammatory peptides support joint tissue integrity and repair.",
+        "category": "Bone/Joint/Connective Tissue",
+    },
+    "cartilage": {
+        "peptides": ["bpc-157", "ghk-cu", "tb-500"],
+        "description": "Flexible connective tissue cushioning joints. Repair peptides may support cartilage matrix maintenance through collagen and proteoglycan synthesis.",
+        "category": "Bone/Joint/Connective Tissue",
+    },
+    "connective tissue repair": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv"],
+        "description": "Repair of ligaments, tendons, and fascia. Healing peptides promote collagen synthesis and angiogenesis for connective tissue regeneration.",
+        "category": "Bone/Joint/Connective Tissue",
+    },
+    "ligament healing": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu"],
+        "description": "Repair of torn or damaged ligaments. BPC-157 and TB-500 support ligament healing through improved blood flow and collagen alignment.",
+        "category": "Bone/Joint/Connective Tissue",
+    },
+    "tendon healing": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu"],
+        "description": "Repair of tendon injuries. BPC-157 has preclinical evidence for accelerating tendon healing through increased collagen production.",
+        "category": "Bone/Joint/Connective Tissue",
+    },
+    "osteoarthritis": {
+        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv"],
+        "description": "Degenerative joint disease. Anti-inflammatory and tissue-repair peptides may support joint health in osteoarthritis.",
+        "category": "Bone/Joint/Connective Tissue",
+    },
+    # ─── Cardiovascular / Pulmonary ───
+    "heart health": {
+        "peptides": ["ss-31", "humanin", "mots-c", "ghk-cu", "bpc-157"],
+        "description": "Cardiovascular system wellness. SS-31 has been studied in heart failure; humanin offers cardioprotective effects in preclinical models.",
+        "category": "Cardiovascular/Pulmonary",
+    },
+    "blood pressure": {
+        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "bpc-157"],
+        "description": "Arterial blood pressure levels. Weight loss from incretin therapies often improves blood pressure. BPC-157 has shown blood pressure modulation in animal studies.",
+        "category": "Cardiovascular/Pulmonary",
+    },
+    "cardiovascular": {
+        "peptides": ["ss-31", "humanin", "mots-c", "ghk-cu", "bpc-157"],
+        "description": "Heart and blood vessel health. Mitochondrial-targeted peptides support cardiac energy metabolism; incretin therapies improve cardiovascular risk factors.",
+        "category": "Cardiovascular/Pulmonary",
+    },
+    "heart disease": {
+        "peptides": ["ss-31", "humanin", "bpc-157"],
+        "description": "Conditions affecting the heart. SS-31 has clinical trial data in heart failure. Humanin shows cardioprotective effects in preclinical models.",
+        "category": "Cardiovascular/Pulmonary",
+    },
+    "heart failure": {
+        "peptides": ["ss-31", "humanin"],
+        "description": "Reduced cardiac pumping capacity. SS-31 (elamipretide) has been studied in clinical trials for heart failure with preserved ejection fraction.",
+        "category": "Cardiovascular/Pulmonary",
+    },
+    "exercise tolerance": {
+        "peptides": ["ss-31", "mots-c", "aod-9604"],
+        "description": "Capacity for physical exertion. SS-31 has shown improved exercise tolerance in clinical studies of mitochondrial dysfunction.",
+        "category": "Cardiovascular/Pulmonary",
+    },
+    "vascular health": {
+        "peptides": ["ss-31", "humanin", "bpc-157", "ghk-cu"],
+        "description": "Blood vessel function and integrity. Angiogenic and mitochondrial peptides support different aspects of vascular health.",
+        "category": "Cardiovascular/Pulmonary",
+    },
+    # ─── Sexual / Reproductive ───
+    "low libido": {
+        "peptides": ["pt-141", "kisspeptin-10", "melanotan-2"],
+        "description": "Reduced sexual desire. PT-141 (bremelanotide) is FDA-approved for hypoactive sexual desire disorder. Kisspeptin-10 modulates reproductive hormone signaling.",
+        "category": "Sexual/Reproductive",
+    },
+    "sexual desire": {
+        "peptides": ["pt-141", "kisspeptin-10", "melanotan-2"],
+        "description": "Interest in sexual activity. PT-141 activates melanocortin receptors in the brain's reward and desire pathways.",
+        "category": "Sexual/Reproductive",
+    },
+    "erectile dysfunction": {
+        "peptides": ["pt-141", "kisspeptin-10", "melanotan-2"],
+        "description": "Difficulty achieving or maintaining erections. PT-141 is used off-label for ED through central melanocortin activation rather than vascular mechanisms.",
+        "category": "Sexual/Reproductive",
+    },
+    "sexual arousal": {
+        "peptides": ["pt-141", "kisspeptin-10", "melanotan-2"],
+        "description": "Physiological and psychological sexual response. PT-141 directly activates central pathways involved in sexual arousal.",
+        "category": "Sexual/Reproductive",
+    },
+    "hsdd": {
+        "peptides": ["pt-141"],
+        "description": "Hypoactive sexual desire disorder. PT-141 (bremelanotide/Vyleesi) is FDA-approved specifically for HSDD in premenopausal women.",
+        "category": "Sexual/Reproductive",
+    },
+    "fertility": {
+        "peptides": ["kisspeptin-10", "ghrp-6", "pt-141"],
+        "description": "Reproductive capacity. Kisspeptin-10 stimulates GnRH release and has been studied for reproductive hormone modulation.",
+        "category": "Sexual/Reproductive",
+    },
+    "testosterone": {
+        "peptides": ["kisspeptin-10", "pt-141", "tesamorelin", "ipamorelin"],
+        "description": "Primary male sex hormone. Kisspeptin-10 stimulates LH release which signals testosterone production. GH-axis peptides support the hormonal environment.",
+        "category": "Sexual/Reproductive",
+    },
+    "hormonal imbalance": {
+        "peptides": ["kisspeptin-10", "tesamorelin", "pt-141", "ghrp-6"],
+        "description": "Disruption in normal hormone levels. Peptides modulating the HPG and GH axes may help address certain hormonal imbalances.",
+        "category": "Sexual/Reproductive",
+    },
+    # ─── Hormonal / GH Optimization ───
+    "growth hormone": {
+        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "sermorelin", "mk-677", "ghrp-2", "ghrp-6", "hexarelin", "aod-9604"],
+        "description": "Increasing endogenous growth hormone production. GHRH analogs and GH secretagogues stimulate pituitary GH release through complementary mechanisms.",
+        "category": "Hormonal/GH Optimization",
+    },
+    "gh deficiency": {
+        "peptides": ["tesamorelin", "sermorelin", "cjc-1295", "mk-677", "ghrp-2", "ipamorelin"],
+        "description": "Insufficient growth hormone production. GHRH analogs like tesamorelin and sermorelin have clinical data for GH deficiency indications.",
+        "category": "Hormonal/GH Optimization",
+    },
+    "igf-1": {
+        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "mk-677", "sermorelin", "ghrp-2", "igf-1-lr3", "hexarelin"],
+        "description": "Insulin-like growth factor 1 levels. GH-axis peptides increase endogenous IGF-1 production. IGF-1 LR3 provides direct receptor activation.",
+        "category": "Hormonal/GH Optimization",
+    },
+    "hgh": {
+        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "sermorelin", "mk-677", "ghrp-2", "ghrp-6", "hexarelin"],
+        "description": "Human growth hormone signaling. GHRH analogs and GH secretagogues stimulate the body's own GH production rather than providing exogenous HGH.",
+        "category": "Hormonal/GH Optimization",
+    },
+    "hormone optimization": {
+        "peptides": ["tesamorelin", "ipamorelin", "kisspeptin-10", "mk-677", "sermorelin", "cjc-1295"],
+        "description": "Balancing and optimizing hormone levels. GH-axis and reproductive hormone-modulating peptides support endocrine function.",
+        "category": "Hormonal/GH Optimization",
+    },
+    "pituitary": {
+        "peptides": ["tesamorelin", "sermorelin", "cjc-1295", "ghrp-2", "ipamorelin"],
+        "description": "The master endocrine gland. GHRH analogs directly stimulate the pituitary to release growth hormone in natural pulsatile patterns.",
+        "category": "Hormonal/GH Optimization",
+    },
+    # ─── Mitochondrial / Energy ───
+    "low energy": {
+        "peptides": ["ss-31", "mots-c", "humanin", "aod-9604", "ghk-cu"],
+        "description": "Insufficient physical or mental energy. Mitochondrial peptides target cellular energy production at the mitochondrial level.",
+        "category": "Mitochondrial/Energy",
+    },
+    "fatigue": {
+        "peptides": ["ss-31", "mots-c", "humanin", "aod-9604", "dsip", "ghk-cu"],
+        "description": "Persistent tiredness or exhaustion. Mitochondrial peptides address cellular energy; DSIP supports restorative sleep for fatigue recovery.",
+        "category": "Mitochondrial/Energy",
+    },
+    "mitochondrial function": {
+        "peptides": ["ss-31", "mots-c", "humanin", "ghk-cu"],
+        "description": "Cellular energy production efficiency. SS-31 targets the inner mitochondrial membrane; MOTS-c regulates metabolic signaling from mitochondria.",
+        "category": "Mitochondrial/Energy",
+    },
+    "cellular energy": {
+        "peptides": ["ss-31", "mots-c", "humanin", "ghk-cu"],
+        "description": "ATP production at the cellular level. Mitochondrial-targeted peptides optimize electron transport chain efficiency and reduce oxidative stress.",
+        "category": "Mitochondrial/Energy",
+    },
+    "chronic fatigue": {
+        "peptides": ["ss-31", "mots-c", "humanin", "dsip"],
+        "description": "Persistent, unexplained exhaustion. Mitochondrial peptides target the cellular energy deficit that may underlie chronic fatigue.",
+        "category": "Mitochondrial/Energy",
+    },
+    "energy levels": {
+        "peptides": ["ss-31", "mots-c", "humanin", "aod-9604", "ghk-cu"],
+        "description": "Overall daily energy and vitality. Mitochondrial support peptides optimize the cellular machinery responsible for energy production.",
+        "category": "Mitochondrial/Energy",
+    },
+    "metabolic flexibility": {
+        "peptides": ["mots-c", "ss-31", "aod-9604", "humanin"],
+        "description": "The ability to switch between fuel sources. MOTS-c regulates metabolic transitions between glucose and fat utilization.",
+        "category": "Mitochondrial/Energy",
+    },
+    # ─── General ───
+    "hot flashes": {
+        "peptides": ["kisspeptin-10", "melanotan-2", "tesamorelin", "selank"],
+        "description": "Sudden sensations of warmth often associated with hormonal changes. Kisspeptin-10 modulates reproductive hormone signaling involved in temperature regulation.",
+        "category": "Hormonal/GH Optimization",
+    },
+    "menopause": {
+        "peptides": ["kisspeptin-10", "tesamorelin", "aod-9604", "ghk-cu", "dsip"],
+        "description": "The natural end of menstrual cycles. Peptides addressing hormonal, metabolic, and sleep changes may support women during menopausal transition.",
+        "category": "Hormonal/GH Optimization",
+    },
+}
+
 COMMUNITY_NOTES = {
     "retatrutide+tesamorelin": "Community discussions often pair incretin-based fat-loss signals with GH-axis body-composition goals; this is anecdotal and must be validated against trial evidence.",
     "retatrutide+tesamorelin+ipamorelin": "Forum protocols sometimes phase GH-axis adjuncts after initial response period; evidence quality is lower than controlled trials.",
@@ -2474,6 +3407,29 @@ def _do_search():
             {"label": "RCSB Protein Data Bank", "url": f"https://www.rcsb.org/search?request=%7B%22query%22%3A%7B%22type%22%3A%22group%22%2C%22logical_operator%22%3A%22and%22%2C%22nodes%22%3A%5B%7B%22type%22%3A%22terminal%22%2C%22service%22%3A%22full_text%22%2C%22parameters%22%3A%7B%22value%22%3A%22{quote(term)}%22%7D%7D%5D%7D%7D"},
             {"label": "UniProt", "url": f"https://www.uniprot.org/uniprotkb?query={quote(term)}"},
         ],
+        "protocol": STACK_PROTOCOLS.get(term),
+        "stack_pairings": [
+            {
+                "stack_key": sk,
+                "name": proto.get("name", sk),
+                "goal": proto.get("goal", ""),
+                "cycle_weeks": proto.get("cycle_weeks", 0),
+                "summary": proto.get("evidence_summary", ""),
+            }
+            for sk, proto in STACK_PROTOCOLS.items()
+            if term in sk.split("+")
+        ][:8],
+        "local_data": {
+            "stack_knowledge": STACK_KNOWLEDGE.get(term, {}),
+            "snapshot": SNAPSHOT_LIBRARY.get(term, {}),
+            "goals": [
+                gk for gk, gv in GOAL_BLUEPRINTS.items()
+                if any(
+                    et in STACK_KNOWLEDGE.get(term, {}).get("effects", [])
+                    for et in gv.get("primary_targets", [])
+                )
+            ],
+        },
     }
     return jsonify(response)
 
@@ -2581,6 +3537,136 @@ def stack_recommend():
             },
         }
     ), 200
+
+
+@app.route('/symptom-search')
+def symptom_search():
+    raw_query = (request.args.get("q") or "").strip()
+    if not raw_query:
+        return jsonify({"error": "Please describe what you are looking for."}), 400
+
+    query = raw_query.lower().strip()
+    stop_words = {
+        "a", "an", "the", "for", "and", "or", "to", "of", "in", "with", "that",
+        "is", "it", "on", "at", "by", "i", "me", "my", "we", "our", "you",
+        "your", "he", "she", "they", "them", "their", "this", "that", "these",
+        "those", "am", "are", "was", "were", "be", "been", "being", "have",
+        "has", "had", "do", "does", "did", "but", "if", "because", "as",
+        "until", "while", "about", "between", "through", "during", "before",
+        "after", "above", "below", "up", "down", "out", "off", "over", "under",
+        "again", "further", "then", "once", "here", "there", "when", "where",
+        "why", "how", "all", "each", "every", "both", "few", "more", "most",
+        "other", "some", "such", "no", "nor", "not", "only", "own", "same",
+        "so", "than", "too", "very", "just", "get", "something", "need",
+        "help", "want", "looking", "good", "best", "treat", "treatment",
+        "peptide", "peptides", "can", "what", "any", "anything",
+    }
+    tokens = re.findall(r'[a-z]+', query)
+    tokens = [t for t in tokens if t not in stop_words and len(t) > 1]
+
+    if not tokens:
+        # Single word query that was a stop word — still try exact match
+        tokens = [query]
+
+    scored = []
+    for condition_key, entry in SYMPTOM_CONDITION_MAP.items():
+        score = 0
+        if query == condition_key:
+            score += 100
+        elif condition_key in query or query in condition_key:
+            score += 60
+        key_tokens = set(re.findall(r'[a-z]+', condition_key))
+        if tokens:
+            overlap = sum(1 for t in tokens if t in condition_key)
+            score += overlap * 20
+            partial = sum(
+                1 for t in tokens for k in key_tokens
+                if len(t) > 2 and (t in k or k in t)
+            )
+            score += partial * 8
+        if score > 0:
+            scored.append((condition_key, score, entry))
+
+    if not scored:
+        for pep_name, meta in STACK_KNOWLEDGE.items():
+            pep_lower = pep_name.lower()
+            if pep_lower in query or query in pep_lower:
+                scored.append((pep_name, 90, {
+                    "peptides": [pep_name],
+                    "description": meta.get("summary", ""),
+                    "category": "Direct Peptide Match",
+                }))
+            elif any(t in pep_lower for t in tokens):
+                scored.append((pep_name, 40, {
+                    "peptides": [pep_name],
+                    "description": meta.get("summary", ""),
+                    "category": "Direct Peptide Match",
+                }))
+
+    scored.sort(key=lambda x: x[1], reverse=True)
+
+    seen_peptides = set()
+    results = []
+    for condition_key, score, entry in scored[:20]:
+        for pep in entry["peptides"]:
+            pep = normalize_term(pep)
+            if pep in STACK_KNOWLEDGE and pep not in seen_peptides:
+                seen_peptides.add(pep)
+                sk = STACK_KNOWLEDGE[pep]
+                results.append({
+                    "peptide": pep,
+                    "condition_matched": condition_key,
+                    "match_score": score,
+                    "reason": entry["description"],
+                    "category": entry.get("category", "General"),
+                    "stack_knowledge": {
+                        "effects": sk.get("effects", []),
+                        "tier": sk.get("tier", "D"),
+                        "summary": sk.get("summary", ""),
+                    },
+                    "snapshot": {
+                        k: SNAPSHOT_LIBRARY.get(pep, {}).get(k, "")
+                        for k in ["primary_effect", "mechanism_pathway",
+                                  "expected_body_outcomes", "clinical_context"]
+                    },
+                })
+
+    matched_peptides_set = set(r["peptide"] for r in results)
+    relevant_stacks = []
+    for stack_key, proto in STACK_PROTOCOLS.items():
+        stack_peps = stack_key.split("+")
+        overlap = [p for p in stack_peps if p in matched_peptides_set]
+        if overlap:
+            relevance = len(overlap) / len(stack_peps)
+            first_pep = stack_peps[0]
+            relevant_stacks.append({
+                "stack_key": stack_key,
+                "name": proto.get("name", stack_key),
+                "goal": proto.get("goal", ""),
+                "matched_peptides": overlap,
+                "relevance": round(relevance, 2),
+                "protocol": {
+                    "cycle_weeks": proto.get("cycle_weeks", 0),
+                    "off_weeks": proto.get("off_weeks", 0),
+                    "phases": proto.get("phases", []),
+                    "post_cycle": proto.get("post_cycle", ""),
+                    "evidence_summary": proto.get("evidence_summary", ""),
+                },
+                "evidence_tier": STACK_KNOWLEDGE.get(first_pep, {}).get("tier", "D"),
+            })
+    relevant_stacks.sort(key=lambda s: (s["relevance"], len(s["matched_peptides"])), reverse=True)
+    relevant_stacks = relevant_stacks[:5]
+
+    return jsonify({
+        "query": raw_query,
+        "normalized_query": query,
+        "matched_conditions": [c for c, s, e in scored[:10]],
+        "peptide_results": results[:15],
+        "matched_stacks": relevant_stacks,
+        "total_peptides_matched": len(results),
+        "total_stacks_matched": len(relevant_stacks),
+    }), 200
+
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", "8000"))
