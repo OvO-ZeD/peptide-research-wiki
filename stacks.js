@@ -1,9 +1,5 @@
 /* ─── State ─── */
-var resultsRoot = document.getElementById('stack_results');
 var SAVED_STACKS_KEY = 'peptide_saved_stacks';
-var _lastResponse = null;
-var _lastGoal = '';
-var _lastGoalLabel = '';
 
 /* ─── Saved stacks (localStorage) ─── */
 function loadSavedStacks() {
@@ -48,37 +44,19 @@ function badgeTier(tier) {
   return '<span class="badge badge-tier-' + tier.toLowerCase() + '">' + escapeHtml(tier) + '</span>';
 }
 
-/* ─── Skeleton ─── */
-function renderSkeleton() {
-  var html = '';
-  for (var i = 0; i < 4; i++) {
-    html += '<div class="skeleton-card" style="animation:fadeSlide 0.4s ease-out both;animation-delay:' + (i * 0.06) + 's">' +
-      '<div class="skeleton-line short"></div>' +
-      '<div class="skeleton-line" style="width:45%"></div>' +
-      '<div style="display:flex;gap:6px;margin-top:10px">' +
-        '<div class="skeleton-badge"></div>' +
-        '<div class="skeleton-badge" style="width:60px"></div>' +
-      '</div>' +
-    '</div>';
-  }
-  resultsRoot.innerHTML = html;
-}
+/* ─── Render saved stacks section ─── */
+function renderSavedStacksSection() {
+  var saved = loadSavedStacks();
+  if (!saved.length) return '';
 
-/* ─── Fetch Stacks ─── */
-async function fetchStacks(goal) {
-  _lastGoal = goal;
-  renderSkeleton();
-
-  try {
-    var res = await fetch('/stack-recommend?goal=' + encodeURIComponent(goal));
-    if (!res.ok) throw new Error('Failed to load.');
-    var data = await res.json();
-    _lastResponse = data;
-    _lastGoalLabel = data.goal_label || goal;
-    renderStacks(data, goal);
-  } catch (err) {
-    resultsRoot.innerHTML = '<div class="empty-state"><p>Could not load recommendations.</p></div>';
+  var html = '<div class="saved-section"><div class="saved-header">' +
+    '<h3 class="saved-title">&#9733; Saved Stacks</h3>' +
+    '<span class="saved-count">' + saved.length + '</span></div>';
+  for (var si = 0; si < saved.length; si++) {
+    html += renderStackCard(saved[si], true);
   }
+  html += '</div>';
+  return html;
 }
 
 /* ─── Copy protocol ─── */
@@ -239,19 +217,23 @@ function renderStackCard(r, saved) {
 /* ─── Symptom Search ─── */
 
 async function doSymptomSearch() {
-  var input = document.getElementById('symptom_search_input');
-  var resultsContainer = document.getElementById('symptom_search_results');
-  var statusEl = document.getElementById('symptom_search_status');
+  var input = document.getElementById('search_input');
+  var resultsContainer = document.getElementById('search_results');
+  var statusEl = document.getElementById('search_status');
+  var defaultState = document.getElementById('default_state');
   var query = (input && input.value.trim()) || '';
 
   if (!query) {
-    if (statusEl) statusEl.textContent = 'Please describe what you are looking for.';
     return;
   }
 
+  // Deactivate category chips
+  document.querySelectorAll('.cat-chip.active').forEach(function (c) { c.classList.remove('active'); });
+
+  if (defaultState) defaultState.style.display = 'none';
   resultsContainer.style.display = 'block';
   resultsContainer.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span><span></span><span></span></div>';
-  if (statusEl) statusEl.textContent = 'Searching for "' + escapeHtml(query) + '"...';
+  if (statusEl) { statusEl.style.display = 'block'; statusEl.textContent = 'Searching for "' + escapeHtml(query) + '"...'; }
 
   try {
     var res = await fetch('/symptom-search?q=' + encodeURIComponent(query));
@@ -268,13 +250,17 @@ async function doSymptomSearch() {
     resultsContainer.innerHTML = renderSymptomResults(data);
     resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (err) {
-    resultsContainer.innerHTML = '<div class="empty-state"><p>' + escapeHtml(err.message || 'Could not complete search.') + '</p><p style="font-size:0.78rem">Try simpler terms like "fat loss", "sleep", "anxiety", or a specific condition.</p></div>';
-    if (statusEl) statusEl.textContent = 'Could not complete search.';
+    if (defaultState) defaultState.style.display = '';
+    resultsContainer.style.display = 'none';
+    if (statusEl) { statusEl.style.display = 'none'; }
   }
 }
 
 function renderSymptomResults(data) {
   var html = '';
+
+  // Saved stacks (always shown above results)
+  html += renderSavedStacksSection();
 
   var conditions = data.matched_conditions || [];
   if (conditions.length) {
@@ -440,98 +426,59 @@ function renderSymptomStackCard(stack, index) {
   return html;
 }
 
-/* ─── Filter stacks ─── */
-function filterStacks(val) {
-  var q = val.toLowerCase().trim();
-  var cards = resultsRoot.querySelectorAll('.stack-card');
-  for (var i = 0; i < cards.length; i++) {
-    var name = cards[i].getAttribute('data-stack-name') || '';
-    cards[i].style.display = (!q || name.toLowerCase().indexOf(q) > -1) ? '' : 'none';
-  }
-}
-
-/* ─── Render Stacks ─── */
-function renderStacks(data, currentGoal) {
-  var recs = data.recommendations || [];
-  var saved = loadSavedStacks();
-  var html = '';
-
-  // ─── Saved stacks section ───
-  if (saved.length) {
-    html += '<div class="saved-section"><div class="saved-header">' +
-      '<h3 class="saved-title">&#9733; Saved Stacks</h3>' +
-      '<span class="saved-count">' + saved.length + '</span></div>';
-    for (var si = 0; si < saved.length; si++) {
-      html += renderStackCard(saved[si], true);
-    }
-    html += '</div>';
-  }
-
-  // ─── Current results ───
-  if (!recs.length) {
-    html += '<div class="empty-state"><p>No stacks found for this goal.</p></div>';
-  } else {
-    html += '<div class="results-header"><h3 class="results-title">' + escapeHtml(_lastGoalLabel || currentGoal || '') + '</h3></div>';
-    for (var i = 0; i < recs.length; i++) {
-      html += renderStackCard(recs[i]);
-    }
-  }
-
-  resultsRoot.innerHTML = html;
-}
-
 /* ─── Toggle stack body ─── */
 function toggleStack(btn) {
   btn.parentElement.classList.toggle('open');
 }
 
-/* ─── Save / Unsave ─── */
+/* ─── Save / Unsave from saved stacks ─── */
 function toggleSave(el, name) {
-  var isSaved = el.classList.contains('saved');
-
-  if (isSaved) {
+  if (el.classList.contains('saved')) {
     removeStackFromLocal({ stack: name.split(' + ') });
     if (typeof showToast === 'function') showToast('Stack unsaved', '☆');
-  } else {
-    var recs = (_lastResponse && _lastResponse.recommendations) || [];
-    var found = null;
-    for (var i = 0; i < recs.length; i++) {
-      if (stackName(recs[i]) === name) { found = recs[i]; break; }
-    }
-    if (found) {
-      saveStackToLocal(found);
-      if (typeof showToast === 'function') showToast('Stack saved', '★');
-    }
+    updateSavedSection();
   }
-
-  renderStacks(_lastResponse || { recommendations: [] }, _lastGoal);
 }
 
-/* ─── Dropdown change ─── */
+function updateSavedSection() {
+  var container = document.getElementById('search_results');
+  if (!container || container.style.display === 'none') return;
+  var existing = container.querySelector('.saved-section');
+  var html = renderSavedStacksSection();
+  if (existing) {
+    if (html) {
+      existing.outerHTML = html;
+    } else {
+      existing.remove();
+    }
+  } else if (html) {
+    container.insertAdjacentHTML('afterbegin', html);
+  }
+}
+
+/* ─── DOM ready ─── */
 document.addEventListener('DOMContentLoaded', function () {
-  var sel = document.getElementById('goal_select');
-  if (!sel) return;
-  sel.addEventListener('change', function () {
-    fetchStacks(this.value);
+  // Category chips
+  document.querySelectorAll('.cat-chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      var q = this.getAttribute('data-q');
+      var input = document.getElementById('search_input');
+      if (input) { input.value = q; }
+      document.querySelectorAll('.cat-chip.active').forEach(function (c) { c.classList.remove('active'); });
+      this.classList.add('active');
+      doSymptomSearch();
+    });
   });
 
-  // Stack filter input
-  var filter = document.getElementById('stack_filter');
-  if (filter) {
-    filter.addEventListener('input', function () { filterStacks(this.value); });
-  }
-
-  // Symptom search
-  var symptomInput = document.getElementById('symptom_search_input');
-  var symptomBtn = document.getElementById('symptom_search_btn');
-  if (symptomInput) {
-    symptomInput.addEventListener('keydown', function (e) {
+  // Search input
+  var searchInput = document.getElementById('search_input');
+  var searchBtn = document.getElementById('search_btn');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') { e.preventDefault(); doSymptomSearch(); }
     });
   }
-  if (symptomBtn) {
-    symptomBtn.addEventListener('click', function (e) { e.preventDefault(); doSymptomSearch(); });
+  if (searchBtn) {
+    searchBtn.addEventListener('click', function (e) { e.preventDefault(); doSymptomSearch(); });
   }
-
-  fetchStacks(sel.value);
 });
