@@ -6,14 +6,9 @@
   var messages = document.getElementById('chat_messages');
   var welcome = document.getElementById('welcome_state');
   var suggestions = document.getElementById('suggestions');
-  var interactionPicker = document.getElementById('interaction_picker');
-  var interactionCheckBtn = document.getElementById('interaction_check_btn');
-  var interactionResults = document.getElementById('interaction_results');
 
   /* ─── State ─── */
   var isSending = false;
-  var selectedPeptides = [];
-  var allPeptideNames = [];
 
   /* ─── Toast ─── */
   function showToast(msg) {
@@ -37,6 +32,15 @@
 
     if (role === 'user') {
       div.textContent = text;
+    } else if (role === 'interaction') {
+      /* Render interaction results as chat message */
+      var label = document.createElement('div');
+      label.className = 'msg-label';
+      label.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:12px;height:12px;vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg> Interaction Check';
+      div.appendChild(label);
+      var content = document.createElement('div');
+      content.innerHTML = text;
+      div.appendChild(content);
     } else {
       /* Parse markdown-style formatting */
       var html = '';
@@ -108,7 +112,7 @@
         div.appendChild(stackDiv);
       }
 
-      /* Action buttons: Copy, Dosage, Safety */
+      /* Action buttons: Copy, Dosage, Safety, Interactions */
       var actions = document.createElement('div');
       actions.className = 'msg-actions';
 
@@ -130,26 +134,40 @@
       });
       actions.appendChild(copyBtn);
 
-      /* Dosage buttons — from citations */
+      /* Dosage, Safety, Interactions — require citations */
       if (extra && extra.citations && extra.citations.length) {
+        var pepList = [];
+        for (var ci2 = 0; ci2 < extra.citations.length; ci2++) {
+          pepList.push(extra.citations[ci2].peptide || extra.citations[ci2].source);
+        }
+        var firstPep = pepList[0];
+
         var dosageBtn = document.createElement('button');
         dosageBtn.className = 'msg-action-btn';
         dosageBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Dosage';
         dosageBtn.addEventListener('click', function () {
-          var pep = extra.citations[0].peptide || extra.citations[0].source;
-          fetchDosage(pep, dosageBtn);
+          fetchDosage(firstPep, dosageBtn);
         });
         actions.appendChild(dosageBtn);
 
-        /* Safety button */
         var safetyBtn = document.createElement('button');
         safetyBtn.className = 'msg-action-btn';
         safetyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5"/></svg> Safety';
         safetyBtn.addEventListener('click', function () {
-          var pep = extra.citations[0].peptide || extra.citations[0].source;
-          fetchSafety(pep, safetyBtn);
+          fetchSafety(firstPep, safetyBtn);
         });
         actions.appendChild(safetyBtn);
+
+        /* Interactions button — only when 2+ citations */
+        if (pepList.length >= 2) {
+          var ixBtn = document.createElement('button');
+          ixBtn.className = 'msg-action-btn';
+          ixBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg> Interactions';
+          ixBtn.addEventListener('click', function () {
+            showInteractions(pepList);
+          });
+          actions.appendChild(ixBtn);
+        }
       }
 
       div.appendChild(actions);
@@ -196,7 +214,6 @@
   }
 
   function showDosageCard(d, btn) {
-    /* Remove existing card if any */
     var existing = btn.parentNode.parentNode.querySelector('.inline-dosage-card');
     if (existing) { existing.remove(); return; }
 
@@ -260,6 +277,56 @@
     btn.parentNode.parentNode.appendChild(card);
   }
 
+  /* ─── Interaction Checker (chat-based) ─── */
+  function showInteractions(peps) {
+    if (!peps || peps.length < 2) return;
+
+    var loadingDiv = document.createElement('div');
+    loadingDiv.className = 'msg msg-ai msg-interim';
+    loadingDiv.innerHTML = '<div class="msg-label">Interaction Check</div><div style="font-size:0.75rem;color:var(--ink-subtle);padding:4px 0">Checking ' + peps.length + ' peptides...</div>';
+    messages.appendChild(loadingDiv);
+    scrollBottom();
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/api/interactions', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    xhr.onload = function () {
+      loadingDiv.remove();
+      if (xhr.status === 200) {
+        var data = JSON.parse(xhr.responseText);
+        var ix = data.interactions || [];
+        renderInteractionMessage(ix, peps);
+      } else {
+        addMsg('Failed to check interactions.', 'ai');
+      }
+    };
+    xhr.onerror = function () {
+      loadingDiv.remove();
+      addMsg('Network error while checking interactions.', 'ai');
+    };
+    xhr.send(JSON.stringify({ peptides: peps }));
+  }
+
+  function renderInteractionMessage(interactions, peps) {
+    var html = '';
+    if (!interactions.length) {
+      html = '**No known interactions** between **' + peps.join(' + ') + '**.';
+    } else {
+      html = '**Interaction Results**:';
+      for (var i = 0; i < interactions.length; i++) {
+        var ix = interactions[i];
+        var typeLabel = ix.type.charAt(0).toUpperCase() + ix.type.slice(1);
+        html += '<div class="interaction-card ' + ix.type + '" style="margin-top:6px">' +
+          '<div class="pair-names"><span class="interaction-type-badge">' + typeLabel + '</span>' + ix.peptide_a + ' + ' + ix.peptide_b + '</div>' +
+          '<div class="pair-note">' + ix.note + '</div>' +
+          (ix.evidence ? '<div class="pair-evidence">Evidence: ' + ix.evidence + '</div>' : '') +
+          '</div>';
+      }
+    }
+    addMsg(html, 'interaction');
+  }
+
   /* ─── Send ─── */
   function sendMessage(text) {
     if (!text.trim() || isSending) return;
@@ -309,86 +376,6 @@
     xhr.send(JSON.stringify({ question: text.trim() }));
   }
 
-  /* ─── Interaction Checker ─── */
-  function populateInteractionPicker() {
-    if (!interactionPicker) return;
-    /* Fetch all peptide names from the page or use known list */
-    var names = [
-      'bpc-157', 'tb-500', 'ghk-cu', 'semaglutide', 'tirzepatide', 'retatrutide',
-      'cjc-1295', 'ipamorelin', 'ghrp-2', 'ghrp-6', 'hexarelin', 'tesamorelin',
-      'aod-9604', 'semax', 'selank', 'dsip', 'mk-677', 'ss-31', 'mots-c',
-      'thymosin-alpha-1', 'melanotan-2', 'pt-141', 'liraglutide', 'cagrilintide',
-      'igf-1-lr3', 'sermorelin', 'humanin'
-    ];
-    allPeptideNames = names;
-    for (var i = 0; i < names.length; i++) {
-      var chip = document.createElement('span');
-      chip.className = 'interaction-peptide-chip';
-      chip.textContent = names[i];
-      chip.setAttribute('data-pep', names[i]);
-      chip.addEventListener('click', function () {
-        var pep = this.getAttribute('data-pep');
-        var idx = selectedPeptides.indexOf(pep);
-        if (idx >= 0) {
-          selectedPeptides.splice(idx, 1);
-          this.classList.remove('selected');
-        } else {
-          selectedPeptides.push(pep);
-          this.classList.add('selected');
-        }
-        interactionCheckBtn.disabled = selectedPeptides.length < 2;
-        var label = interactionCheckBtn.parentNode.querySelector('span');
-        if (label) {
-          label.textContent = selectedPeptides.length < 2
-            ? 'Select 2+ peptides above'
-            : selectedPeptides.length + ' selected — click Check';
-        }
-      });
-      interactionPicker.appendChild(chip);
-    }
-  }
-
-  function checkInteractions() {
-    if (selectedPeptides.length < 2 || !interactionResults) return;
-    interactionResults.innerHTML = '<div style="font-size:0.75rem;color:var(--ink-subtle);padding:4px 0">Checking...</div>';
-
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', '/api/interactions', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-
-    xhr.onload = function () {
-      if (xhr.status === 200) {
-        var data = JSON.parse(xhr.responseText);
-        renderInteractionResults(data.interactions || []);
-      } else {
-        interactionResults.innerHTML = '<div style="font-size:0.75rem;color:var(--error)">Failed to check interactions.</div>';
-      }
-    };
-    xhr.onerror = function () {
-      interactionResults.innerHTML = '<div style="font-size:0.75rem;color:var(--error)">Network error.</div>';
-    };
-    xhr.send(JSON.stringify({ peptides: selectedPeptides }));
-  }
-
-  function renderInteractionResults(interactions) {
-    if (!interactionResults) return;
-    if (!interactions.length) {
-      interactionResults.innerHTML = '<div style="font-size:0.75rem;color:var(--ink-subtle)">No known interactions between selected peptides.</div>';
-      return;
-    }
-    var html = '';
-    for (var i = 0; i < interactions.length; i++) {
-      var ix = interactions[i];
-      var typeLabel = ix.type.charAt(0).toUpperCase() + ix.type.slice(1);
-      html += '<div class="interaction-card ' + ix.type + '">' +
-        '<div class="pair-names"><span class="interaction-type-badge">' + typeLabel + '</span>' + ix.peptide_a + ' + ' + ix.peptide_b + '</div>' +
-        '<div class="pair-note">' + ix.note + '</div>' +
-        (ix.evidence ? '<div class="pair-evidence">Evidence: ' + ix.evidence + '</div>' : '') +
-        '</div>';
-    }
-    interactionResults.innerHTML = html;
-  }
-
   /* ─── Events ─── */
   input.addEventListener('input', function () {
     sendBtn.disabled = isSending || !input.value.trim();
@@ -414,13 +401,7 @@
     });
   }
 
-  if (interactionCheckBtn) {
-    interactionCheckBtn.addEventListener('click', checkInteractions);
-  }
-
   /* ─── Init ─── */
-  populateInteractionPicker();
-
   var initialQ = window.location.search.match(/[?&]q=([^&]+)/);
   if (initialQ) {
     var q = decodeURIComponent(initialQ[1]);
