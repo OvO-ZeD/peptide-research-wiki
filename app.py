@@ -2808,12 +2808,14 @@ def fetch_wikipedia_summary(term):
 
 
 def fetch_clinical_trials(term):
-    endpoint = f"https://clinicaltrials.gov/api/v2/studies?query.term={quote(term)}&pageSize=20"
+    # Use condition + title search for relevance — avoid loose full-text matches
+    endpoint = f"https://clinicaltrials.gov/api/v2/studies?query.term={quote(term)}&pageSize=20&filter.overallStatus=NOT_YET_RECRUITING,ACTIVE_NOT_RECRUITING,COMPLETED,TERMINATED"
     data = fetch_json(endpoint)
     if not data:
         return []
     studies = data.get("studies", [])
     results = []
+    term_lower = term.lower()
     for study in studies:
         protocol = study.get("protocolSection", {})
         ident = protocol.get("identificationModule", {})
@@ -2860,13 +2862,14 @@ def fetch_clinical_trials(term):
 
 
 def fetch_pubmed(term):
-    query = f"({term}[Title/Abstract]) OR ({term}[MeSH Terms]) OR ({term}[All Fields])"
-    search_url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=12&sort=relevance&term={quote(query)}"
+    query = f"({term}[Title/Abstract]) AND (peptide[Title/Abstract] OR ({term}[MeSH Terms]))"
+    search_url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=15&sort=relevance&term={quote(query)}"
     search_data = fetch_json(search_url)
     if not search_data:
         return []
     ids = search_data.get("esearchresult", {}).get("idlist", [])
     papers = []
+    term_lower = term.lower()
     for pmid in ids:
         sum_url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&retmode=json&id={pmid}"
         sum_data = fetch_json(sum_url)
@@ -3233,21 +3236,49 @@ def build_stack_candidates(goal_key, priority_peptide):
 
 
 def fetch_openfda(term):
-    endpoint = f"https://api.fda.gov/drug/label.json?search={quote(term)}&limit=1"
+    """Fetch FDA drug label data. Validates result actually matches the queried term."""
+    endpoint = f"https://api.fda.gov/drug/label.json?search={quote(term)}&limit=3"
     data = fetch_json(endpoint)
     if not data:
         return None
     results = data.get("results", [])
     if not results:
         return None
-    item = results[0]
-    indications = item.get("indications_and_usage", [""])
-    warnings = item.get("warnings", [""])
-    reactions = item.get("adverse_reactions", [""])
+
+    term_lower = term.lower().strip()
+    best = None
+    best_score = 0
+    for item in results:
+        generic = (item.get("generic_name") or item.get("openfda", {}).get("generic_name", [""])[0] or "").lower()
+        brand = (item.get("brand_name") or item.get("openfda", {}).get("brand_name", [""])[0] or "").lower()
+        indications_text = (item.get("indications_and_usage", [""])[0] or "").lower()[:500]
+        score = 0
+        if term_lower in generic or term_lower in brand:
+            score += 20
+        elif term_lower in indications_text:
+            score += 10
+        # Bonus if term appears in any field
+        if term_lower in str(item).lower():
+            score += 5
+        if score > best_score:
+            best_score = score
+            best = item
+
+    # Only return data if we found a meaningful match
+    if not best or best_score < 10:
+        return None
+
+    indications = best.get("indications_and_usage", [""])
+    warnings = best.get("warnings", [""])
+    reactions = best.get("adverse_reactions", [""])
+    generic_name = best.get("generic_name") or best.get("openfda", {}).get("generic_name", [""])[0] or ""
+    brand_name = best.get("brand_name") or best.get("openfda", {}).get("brand_name", [""])[0] or ""
     return {
         "indications": indications[0][:500] if indications and indications[0] else "No FDA indication text available.",
         "warnings": warnings[0][:500] if warnings and warnings[0] else "No FDA warnings text available.",
         "adverse": reactions[0][:500] if reactions and reactions[0] else "No FDA adverse reaction text available.",
+        "generic_name": generic_name,
+        "brand_name": brand_name,
     }
 
 
@@ -3560,7 +3591,12 @@ def fetch_peptide_evidence(pep):
     trials = fetch_clinical_trials(term)
     pubmed_raw = fetch_pubmed(term)
     pubmed = rank_pubmed(pubmed_raw) if pubmed_raw else []
-    fda_data = fetch_openfda(term)
+    # Skip OpenFDA for known research chemicals — they won't have drug labels
+    reg_status = REGULATORY_STATUS.get(pep, "research_chemical")
+    if reg_status != "research_chemical":
+        fda_data = fetch_openfda(term)
+    else:
+        fda_data = None
     evidence_score = build_evidence_score(trials, pubmed, fda_data, wiki)
     claims = build_evidence_claims(trials, pubmed, fda_data)
 
@@ -4142,14 +4178,16 @@ def api_ask():
             if ev and ev.get("fda_data"):
                 fda = ev["fda_data"]
                 parts = []
+                drug_name = fda.get("brand_name") or fda.get("generic_name") or ""
+                prefix = " (" + drug_name + ")" if drug_name else ""
                 if fda.get("indications"):
                     parts.append("Indication: " + fda["indications"][:200])
                 if fda.get("warnings"):
                     parts.append("Warning: " + fda["warnings"][:200])
-                if fda.get("adverse"):
-                    parts.append("Adverse reactions: " + fda["adverse"][:200])
                 if parts:
-                    answer_parts.append("**FDA Data**: " + " | ".join(parts))
+                    answer_parts.append("**FDA Data**" + prefix + ": " + " | ".join(parts))
+            elif ev and ev.get("fda_data") is None:
+                answer_parts.append("*No FDA drug labeling data found for this peptide — it is not an approved drug.*")
 
             # Primary effect, mechanism, outcomes from local data
             if pd.get("summary"):
