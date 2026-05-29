@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Response, stream_with_context
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
@@ -7,7 +7,11 @@ import time
 from datetime import datetime, timezone
 import os
 import re
+from dotenv import load_dotenv
+import anthropic
+from functools import lru_cache
 
+load_dotenv()
 app = Flask(__name__, static_url_path="", static_folder=".")
 
 ALIASES = {
@@ -2896,6 +2900,7 @@ def fetch_wikipedia_summary(term):
     return {"title": title, "summary": summary, "url": wiki_page}
 
 
+@lru_cache(maxsize=128)
 def fetch_clinical_trials(term):
     # Use condition + title search for relevance — avoid loose full-text matches
     endpoint = f"https://clinicaltrials.gov/api/v2/studies?query.term={quote(term)}&pageSize=20&filter.overallStatus=NOT_YET_RECRUITING,ACTIVE_NOT_RECRUITING,COMPLETED,TERMINATED"
@@ -2950,6 +2955,7 @@ def fetch_clinical_trials(term):
     return results
 
 
+@lru_cache(maxsize=128)
 def fetch_pubmed(term):
     query = f"({term}[Title/Abstract]) AND (peptide[Title/Abstract] OR ({term}[MeSH Terms]))"
     search_url = f"https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&retmode=json&retmax=15&sort=relevance&term={quote(query)}"
@@ -4555,6 +4561,352 @@ def api_safety(peptide):
     # Return general safety if no specific notes
     general = SAFETY_NOTES.get("general", {})
     return jsonify({"peptide": pep, "safety": general})
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# AI CHAT HELPER FUNCTIONS - Enhanced for Claude Opus 4.5 Streaming
+# ══════════════════════════════════════════════════════════════════════════════
+
+def detect_comparison_query(message):
+    """Detect if the message is asking for a treatment comparison."""
+    comparison_patterns = [
+        r'\bvs\b',
+        r'\bversus\b',
+        r'\bcompare\b',
+        r'\bcomparison\b',
+        r'\bbetter than\b',
+        r'\bor\b.*\bfor\b',  # e.g., "minoxidil or finasteride for hair loss"
+        r'\bwhich is better\b',
+        r'\bdifference between\b',
+    ]
+    message_lower = message.lower()
+    for pattern in comparison_patterns:
+        if re.search(pattern, message_lower):
+            return True
+    return False
+
+
+def extract_medical_terms(message):
+    """Extract medical terms and treatment names from user message for semantic search."""
+    # Common medical keywords that suggest the user wants research
+    medical_keywords = [
+        'hair loss', 'alopecia', 'weight loss', 'obesity', 'diabetes',
+        'fat loss', 'muscle growth', 'anti-aging', 'longevity', 'aging',
+        'visceral fat', 'insulin resistance', 'glucose', 'metabolism',
+        'testosterone', 'growth hormone', 'hgh', 'healing', 'injury',
+        'inflammation', 'recovery', 'skin', 'wrinkles', 'collagen',
+        'neuroprotection', 'cognitive', 'memory', 'brain', 'nootropic',
+        'cardiovascular', 'heart', 'blood pressure', 'cholesterol',
+        'minoxidil', 'finasteride', 'dutasteride', 'rogaine',
+        'metformin', 'berberine', 'rapamycin', 'nad', 'nmn', 'resveratrol',
+    ]
+
+    message_lower = message.lower()
+    extracted_terms = []
+
+    # Look for medical keywords in the message
+    for keyword in medical_keywords:
+        if keyword in message_lower:
+            extracted_terms.append(keyword)
+
+    # Extract treatment names from comparison queries (e.g., "X vs Y")
+    comparison_match = re.search(r'(\w+(?:-\w+)*)\s+(?:vs|versus|or)\s+(\w+(?:-\w+)*)', message_lower)
+    if comparison_match:
+        extracted_terms.extend([comparison_match.group(1), comparison_match.group(2)])
+
+    return list(set(extracted_terms))  # Remove duplicates
+
+
+def extract_peptide_mentions(message):
+    """Extract peptide names mentioned in a user message."""
+    message_lower = message.lower()
+    mentioned = []
+
+    # Check aliases first
+    for alias, canonical in ALIASES.items():
+        if alias in message_lower:
+            if canonical not in mentioned:
+                mentioned.append(canonical)
+
+    # Check canonical names
+    all_peptides = set(ALIASES.values()) | set(STACK_KNOWLEDGE.keys()) | set(SNAPSHOT_LIBRARY.keys())
+    for peptide in all_peptides:
+        if peptide.lower() in message_lower:
+            if peptide not in mentioned:
+                mentioned.append(peptide)
+
+    return mentioned
+
+
+def build_research_context(peptides, medical_terms=None):
+    """Fetch research context for mentioned peptides and medical terms."""
+    context_parts = []
+
+    # Process peptides
+    for peptide in peptides[:3]:  # Limit to 3 peptides to avoid token overflow
+        term = normalize_term(peptide)
+
+        # Get snapshot if available
+        if term in SNAPSHOT_LIBRARY:
+            snapshot = SNAPSHOT_LIBRARY[term]
+            context_parts.append(f"\n### {peptide.upper()} - Clinical Snapshot\n")
+            context_parts.append(f"**Primary Effect:** {snapshot.get('primary_effect', 'N/A')}\n")
+            context_parts.append(f"**Mechanism:** {snapshot.get('mechanism_pathway', 'N/A')}\n")
+            context_parts.append(f"**Outcomes:** {snapshot.get('expected_body_outcomes', 'N/A')}\n")
+            context_parts.append(f"**Clinical Context:** {snapshot.get('clinical_context', 'N/A')}\n")
+
+        # Get clinical trials (limited)
+        try:
+            trials = fetch_clinical_trials(term)
+            if trials:
+                context_parts.append(f"\n**Clinical Trials for {peptide}:**\n")
+                for trial in trials[:10]:  # Limit to 10 trials
+                    context_parts.append(f"- {trial.get('title', 'N/A')} (NCT ID: {trial.get('nct_id', 'N/A')})\n")
+                    context_parts.append(f"  Status: {trial.get('status', 'N/A')}, Phase: {trial.get('phase', 'N/A')}\n")
+        except:
+            pass
+
+        # Get PubMed articles (limited)
+        try:
+            pubmed = fetch_pubmed(term)
+            ranked = rank_pubmed(pubmed)
+            if ranked:
+                context_parts.append(f"\n**Recent Research for {peptide}:**\n")
+                for article in ranked[:10]:  # Limit to 10 articles
+                    context_parts.append(f"- {article.get('title', 'N/A')}\n")
+                    context_parts.append(f"  PMID: {article.get('pmid', 'N/A')}\n")
+        except:
+            pass
+
+    # Process general medical terms (for semantic search)
+    if medical_terms:
+        for term in medical_terms[:3]:  # Limit to 3 terms
+            try:
+                pubmed = fetch_pubmed(term)
+                ranked = rank_pubmed(pubmed)
+                if ranked:
+                    context_parts.append(f"\n**Research for '{term}':**\n")
+                    for article in ranked[:10]:  # Limit to 10 articles
+                        context_parts.append(f"- {article.get('title', 'N/A')}\n")
+                        context_parts.append(f"  PMID: {article.get('pmid', 'N/A')}\n")
+            except:
+                pass
+
+    return "".join(context_parts) if context_parts else None
+
+
+@app.route('/ask/message', methods=['POST'])
+def ask_message():
+    """Handle AI chat messages with Claude Opus 4.5 response."""
+    try:
+        payload = request.get_json(silent=True) or {}
+        user_message = (payload.get("message") or "").strip()
+        conversation_history = payload.get("history") or []
+
+        if not user_message:
+            return jsonify({"error": "Message cannot be empty."}), 400
+
+        if len(user_message) > 5000:
+            return jsonify({"error": "Message too long. Please limit to 5000 characters."}), 400
+
+        # Extract peptide mentions and medical terms for semantic search
+        mentioned_peptides = extract_peptide_mentions(user_message)
+        medical_terms = extract_medical_terms(user_message)
+        is_comparison = detect_comparison_query(user_message)
+
+        # Build research context
+        research_context = None
+        if mentioned_peptides or medical_terms:
+            research_context = build_research_context(mentioned_peptides, medical_terms)
+
+        # Build system prompt with enhanced comparison capabilities
+        system_prompt = """You are an expert research assistant specializing in peptides, pharmaceuticals, and evidence-based medicine.
+
+Guidelines:
+1. Provide accurate, evidence-based information with citations from research literature
+2. Reference clinical trials, PubMed articles, and research data when available
+3. Compare treatments objectively with supporting evidence - discuss efficacy, safety, mechanisms, and clinical outcomes
+4. When comparing treatments, provide structured analysis with pros/cons for each option
+5. Suggest peptide alternatives when they have superior or complementary evidence
+6. Include clinical protocol recommendations and dosages when backed by research
+7. Be conversational yet professional - explain complex concepts in accessible terms
+8. Admit when evidence is limited, conflicting, or when more research is needed
+9. Always prioritize safety and mention when medical supervision is recommended
+10. For dosing and protocols, only provide information backed by clinical research
+11. Answer general medical questions beyond just peptides - cover pharmaceuticals, supplements, and lifestyle interventions
+12. When discussing off-label uses, clearly distinguish between FDA-approved indications and experimental applications
+
+When research context is provided below, prioritize that data in your response and cite it appropriately.
+
+Important: Format citations as clickable links. For PubMed articles, use: [PubMed PMID:12345678](https://pubmed.ncbi.nlm.nih.gov/12345678)
+For clinical trials, use: [ClinicalTrials.gov NCT12345678](https://clinicaltrials.gov/study/NCT12345678)"""
+
+        # Add comparison-specific instructions
+        if is_comparison:
+            system_prompt += """\n\n### Comparison Query Detected
+For this comparison question:
+- Present a balanced analysis of both/all treatments mentioned
+- Discuss mechanisms of action, clinical efficacy, side effect profiles, and cost considerations
+- Cite specific studies comparing the treatments when available
+- Provide evidence-based recommendations with appropriate caveats
+- Consider synergy potential if both could be used together"""
+
+        # Add research context if available
+        if research_context:
+            system_prompt += f"\n\n### Research Context (use this to inform your response):\n{research_context}"
+
+        # Build conversation for Claude
+        messages = []
+        for msg in conversation_history[-10:]:  # Limit to last 10 messages
+            role = "user" if msg.get("role") == "user" else "assistant"
+            content = msg.get("content", "")
+            if content:
+                messages.append({"role": role, "content": content})
+
+        # Add current user message
+        messages.append({"role": "user", "content": user_message})
+
+        # Call Claude API
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        if not api_key:
+            return jsonify({"error": "AI service not configured. Please add ANTHROPIC_API_KEY to environment."}), 500
+
+        client = anthropic.Anthropic(api_key=api_key)
+
+        response = client.messages.create(
+            model="claude-opus-4-5-20251101",
+            max_tokens=4096,
+            system=system_prompt,
+            messages=messages
+        )
+
+        ai_response = response.content[0].text
+
+        # Extract sources from the response (look for markdown links)
+        sources = []
+        import re
+        link_pattern = r'\[([^\]]+)\]\(([^)]+)\)'
+        matches = re.findall(link_pattern, ai_response)
+        for label, url in matches:
+            if "pubmed" in url.lower() or "clinicaltrials" in url.lower() or "nih.gov" in url.lower():
+                sources.append({"label": label, "url": url})
+
+        return jsonify({
+            "response": ai_response,
+            "sources": sources,
+            "mentioned_peptides": mentioned_peptides,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "tokens_used": response.usage.input_tokens + response.usage.output_tokens
+        }), 200
+
+    except anthropic.AuthenticationError:
+        return jsonify({"error": "AI service authentication failed. Please check API key configuration."}), 500
+    except anthropic.RateLimitError:
+        return jsonify({"error": "Too many requests. Please wait a moment and try again."}), 429
+    except anthropic.APIError as e:
+        return jsonify({"error": f"AI service error: {str(e)[:100]}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Chat failed: {str(e)[:100]}"}), 500
+
+
+@app.route('/ask/stream')
+def ask_stream():
+    """Stream AI chat responses using Server-Sent Events with Claude Opus 4.5."""
+    user_message = request.args.get("message", "").strip()
+    history_json = request.args.get("history", "[]")
+
+    if not user_message:
+        return jsonify({"error": "Message cannot be empty."}), 400
+
+    if len(user_message) > 5000:
+        return jsonify({"error": "Message too long. Please limit to 5000 characters."}), 400
+
+    try:
+        conversation_history = json.loads(history_json)
+    except:
+        conversation_history = []
+
+    def generate():
+        try:
+            # Extract peptide mentions and medical terms for semantic search
+            mentioned_peptides = extract_peptide_mentions(user_message)
+            medical_terms = extract_medical_terms(user_message)
+            is_comparison = detect_comparison_query(user_message)
+
+            # Build research context
+            research_context = None
+            if mentioned_peptides or medical_terms:
+                research_context = build_research_context(mentioned_peptides, medical_terms)
+
+            # Build system prompt with enhanced comparison capabilities
+            system_prompt = """You are an expert research assistant specializing in peptides, pharmaceuticals, and evidence-based medicine.
+
+Guidelines:
+1. Provide accurate, evidence-based information with citations from research literature
+2. Reference clinical trials, PubMed articles, and research data when available
+3. Compare treatments objectively with supporting evidence - discuss efficacy, safety, mechanisms, and clinical outcomes
+4. When comparing treatments, provide structured analysis with pros/cons for each option
+5. Suggest peptide alternatives when they have superior or complementary evidence
+6. Include clinical protocol recommendations and dosages when backed by research
+7. Be conversational yet professional - explain complex concepts in accessible terms
+8. Admit when evidence is limited, conflicting, or when more research is needed
+9. Always prioritize safety and mention when medical supervision is recommended
+10. For dosing and protocols, only provide information backed by clinical research
+11. Answer general medical questions beyond just peptides - cover pharmaceuticals, supplements, and lifestyle interventions
+12. When discussing off-label uses, clearly distinguish between FDA-approved indications and experimental applications
+
+When research context is provided below, prioritize that data in your response and cite it appropriately.
+
+Important: Format citations as clickable links. For PubMed articles, use: [PubMed PMID:12345678](https://pubmed.ncbi.nlm.nih.gov/12345678)
+For clinical trials, use: [ClinicalTrials.gov NCT12345678](https://clinicaltrials.gov/study/NCT12345678)"""
+
+            # Add comparison-specific instructions
+            if is_comparison:
+                system_prompt += """\n\n### Comparison Query Detected
+For this comparison question:
+- Present a balanced analysis of both/all treatments mentioned
+- Discuss mechanisms of action, clinical efficacy, side effect profiles, and cost considerations
+- Cite specific studies comparing the treatments when available
+- Provide evidence-based recommendations with appropriate caveats
+- Consider synergy potential if both could be used together"""
+
+            if research_context:
+                system_prompt += f"\n\n### Research Context (use this to inform your response):\n{research_context}"
+
+            # Build conversation
+            messages = []
+            for msg in conversation_history[-10:]:
+                role = "user" if msg.get("role") == "user" else "assistant"
+                content = msg.get("content", "")
+                if content:
+                    messages.append({"role": role, "content": content})
+
+            messages.append({"role": "user", "content": user_message})
+
+            # Call Claude API with streaming
+            api_key = os.environ.get("ANTHROPIC_API_KEY")
+            if not api_key:
+                yield f"data: {json.dumps({'error': 'AI service not configured'})}\n\n"
+                return
+
+            client = anthropic.Anthropic(api_key=api_key)
+
+            with client.messages.stream(
+                model="claude-opus-4-5-20251101",
+                max_tokens=4096,
+                system=system_prompt,
+                messages=messages
+            ) as stream:
+                for text in stream.text_stream:
+                    yield f"data: {json.dumps({'chunk': text})}\n\n"
+
+                # Send final metadata
+                yield f"data: {json.dumps({'done': True, 'mentioned_peptides': mentioned_peptides})}\n\n"
+
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)[:100]})}\n\n"
+
+    return Response(stream_with_context(generate()), mimetype='text/event-stream')
 
 
 if __name__ == '__main__':

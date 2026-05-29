@@ -159,6 +159,7 @@
       if (e.key === '1') { navigateTo('/'); }
       if (e.key === '2') { navigateTo('/stacks'); }
       if (e.key === '3') { navigateTo('/tracker'); }
+      if (e.key === '4') { navigateTo('/ask'); }
     });
 
     // ─── Swipe between pages ───
@@ -169,11 +170,11 @@
         var dx = e.changedTouches[0].clientX - startX;
         var dy = e.changedTouches[0].clientY - startY;
         if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
-        var pages = ['/', '/stacks', '/tracker'];
+        var pages = ['/', '/stacks', '/tracker', '/ask'];
         var idx = pages.indexOf(window.location.pathname);
         if (idx < 0) return;
-        if (dx < 0 && idx < pages.length - 1) { showToast('→ ' + pages[idx + 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker') || 'Search'); setTimeout(function () { navigateTo(pages[idx + 1]); }, 200); }
-        if (dx > 0 && idx > 0) { showToast('← ' + pages[idx - 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker') || 'Home'); setTimeout(function () { navigateTo(pages[idx - 1]); }, 200); }
+        if (dx < 0 && idx < pages.length - 1) { showToast('→ ' + pages[idx + 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker').replace('ask', 'Ask AI') || 'Search'); setTimeout(function () { navigateTo(pages[idx + 1]); }, 200); }
+        if (dx > 0 && idx > 0) { showToast('← ' + pages[idx - 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker').replace('ask', 'Ask AI') || 'Home'); setTimeout(function () { navigateTo(pages[idx - 1]); }, 200); }
       }, { passive: true });
     })();
 
