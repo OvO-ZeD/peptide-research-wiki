@@ -59,6 +59,95 @@ ALIASES = {
     "humanin": "humanin",
 }
 
+EFFECT_KEYWORDS = {
+    "heal": ["recovery", "healing_support", "connective_tissue_support"],
+    "healing": ["recovery", "healing_support", "connective_tissue_support"],
+    "recover": ["recovery", "healing_support"],
+    "recovery": ["recovery", "healing_support"],
+    "repair": ["healing_support", "recovery", "connective_tissue_support"],
+    "injury": ["recovery", "healing_support", "inflammation_hypothesis"],
+    "tissue": ["healing_support", "connective_tissue_support", "recovery"],
+    "pain": ["recovery", "inflammation_hypothesis"],
+    "inflammation": ["inflammation_hypothesis"],
+    "chronic": ["inflammation_hypothesis", "stress_response"],
+    "fat": ["fat_loss", "visceral_fat", "fat_loss_support", "metabolic_flexibility"],
+    "weight": ["fat_loss", "appetite_modulation", "visceral_fat", "metabolic_flexibility"],
+    "lose": ["fat_loss", "appetite_modulation"],
+    "belly": ["visceral_fat"],
+    "visceral": ["visceral_fat"],
+    "metabolism": ["metabolic_flexibility", "gh_axis", "fat_loss_support"],
+    "metabolic": ["metabolic_flexibility", "glycemic_support", "fat_loss"],
+    "glucose": ["glycemic_support"],
+    "sugar": ["glycemic_support", "appetite_modulation"],
+    "sleep": ["sleep_support", "stress_response"],
+    "insomnia": ["sleep_support"],
+    "focus": ["focus"],
+    "brain": ["focus", "stress_response"],
+    "memory": ["focus"],
+    "cognitive": ["focus"],
+    "mental": ["focus", "stress_response"],
+    "anxiety": ["anxiety_support", "calm", "stress_response"],
+    "stress": ["stress_response", "calm", "anxiety_support"],
+    "calm": ["calm", "anxiety_support"],
+    "mood": ["calm", "anxiety_support", "stress_response"],
+    "relax": ["calm", "anxiety_support", "sleep_support"],
+    "muscle": ["lean_mass_support", "recovery", "gh_axis"],
+    "lean": ["lean_mass_support", "body_composition"],
+    "strength": ["lean_mass_support", "gh_axis"],
+    "endurance": ["exercise_tolerance", "mitochondrial_support"],
+    "stamina": ["exercise_tolerance", "mitochondrial_support"],
+    "energy": ["mitochondrial_support", "exercise_tolerance", "metabolic_flexibility"],
+    "fatigue": ["mitochondrial_support", "recovery", "sleep_support"],
+    "workout": ["recovery", "lean_mass_support", "exercise_tolerance"],
+    "aging": ["mitochondrial_support", "skin_quality", "gh_axis", "body_composition"],
+    "longevity": ["mitochondrial_support"],
+    "skin": ["skin_quality", "healing_support"],
+    "immune": ["thymic_support", "recovery"],
+    "immunity": ["thymic_support", "recovery"],
+    "gut": ["recovery", "healing_support", "inflammation_hypothesis"],
+    "libido": ["sexual_function"],
+    "arousal": ["sexual_function"],
+    "growth": ["gh_axis", "igf_signaling"],
+    "hormone": ["gh_axis", "body_composition"],
+    "appetite": ["appetite_modulation"],
+    "wellness": ["metabolic_flexibility", "mitochondrial_support", "recovery"],
+    "anti": ["mitochondrial_support", "skin_quality", "gh_axis"],
+    "collagen": ["skin_quality", "healing_support"],
+}
+
+EFFECT_LABELS = {
+    "fat_loss": "Fat Loss",
+    "glycemic_support": "Glycemic Control",
+    "appetite_modulation": "Appetite Regulation",
+    "visceral_fat": "Visceral Fat Reduction",
+    "gh_axis": "GH Axis Support",
+    "body_composition": "Body Composition",
+    "recovery": "Recovery Support",
+    "lean_mass_support": "Lean Mass Preservation",
+    "metabolic_flexibility": "Metabolic Flexibility",
+    "exercise_tolerance": "Exercise Tolerance",
+    "fat_loss_support": "Fat Loss Support",
+    "focus": "Focus & Cognition",
+    "stress_response": "Stress Response",
+    "calm": "Calm",
+    "anxiety_support": "Anxiety Support",
+    "inflammation_hypothesis": "Inflammation Modulation",
+    "skin_quality": "Skin Quality",
+    "healing_support": "Healing Support",
+    "connective_tissue_support": "Connective Tissue Support",
+    "sleep_support": "Sleep Support",
+    "mitochondrial_support": "Mitochondrial Support",
+    "sexual_function": "Sexual Function",
+    "igf_signaling": "IGF-1 Signaling",
+    "myostatin_inhibition": "Myostatin Inhibition",
+    "thymic_support": "Thymic / Immune Support",
+    "tanning_support": "Tanning Support",
+    "uv_response": "UV Response",
+    "ghrelin_axis": "Ghrelin Axis",
+    "healing": "Healing Support",
+    "cooling": "Thermoregulation",
+}
+
 SNAPSHOT_LIBRARY = {
     "tesamorelin": {
         "primary_effect": "Tesamorelin is mainly studied to help reduce stubborn belly fat (visceral fat) that sits deep around your internal organs. It is not for general weight loss — it targets the unhealthy fat that wraps around your liver and intestines.",
@@ -4031,6 +4120,10 @@ def api_ask():
     matched_conditions = []
     matched_goals = []
 
+    # ── Score peptides by multiple match signals ──
+    # {pep: {"score": int, "reasons": [str], "matched_effects": [str]}}
+    pep_score = {}
+
     # ── Search symptom/condition map ──
     scored_conditions = []
     for cond_key, entry in SYMPTOM_CONDITION_MAP.items():
@@ -4053,21 +4146,37 @@ def api_ask():
             "category": entry.get("category", "General"),
             "peptides": entry["peptides"],
         })
+        cond_reason = "Matched condition: " + cond_key.replace("_", " ").title()
         for pep in entry["peptides"]:
             pep = normalize_term(pep)
-            if pep in STACK_KNOWLEDGE:
-                matched_peptides.add(pep)
+            if pep not in STACK_KNOWLEDGE:
+                continue
+            matched_peptides.add(pep)
+            if pep not in pep_score:
+                pep_score[pep] = {"score": 0, "reasons": [], "matched_effects": []}
+            pep_score[pep]["score"] += score // 2  # halved since condition matching is per-condition not per-peptide
+            if cond_reason not in pep_score[pep]["reasons"]:
+                pep_score[pep]["reasons"].append(cond_reason)
 
-    # ── Search STACK_KNOWLEDGE directly ──
+    # ── Search STACK_KNOWLEDGE directly (name/substring match) ──
     for pep_name, meta in STACK_KNOWLEDGE.items():
         pep_lower = pep_name.lower()
+        matched_here = False
         if pep_lower in q or q in pep_lower:
             matched_peptides.add(pep_name)
+            matched_here = True
         else:
             for t in tokens:
                 if t in pep_lower:
                     matched_peptides.add(pep_name)
+                    matched_here = True
                     break
+        if matched_here:
+            if pep_name not in pep_score:
+                pep_score[pep_name] = {"score": 0, "reasons": [], "matched_effects": []}
+            pep_score[pep_name]["score"] += 50
+            if "Direct name match" not in pep_score[pep_name]["reasons"]:
+                pep_score[pep_name]["reasons"].append("Direct name match")
 
     # ── Search goals ──
     for gk, gv in GOAL_BLUEPRINTS.items():
@@ -4077,11 +4186,58 @@ def api_ask():
                 matched_goals.append(gk)
                 break
 
+    # ── Search effects via EFFECT_KEYWORDS ──
+    query_effects = set()
+    for t in tokens:
+        if t in EFFECT_KEYWORDS:
+            for eid in EFFECT_KEYWORDS[t]:
+                query_effects.add(eid)
+
+    if query_effects:
+        for pep_name, meta in STACK_KNOWLEDGE.items():
+            pep_effects = set(meta.get("effects", []))
+            overlap = pep_effects & query_effects
+            if overlap:
+                if pep_name not in matched_peptides:
+                    matched_peptides.add(pep_name)
+                if pep_name not in pep_score:
+                    pep_score[pep_name] = {"score": 0, "reasons": [], "matched_effects": []}
+                pep_score[pep_name]["score"] += 30 * len(overlap)
+                for eid in overlap:
+                    label = EFFECT_LABELS.get(eid, eid.replace("_", " ").title())
+                    reason = "Matches effect: " + label
+                    if reason not in pep_score[pep_name]["reasons"]:
+                        pep_score[pep_name]["reasons"].append(reason)
+                    if label not in pep_score[pep_name]["matched_effects"]:
+                        pep_score[pep_name]["matched_effects"].append(label)
+
+    # ── Search SNAPSHOT_LIBRARY text fields ──
+    for pep_name, snap in SNAPSHOT_LIBRARY.items():
+        if pep_name not in STACK_KNOWLEDGE:
+            continue
+        fields = ["primary_effect", "mechanism_pathway", "expected_body_outcomes", "clinical_context"]
+        match_count = 0
+        for field in fields:
+            text = (snap.get(field) or "").lower()
+            for t in tokens:
+                if t in text:
+                    match_count += 1
+                    break
+        if match_count:
+            if pep_name not in matched_peptides:
+                matched_peptides.add(pep_name)
+            if pep_name not in pep_score:
+                pep_score[pep_name] = {"score": 0, "reasons": [], "matched_effects": []}
+            pep_score[pep_name]["score"] += 15 * match_count
+            if "Matches description" not in pep_score[pep_name]["reasons"]:
+                pep_score[pep_name]["reasons"].append("Matches description")
+
     # ── Attach full data to matched peptides ──
     peptide_data = {}
     for pep in matched_peptides:
         sk = STACK_KNOWLEDGE.get(pep, {})
         snap = SNAPSHOT_LIBRARY.get(pep, {})
+        sc = pep_score.get(pep, {"score": 0, "reasons": [], "matched_effects": []})
         peptide_data[pep] = {
             "summary": sk.get("summary", ""),
             "effects": sk.get("effects", []),
@@ -4089,6 +4245,9 @@ def api_ask():
             "primary_effect": snap.get("primary_effect", ""),
             "mechanism": snap.get("mechanism_pathway", ""),
             "outcomes": snap.get("expected_body_outcomes", ""),
+            "score": sc["score"],
+            "reasons": sc["reasons"],
+            "matched_effects": sc["matched_effects"],
         }
 
     # ── Find relevant stacks ──
@@ -4116,7 +4275,33 @@ def api_ask():
     # ── Build answer (HTML format with badges) ──
     answer_parts = []
 
+    # ── Intro paragraph ──
+    all_pep_names = list(peptide_data.keys())
     if matched_conditions:
+        cond_names = [mc["condition"].replace("_", " ").title() for mc in matched_conditions[:2]]
+        top_peps = all_pep_names[:3]
+        pep_list_str = ", ".join(p.title() for p in top_peps)
+        answer_parts.append(
+            "I found information matching **" + cond_names[0] + "** with "
+            + str(len(all_pep_names)) + " related peptides including " + pep_list_str + ". Here is the breakdown:"
+        )
+    elif matched_goals:
+        goal_labels = [GOAL_BLUEPRINTS[gk]["label"] for gk in matched_goals[:2]]
+        top_peps = all_pep_names[:3]
+        pep_list_str = ", ".join(p.title() for p in top_peps)
+        answer_parts.append(
+            "Your query relates to **" + goal_labels[0] + "** — here are "
+            + str(len(all_pep_names)) + " relevant peptides including " + pep_list_str + ":"
+        )
+    elif all_pep_names:
+        top_peps = all_pep_names[:3]
+        pep_list_str = ", ".join(p.title() for p in top_peps)
+        answer_parts.append(
+            "Based on your query, here are the most relevant peptides from our database (" + str(len(all_pep_names)) + " found):"
+        )
+
+    if matched_conditions:
+        answer_parts.append("")
         for mc in matched_conditions[:2]:
             title = mc["condition"].replace("_", " ").title()
             answer_parts.append("**" + title + "**")
@@ -4128,7 +4313,7 @@ def api_ask():
     if peptide_data:
         answer_parts.append("")
         sorted_peps = sorted(peptide_data.items(),
-                             key=lambda x: {"A": 0, "B": 1, "C": 2, "D": 3}.get(x[1]["tier"], 4))
+                             key=lambda x: (-x[1].get("score", 0), {"A": 0, "B": 1, "C": 2, "D": 3}.get(x[1]["tier"], 4)))
         shown = set()
         answered_peps = 0
         for pep, pd in sorted_peps:
@@ -4154,6 +4339,12 @@ def api_ask():
             reg_status = REGULATORY_STATUS.get(pep, "research_chemical")
             reg_html = regulatory_badge_html(reg_status)
             answer_parts.append(reg_html)
+
+            # ═ NEW: Why it matched ═
+            reasons = pd.get("reasons", [])
+            if reasons:
+                why = " | ".join(reasons[:3])
+                answer_parts.append("**Why it matched**: " + why)
 
             # Evidence score from live data
             if ev and ev.get("evidence_score"):
@@ -4202,6 +4393,16 @@ def api_ask():
                 effect_str = ", ".join(e.replace("_", " ").title() for e in pd["effects"])
                 answer_parts.append("**Effect profile**: " + effect_str)
 
+            # ═ NEW: Safety inline ═
+            safety = SAFETY_NOTES.get(pep) or SAFETY_NOTES.get("general", {})
+            safety_points = safety.get("points", [])
+            if safety_points:
+                first = safety_points[0]
+                extra = ""
+                if len(safety_points) > 1:
+                    extra = " (+" + str(len(safety_points) - 1) + " more safety notes)"
+                answer_parts.append("**Safety**: " + first + extra)
+
             # Evidence breakdown
             if ev and ev.get("evidence_score"):
                 bd = ev["evidence_score"].get("breakdown", {})
@@ -4224,6 +4425,13 @@ def api_ask():
                 answer_parts.append("*This peptide is under clinical investigation but not yet FDA-approved.*")
             elif reg_status == "research_chemical":
                 answer_parts.append("*This peptide is a research chemical — not FDA-approved. Long-term safety data is limited.*")
+
+            # ═ NEW: Community note inline ═
+            for ck, note in COMMUNITY_NOTES.items():
+                stack_peps = ck.split("+")
+                if pep in stack_peps and any(p in stack_peps for p in shown if p != pep):
+                    answer_parts.append("*Community note*: " + note[:300])
+                    break
 
             answered_peps += 1
             if answered_peps >= 3:
@@ -4253,7 +4461,8 @@ def api_ask():
 
     # ── Build evidence dict for frontend ──
     evidence_data = {}
-    for pep in list(peptide_data.keys())[:8]:
+    for pep in sorted(peptide_data.keys(),
+                      key=lambda p: -pep_score.get(p, {}).get("score", 0))[:8]:
         try:
             ev = fetch_peptide_evidence(pep)
             if ev:
@@ -4273,7 +4482,8 @@ def api_ask():
 
     # ── Build citations ──
     citations = []
-    for pep in sorted(matched_peptides)[:8]:
+    for pep in sorted(matched_peptides,
+                      key=lambda p: -pep_score.get(p, {}).get("score", 0))[:12]:
         citations.append({
             "source": pep,
             "label": pep.title(),
