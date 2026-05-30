@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 import os
 import re
 from dotenv import load_dotenv
-import anthropic
+import requests
 from functools import lru_cache
 
 load_dotenv()
@@ -4766,25 +4766,62 @@ For this comparison question:
         # Add current user message
         messages.append({"role": "user", "content": user_message})
 
-        # Call Claude API
-        api_key = os.environ.get("ANTHROPIC_API_KEY")
-        if not api_key:
-            return jsonify({"error": "AI service not configured. Please add ANTHROPIC_API_KEY to environment."}), 500
+        # Call FREE Hugging Face Inference API (no API key required!)
+        # Using Mixtral-8x7B-Instruct - powerful, free, no authentication needed
+        model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+        api_url = f"https://api-inference.huggingface.co/models/{model}"
 
-        client = anthropic.Anthropic(api_key=api_key)
+        # Build prompt from conversation history
+        prompt = system_prompt + "\n\n"
+        for msg in messages:
+            role = msg["role"].upper()
+            content = msg["content"]
+            prompt += f"{role}: {content}\n\n"
+        prompt += "ASSISTANT:"
 
-        response = client.messages.create(
-            model="claude-opus-4-5-20251101",
-            max_tokens=4096,
-            system=system_prompt,
-            messages=messages
-        )
+        # Make free API call (no authentication required)
+        try:
+            hf_response = requests.post(
+                api_url,
+                json={
+                    "inputs": prompt,
+                    "parameters": {
+                        "max_new_tokens": 2048,
+                        "temperature": 0.7,
+                        "top_p": 0.95,
+                        "return_full_text": False
+                    }
+                },
+                timeout=30
+            )
 
-        ai_response = response.content[0].text
+            if hf_response.status_code == 200:
+                result = hf_response.json()
+                # Handle both list and dict responses
+                if isinstance(result, list) and len(result) > 0:
+                    ai_response = result[0].get("generated_text", "")
+                elif isinstance(result, dict):
+                    ai_response = result.get("generated_text", "")
+                else:
+                    ai_response = "I apologize, but I received an unexpected response format. Please try again."
+
+                # Clean up response - remove prompt repetition if present
+                if "ASSISTANT:" in ai_response:
+                    ai_response = ai_response.split("ASSISTANT:")[-1].strip()
+
+            elif hf_response.status_code == 503:
+                # Model is loading - this is common on first request
+                ai_response = "The AI model is warming up (first-time load). Please wait 20 seconds and try again. This only happens once!"
+            else:
+                ai_response = f"I'm having trouble connecting to the AI service right now. Please try again in a moment. (Status: {hf_response.status_code})"
+
+        except requests.Timeout:
+            ai_response = "The request took too long. Please try again with a shorter message."
+        except requests.RequestException as e:
+            ai_response = f"Network error connecting to AI service. Please check your connection and try again."
 
         # Extract sources from the response (look for markdown links)
         sources = []
-        import re
         link_pattern = r'\[([^\]]+)\]\(([^)]+)\)'
         matches = re.findall(link_pattern, ai_response)
         for label, url in matches:
@@ -4796,22 +4833,16 @@ For this comparison question:
             "sources": sources,
             "mentioned_peptides": mentioned_peptides,
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "tokens_used": response.usage.input_tokens + response.usage.output_tokens
+            "tokens_used": len(prompt.split()) + len(ai_response.split())  # Approximate token count
         }), 200
 
-    except anthropic.AuthenticationError:
-        return jsonify({"error": "AI service authentication failed. Please check API key configuration."}), 500
-    except anthropic.RateLimitError:
-        return jsonify({"error": "Too many requests. Please wait a moment and try again."}), 429
-    except anthropic.APIError as e:
-        return jsonify({"error": f"AI service error: {str(e)[:100]}"}), 500
     except Exception as e:
         return jsonify({"error": f"Chat failed: {str(e)[:100]}"}), 500
 
 
 @app.route('/ask/stream')
 def ask_stream():
-    """Stream AI chat responses using Server-Sent Events with Claude Opus 4.5."""
+    """Stream AI chat responses using Server-Sent Events with FREE Hugging Face API."""
     user_message = request.args.get("message", "").strip()
     history_json = request.args.get("history", "[]")
 
@@ -4883,25 +4914,71 @@ For this comparison question:
 
             messages.append({"role": "user", "content": user_message})
 
-            # Call Claude API with streaming
-            api_key = os.environ.get("ANTHROPIC_API_KEY")
-            if not api_key:
-                yield f"data: {json.dumps({'error': 'AI service not configured'})}\n\n"
+            # Call FREE Hugging Face Inference API (no API key required!)
+            model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+            api_url = f"https://api-inference.huggingface.co/models/{model}"
+
+            # Build prompt from conversation history
+            prompt = system_prompt + "\n\n"
+            for msg in messages:
+                role = msg["role"].upper()
+                content = msg["content"]
+                prompt += f"{role}: {content}\n\n"
+            prompt += "ASSISTANT:"
+
+            # Make free API call
+            try:
+                hf_response = requests.post(
+                    api_url,
+                    json={
+                        "inputs": prompt,
+                        "parameters": {
+                            "max_new_tokens": 2048,
+                            "temperature": 0.7,
+                            "top_p": 0.95,
+                            "return_full_text": False
+                        }
+                    },
+                    timeout=30
+                )
+
+                if hf_response.status_code == 200:
+                    result = hf_response.json()
+                    # Handle both list and dict responses
+                    if isinstance(result, list) and len(result) > 0:
+                        ai_response = result[0].get("generated_text", "")
+                    elif isinstance(result, dict):
+                        ai_response = result.get("generated_text", "")
+                    else:
+                        ai_response = "I apologize, but I received an unexpected response format. Please try again."
+
+                    # Clean up response
+                    if "ASSISTANT:" in ai_response:
+                        ai_response = ai_response.split("ASSISTANT:")[-1].strip()
+
+                    # Simulate streaming by yielding response in chunks
+                    chunk_size = 50  # characters per chunk
+                    for i in range(0, len(ai_response), chunk_size):
+                        chunk = ai_response[i:i + chunk_size]
+                        yield f"data: {json.dumps({'chunk': chunk})}\n\n"
+                        time.sleep(0.01)  # Small delay to simulate streaming
+
+                elif hf_response.status_code == 503:
+                    error_msg = "The AI model is warming up (first-time load). Please wait 20 seconds and try again. This only happens once!"
+                    yield f"data: {json.dumps({'chunk': error_msg})}\n\n"
+                else:
+                    error_msg = f"I'm having trouble connecting to the AI service right now. Please try again in a moment. (Status: {hf_response.status_code})"
+                    yield f"data: {json.dumps({'chunk': error_msg})}\n\n"
+
+            except requests.Timeout:
+                yield f"data: {json.dumps({'error': 'Request timeout. Please try again with a shorter message.'})}\n\n"
+                return
+            except requests.RequestException as e:
+                yield f"data: {json.dumps({'error': 'Network error. Please check your connection.'})}\n\n"
                 return
 
-            client = anthropic.Anthropic(api_key=api_key)
-
-            with client.messages.stream(
-                model="claude-opus-4-5-20251101",
-                max_tokens=4096,
-                system=system_prompt,
-                messages=messages
-            ) as stream:
-                for text in stream.text_stream:
-                    yield f"data: {json.dumps({'chunk': text})}\n\n"
-
-                # Send final metadata
-                yield f"data: {json.dumps({'done': True, 'mentioned_peptides': mentioned_peptides})}\n\n"
+            # Send final metadata
+            yield f"data: {json.dumps({'done': True, 'mentioned_peptides': mentioned_peptides})}\n\n"
 
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e)[:100]})}\n\n"
