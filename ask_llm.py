@@ -15,6 +15,7 @@ DEFAULT_MODEL = "ministral-3:14b"
 PUBMED_SEARCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
 PUBMED_SUMMARY_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi"
 PUBMED_FETCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
+WIKIPEDIA_API = "https://en.wikipedia.org/w/api.php"
 TIMEOUT = 30
 
 
@@ -145,6 +146,9 @@ def _build_pubmed_queries(keywords, raw_query):
                 phrases_in_query.append(phrase)
 
     if phrases_in_query:
+        if len(phrases_in_query) >= 2:
+            # Combine multiple phrases directly
+            queries.append(" AND ".join(phrases_in_query[:3]))
         # Use phrase + keyword combo
         for phrase in phrases_in_query[:2]:
             extra_kw = [k for k in keywords if k not in phrase.strip('"').split()]
@@ -212,6 +216,81 @@ def _exec_pubmed_search(search_term, retmax):
     if not search_data:
         return []
     return search_data.get("esearchresult", {}).get("idlist", [])
+
+
+def search_wikipedia(query, max_results=3):
+    """Search Wikipedia for articles matching the query.
+    Returns list of {title, summary, link, source}."""
+    keywords = _extract_medical_keywords(query)
+    if not keywords:
+        keywords = re.findall(r'[a-z]+', query.lower())
+    search_term = " ".join(keywords[:4])
+
+    params = urllib.parse.urlencode({
+        "action": "opensearch",
+        "search": search_term,
+        "limit": max_results,
+        "namespace": 0,
+        "format": "json",
+    })
+    url = f"{WIKIPEDIA_API}?{params}"
+    data = fetch_json(url)
+    if not data or len(data) < 2:
+        return []
+
+    titles = data[1] if len(data) > 1 else []
+    links = data[3] if len(data) > 3 else []
+
+    # Also try just the first keyword if no results
+    if not titles and keywords:
+        params = urllib.parse.urlencode({
+            "action": "opensearch",
+            "search": keywords[0],
+            "limit": max_results,
+            "namespace": 0,
+            "format": "json",
+        })
+        url = f"{WIKIPEDIA_API}?{params}"
+        data = fetch_json(url)
+        if data and len(data) > 1:
+            titles = data[1] or titles
+            links = data[3] if len(data) > 3 else links
+
+    articles = []
+    for i in range(min(len(titles), max_results)):
+        title = titles[i]
+        link = links[i] if i < len(links) else f"https://en.wikipedia.org/wiki/{urllib.parse.quote(title.replace(' ', '_'))}"
+        # Fetch actual extract (opensearch summaries are often empty)
+        extract = fetch_wikipedia_extract(title, max_chars=600)
+        articles.append({
+            "title": title,
+            "summary": extract or "",
+            "link": link,
+            "source": "Wikipedia",
+        })
+    return articles
+
+
+def fetch_wikipedia_extract(title, max_chars=800):
+    """Fetch a longer extract from Wikipedia for a given article title."""
+    params = urllib.parse.urlencode({
+        "action": "query",
+        "prop": "extracts",
+        "exintro": True,
+        "explaintext": True,
+        "exchars": max_chars,
+        "titles": title,
+        "format": "json",
+    })
+    url = f"{WIKIPEDIA_API}?{params}"
+    data = fetch_json(url)
+    if not data:
+        return None
+    pages = data.get("query", {}).get("pages", {})
+    for page_id, page in pages.items():
+        if page_id != "-1" and page.get("extract"):
+            return page["extract"]
+    return None
 
 
 def _parse_pubmed_xml(xml_text, ids):

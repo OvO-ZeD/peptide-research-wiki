@@ -211,10 +211,10 @@ SNAPSHOT_LIBRARY = {
         "clinical_context": "Epitalon was developed by Russian scientists and has been studied primarily in animal models and small human trials in Russia and Ukraine. It is not FDA approved and is sold as a research chemical. The human evidence base is small compared to mainstream medications.",
     },
     "ghk-cu": {
-        "primary_effect": "GHK-Cu (copper peptide) is a naturally occurring small peptide that binds copper ions. It is best known for skin regeneration and wound healing — it is a common ingredient in high-end skin care products for anti-aging and collagen support.",
-        "mechanism_pathway": "GHK-Cu is a tripeptide (three amino acids: glycine-histidine-lysine) with a copper ion attached. It signals skin cells to produce more collagen and elastin (the proteins that keep skin firm and youthful), reduces inflammation, and acts as an antioxidant. It also promotes blood vessel growth to injured tissues, which aids wound healing. The copper ion is essential for these effects.",
-        "expected_body_outcomes": "Topical application may improve skin firmness, reduce fine lines and wrinkles, and support wound healing. Injected forms are discussed for tissue repair, hair growth, and anti-aging, though injection use has less formal study than topical. Effects on skin typically appear after weeks to months of consistent use.",
-        "clinical_context": "GHK-Cu is widely used in cosmetic skin care products and has been studied in clinical settings for wound healing. It is not FDA approved as a drug (it is a cosmetic ingredient). Injectable forms are available as research chemicals. The safety of long-term injection use is not as well established as topical application.",
+        "primary_effect": "GHK-Cu (copper peptide) is a naturally occurring small peptide that binds copper ions. It is widely studied for skin regeneration, wound healing, and hair growth support through improved scalp angiogenesis and reduced inflammation.",
+        "mechanism_pathway": "GHK-Cu is a tripeptide (glycine-histidine-lysine) with a copper ion. It signals skin and hair follicle cells to produce more collagen and elastin, reduces inflammation via NF-kB inhibition, acts as an antioxidant, and promotes angiogenesis (new blood vessel growth) which improves nutrient delivery to hair follicles. The copper ion is essential — it activates enzymes needed for collagen crosslinking and SOD antioxidant activity.",
+        "expected_body_outcomes": "Topical application may improve skin firmness, reduce fine lines, and support wound healing. For hair: studies suggest improved hair follicle density, reduced shedding, and thicker hair shafts with consistent topical use over 3-6 months. Injectable forms are discussed for systemic tissue repair, though injection use has less formal study than topical.",
+        "clinical_context": "GHK-Cu is widely used in cosmetic products (topical serums for anti-aging and hair thinning). PubMed-indexed studies show wound healing and collagen synthesis effects. Hair growth studies are primarily cosmetic-industry funded. Not FDA approved as a drug — classified as a cosmetic ingredient. Injectable forms are research chemicals with limited long-term safety data.",
     },
     "liraglutide": {
         "primary_effect": "Liraglutide helps lower blood sugar and supports weight loss. It is a well-established medication for type 2 diabetes (Victoza) and weight management (Saxenda), with over a decade of clinical use.",
@@ -2529,9 +2529,19 @@ SYMPTOM_CONDITION_MAP = {
         "description": "Stimulation of hair follicle activity. GHK-Cu is studied for hair growth through improved blood flow and follicle health.",
         "category": "Skin/Hair",
     },
+    "hair fall": {
+        "peptides": ["ghk-cu", "bpc-157", "tb-500", "melanotan-2"],
+        "description": "Thinning or loss of hair (alopecia). GHK-Cu, BPC-157, and TB-500 have been studied for hair follicle angiogenesis and regeneration support.",
+        "category": "Skin/Hair",
+    },
     "hair loss": {
-        "peptides": ["ghk-cu", "bpc-157", "melanotan-2"],
-        "description": "Thinning or loss of hair. Copper peptides have been studied for hair follicle support and potential regrowth stimulation.",
+        "peptides": ["ghk-cu", "bpc-157", "tb-500", "melanotan-2"],
+        "description": "Thinning or loss of hair (alopecia). Copper peptides have been studied for hair follicle support, angiogenesis, and potential regrowth stimulation through improved scalp blood flow and reduced inflammation.",
+        "category": "Skin/Hair",
+    },
+    "androgenic alopecia": {
+        "peptides": ["ghk-cu", "bpc-157", "tb-500"],
+        "description": "Hormonal hair loss driven by DHT sensitivity. Peptides like GHK-Cu support follicle health through improved blood supply and reduced inflammation, while BPC-157 may aid tissue repair in the scalp. These do not block DHT but support follicle environment.",
         "category": "Skin/Hair",
     },
     "skin regeneration": {
@@ -4532,7 +4542,39 @@ def api_ask():
                 "source": "pubmed",
             }), 200
 
-        # No LLM, no PubMed results — show clean message, NOT weak local DB matches
+        # Try Wikipedia as 3rd fallback
+        wiki_articles = ask_llm.search_wikipedia(question, max_results=2)
+        if wiki_articles:
+            answer_parts = [
+                "I found information on **Wikipedia** related to your question:",
+                "",
+            ]
+            wiki_citations = []
+            for a in wiki_articles:
+                answer_parts.append("**" + a["title"] + "**")
+                if a.get("summary"):
+                    answer_parts.append(a["summary"])
+                answer_parts.append("*Source: [" + a["title"] + "](" + a["link"] + ")*")
+                answer_parts.append("")
+                wiki_citations.append({
+                    "source": a["title"],
+                    "label": a["title"][:60],
+                    "peptide": a["title"],
+                    "link": a["link"],
+                })
+            answer_parts.append("*Information from Wikipedia. Always consult a healthcare professional before starting any new protocol.*")
+
+            return jsonify({
+                "answer": "\n".join(answer_parts),
+                "citations": wiki_citations,
+                "stacks": [],
+                "evidence": {},
+                "matched_conditions": [],
+                "matched_peptides": [],
+                "source": "wikipedia",
+            }), 200
+
+        # No results from any source
         answer_parts = [
             "I couldn't find specific research about \"" + question + "\" in our database or PubMed.",
             "Try searching for a specific peptide or condition, or rephrase your question.",
