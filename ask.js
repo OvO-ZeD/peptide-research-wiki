@@ -88,7 +88,7 @@
           var c = extra.citations[ci];
           var chip = document.createElement('a');
           chip.className = 'citation-chip';
-          chip.href = '/search?term=' + encodeURIComponent(c.peptide || c.source);
+          chip.href = c.link || ('/search?term=' + encodeURIComponent(c.peptide || c.source));
           chip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/></svg> ' + (c.label || c.source);
           chip.target = '_blank';
           citeDiv.appendChild(chip);
