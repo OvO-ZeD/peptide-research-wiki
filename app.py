@@ -4475,6 +4475,7 @@ def api_ask():
             llm_result = None
 
         if llm_result and llm_result.get("answer"):
+            # LLM succeeded — use AI answer
             answer_parts = [llm_result["answer"]]
             llm_citations = []
             for cite in llm_result.get("citations", []):
@@ -4497,12 +4498,13 @@ def api_ask():
                 "source": "llm",
             }), 200
 
-        # Fallback if LLM unavailable
-        answer_parts = [
-            "I couldn't find specific information about \"" + question + "\" in the local database.",
-            "Try searching for a specific peptide or condition, or rephrase your question.",
-            "You can also browse the **Stacks** tab for protocol recommendations.",
-        ]
+        # LLM unavailable (Vercel / cloud) — use whatever local DB found
+        if not answer_parts or all(p.strip() == "" for p in answer_parts):
+            answer_parts = [
+                "I couldn't find specific information about \"" + question + "\" in the local database.",
+                "Try searching for a specific peptide or condition, or rephrase your question.",
+                "You can also browse the **Stacks** tab for protocol recommendations.",
+            ]
 
     answer = "\n".join(answer_parts).strip()
 
