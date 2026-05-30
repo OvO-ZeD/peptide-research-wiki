@@ -4696,6 +4696,107 @@ def build_research_context(peptides, medical_terms=None):
     return "".join(context_parts) if context_parts else None
 
 
+def generate_local_ai_response(user_message, research_context, mentioned_peptides, is_comparison):
+    """Generate AI-like responses using local research context only - no external API calls."""
+
+    # Build response based on available research
+    response_parts = []
+
+    if is_comparison:
+        response_parts.append("Based on the available clinical research:\n\n")
+    else:
+        response_parts.append("Based on current research:\n\n")
+
+    # Extract information from research context
+    if research_context:
+        # Parse clinical snapshot
+        if "Clinical Snapshot" in research_context:
+            sections = research_context.split("###")
+            for section in sections:
+                if "Clinical Snapshot" in section:
+                    lines = section.strip().split("\n")
+                    response_parts.append(f"**{lines[0].replace('- Clinical Snapshot', '').strip()}**\n\n")
+                    for line in lines[1:6]:  # First 5 lines of snapshot
+                        if line.strip():
+                            response_parts.append(f"{line.strip()}\n")
+                    response_parts.append("\n")
+
+        # Parse clinical trials
+        if "Clinical Trials for" in research_context:
+            trials_section = research_context.split("**Clinical Trials for")[1:]
+            for section in trials_section[:2]:  # First 2 peptides
+                lines = section.split("\n")
+                response_parts.append(f"\n**Clinical Trials for{lines[0]}**\n")
+                for line in lines[1:6]:  # First 5 trials
+                    if line.strip() and (line.strip().startswith("-") or "Status:" in line or "NCT" in line):
+                        response_parts.append(f"{line.strip()}\n")
+                response_parts.append("\n")
+
+        # Parse PubMed research
+        if "Recent Research for" in research_context:
+            research_section = research_context.split("**Recent Research for")[1:]
+            for section in research_section[:2]:  # First 2 peptides
+                lines = section.split("\n")
+                response_parts.append(f"\n**Recent Research for{lines[0]}**\n")
+                for line in lines[1:6]:  # First 5 articles
+                    if line.strip() and (line.strip().startswith("-") or "PMID:" in line):
+                        # Convert PMID to clickable link
+                        if "PMID:" in line:
+                            pmid = line.split("PMID:")[1].strip()
+                            line = f"  [PubMed PMID:{pmid}](https://pubmed.ncbi.nlm.nih.gov/{pmid})"
+                        response_parts.append(f"{line.strip()}\n")
+                response_parts.append("\n")
+
+    # Add peptide-specific info from SNAPSHOT_LIBRARY if not already covered
+    if mentioned_peptides and (not research_context or len("".join(response_parts)) < 200):
+        for peptide in mentioned_peptides[:2]:  # Limit to first 2
+            term = normalize_term(peptide)
+            if term in SNAPSHOT_LIBRARY:
+                snap = SNAPSHOT_LIBRARY[term]
+                response_parts.append(f"\n**{peptide.upper()}:**\n\n")
+                if snap.get("primary_effect"):
+                    response_parts.append(f"**Primary Effect:** {snap['primary_effect']}\n\n")
+                if snap.get("mechanism_pathway"):
+                    response_parts.append(f"**Mechanism:** {snap['mechanism_pathway']}\n\n")
+                if snap.get("expected_body_outcomes"):
+                    response_parts.append(f"**Expected Outcomes:** {snap['expected_body_outcomes']}\n\n")
+                if snap.get("clinical_context"):
+                    response_parts.append(f"**Clinical Context:** {snap['clinical_context']}\n\n")
+
+    # Add stack knowledge if available
+    if mentioned_peptides:
+        for peptide in mentioned_peptides[:2]:
+            term = normalize_term(peptide)
+            if term in STACK_KNOWLEDGE:
+                stack_info = STACK_KNOWLEDGE[term]
+                if stack_info.get("description"):
+                    response_parts.append(f"\n**About {peptide}:** {stack_info['description']}\n\n")
+                if stack_info.get("benefits"):
+                    benefits = stack_info["benefits"]
+                    if isinstance(benefits, list):
+                        response_parts.append(f"**Benefits:** {', '.join(benefits[:5])}\n\n")
+
+    # If no research context, provide general guidance
+    if not response_parts or len("".join(response_parts)) < 100:
+        response_parts = [
+            "I can provide information based on our peptide research database.\n\n",
+            f"**Your Question:** {user_message[:200]}\n\n",
+            "**Recommendations:**\n\n",
+            "- Search our peptide catalog for specific compounds\n",
+            "- Check PubMed for recent studies at [pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov)\n",
+            "- Review clinical trials at [ClinicalTrials.gov](https://clinicaltrials.gov)\n\n",
+            "Please ask about specific peptides, treatments, or mechanisms for more detailed information from our research database.\n\n",
+            "**Note:** Always consult healthcare professionals before starting any new treatment protocol."
+        ]
+
+    # Add professional disclaimer
+    final_response = "".join(response_parts)
+    if mentioned_peptides or "treatment" in user_message.lower() or "dose" in user_message.lower():
+        final_response += "\n\n---\n\n**Important:** This information is for educational purposes. Consult with a qualified healthcare provider before starting any treatment protocol."
+
+    return final_response
+
+
 @app.route('/ask/message', methods=['POST'])
 def ask_message():
     """Handle AI chat messages with Claude Opus 4.5 response."""
@@ -4767,68 +4868,13 @@ For this comparison question:
         # Add current user message
         messages.append({"role": "user", "content": user_message})
 
-        # Call FREE Hugging Face Inference API (no API key required!)
-        # Using Mixtral-8x7B-Instruct - powerful, free, no authentication needed
-        model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
-        api_url = f"https://api-inference.huggingface.co/models/{model}"
-
-        # Build prompt from conversation history
-        prompt = system_prompt + "\n\n"
-        for msg in messages:
-            role = msg["role"].upper()
-            content = msg["content"]
-            prompt += f"{role}: {content}\n\n"
-        prompt += "ASSISTANT:"
-
-        # Make free API call using built-in urllib (no dependencies!)
-        try:
-            # Prepare request
-            data = json.dumps({
-                "inputs": prompt,
-                "parameters": {
-                    "max_new_tokens": 2048,
-                    "temperature": 0.7,
-                    "top_p": 0.95,
-                    "return_full_text": False
-                }
-            }).encode('utf-8')
-
-            req = urllib.request.Request(
-                api_url,
-                data=data,
-                headers={'Content-Type': 'application/json'},
-                method='POST'
-            )
-
-            # Make request with timeout
-            with urllib.request.urlopen(req, timeout=30) as response:
-                result = json.loads(response.read().decode('utf-8'))
-
-                # Handle both list and dict responses
-                if isinstance(result, list) and len(result) > 0:
-                    ai_response = result[0].get("generated_text", "")
-                elif isinstance(result, dict):
-                    ai_response = result.get("generated_text", "")
-                else:
-                    ai_response = "I apologize, but I received an unexpected response format. Please try again."
-
-                # Clean up response - remove prompt repetition if present
-                if "ASSISTANT:" in ai_response:
-                    ai_response = ai_response.split("ASSISTANT:")[-1].strip()
-
-        except urllib.error.HTTPError as e:
-            error_body = e.read().decode('utf-8', errors='ignore')[:200]
-            if e.code == 503:
-                # Model is loading - this is common on first request
-                ai_response = "The AI model is warming up (first-time load). Please wait 20 seconds and try again. This only happens once!"
-            else:
-                ai_response = f"AI service returned error {e.code}: {error_body}"
-        except urllib.error.URLError as e:
-            ai_response = f"Network error: {str(e.reason)[:100]}. Please check your internet connection."
-        except Exception as e:
-            import traceback
-            error_details = traceback.format_exc()[-200:]
-            ai_response = f"Error: {str(e)[:100]}\nDetails: {error_details}"
+        # Generate response locally using research context (no external API calls!)
+        ai_response = generate_local_ai_response(
+            user_message,
+            research_context,
+            mentioned_peptides,
+            is_comparison
+        )
 
         # Extract sources from the response (look for markdown links)
         sources = []
@@ -4924,77 +4970,20 @@ For this comparison question:
 
             messages.append({"role": "user", "content": user_message})
 
-            # Call FREE Hugging Face Inference API (no API key required!)
-            model = "mistralai/Mixtral-8x7B-Instruct-v0.1"
-            api_url = f"https://api-inference.huggingface.co/models/{model}"
+            # Generate response locally using research context (no external API calls!)
+            ai_response = generate_local_ai_response(
+                user_message,
+                research_context,
+                mentioned_peptides,
+                is_comparison
+            )
 
-            # Build prompt from conversation history
-            prompt = system_prompt + "\n\n"
-            for msg in messages:
-                role = msg["role"].upper()
-                content = msg["content"]
-                prompt += f"{role}: {content}\n\n"
-            prompt += "ASSISTANT:"
-
-            # Make free API call using built-in urllib
-            try:
-                # Prepare request
-                data = json.dumps({
-                    "inputs": prompt,
-                    "parameters": {
-                        "max_new_tokens": 2048,
-                        "temperature": 0.7,
-                        "top_p": 0.95,
-                        "return_full_text": False
-                    }
-                }).encode('utf-8')
-
-                req = urllib.request.Request(
-                    api_url,
-                    data=data,
-                    headers={'Content-Type': 'application/json'},
-                    method='POST'
-                )
-
-                # Make request with timeout
-                with urllib.request.urlopen(req, timeout=30) as response:
-                    result = json.loads(response.read().decode('utf-8'))
-
-                    # Handle both list and dict responses
-                    if isinstance(result, list) and len(result) > 0:
-                        ai_response = result[0].get("generated_text", "")
-                    elif isinstance(result, dict):
-                        ai_response = result.get("generated_text", "")
-                    else:
-                        ai_response = "I apologize, but I received an unexpected response format. Please try again."
-
-                    # Clean up response
-                    if "ASSISTANT:" in ai_response:
-                        ai_response = ai_response.split("ASSISTANT:")[-1].strip()
-
-                    # Simulate streaming by yielding response in chunks
-                    chunk_size = 50  # characters per chunk
-                    for i in range(0, len(ai_response), chunk_size):
-                        chunk = ai_response[i:i + chunk_size]
-                        yield f"data: {json.dumps({'chunk': chunk})}\n\n"
-                        time.sleep(0.01)  # Small delay to simulate streaming
-
-            except urllib.error.HTTPError as e:
-                error_body = e.read().decode('utf-8', errors='ignore')[:200]
-                if e.code == 503:
-                    error_msg = "The AI model is warming up (first-time load). Please wait 20 seconds and try again. This only happens once!"
-                    yield f"data: {json.dumps({'chunk': error_msg})}\n\n"
-                else:
-                    error_msg = f"AI service error {e.code}: {error_body}"
-                    yield f"data: {json.dumps({'chunk': error_msg})}\n\n"
-            except urllib.error.URLError as e:
-                yield f"data: {json.dumps({'error': f'Network error: {str(e.reason)[:100]}'})}\n\n"
-                return
-            except Exception as e:
-                import traceback
-                error_details = traceback.format_exc()[-200:]
-                yield f"data: {json.dumps({'error': f'{str(e)[:100]} | {error_details}'})}\n\n"
-                return
+            # Simulate streaming by yielding response in chunks
+            chunk_size = 50  # characters per chunk
+            for i in range(0, len(ai_response), chunk_size):
+                chunk = ai_response[i:i + chunk_size]
+                yield f"data: {json.dumps({'chunk': chunk})}\n\n"
+                time.sleep(0.01)  # Small delay to simulate streaming
 
             # Send final metadata
             yield f"data: {json.dumps({'done': True, 'mentioned_peptides': mentioned_peptides})}\n\n"
