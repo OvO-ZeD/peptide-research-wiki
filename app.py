@@ -2,13 +2,14 @@ from flask import Flask, render_template, request, jsonify, Response, stream_wit
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
+import urllib.request
+import urllib.error
 import json
 import time
 from datetime import datetime, timezone
 import os
 import re
 from dotenv import load_dotenv
-import requests
 from functools import lru_cache
 
 load_dotenv()
@@ -4779,24 +4780,30 @@ For this comparison question:
             prompt += f"{role}: {content}\n\n"
         prompt += "ASSISTANT:"
 
-        # Make free API call (no authentication required)
+        # Make free API call using built-in urllib (no dependencies!)
         try:
-            hf_response = requests.post(
+            # Prepare request
+            data = json.dumps({
+                "inputs": prompt,
+                "parameters": {
+                    "max_new_tokens": 2048,
+                    "temperature": 0.7,
+                    "top_p": 0.95,
+                    "return_full_text": False
+                }
+            }).encode('utf-8')
+
+            req = urllib.request.Request(
                 api_url,
-                json={
-                    "inputs": prompt,
-                    "parameters": {
-                        "max_new_tokens": 2048,
-                        "temperature": 0.7,
-                        "top_p": 0.95,
-                        "return_full_text": False
-                    }
-                },
-                timeout=30
+                data=data,
+                headers={'Content-Type': 'application/json'},
+                method='POST'
             )
 
-            if hf_response.status_code == 200:
-                result = hf_response.json()
+            # Make request with timeout
+            with urllib.request.urlopen(req, timeout=30) as response:
+                result = json.loads(response.read().decode('utf-8'))
+
                 # Handle both list and dict responses
                 if isinstance(result, list) and len(result) > 0:
                     ai_response = result[0].get("generated_text", "")
@@ -4809,16 +4816,16 @@ For this comparison question:
                 if "ASSISTANT:" in ai_response:
                     ai_response = ai_response.split("ASSISTANT:")[-1].strip()
 
-            elif hf_response.status_code == 503:
+        except urllib.error.HTTPError as e:
+            if e.code == 503:
                 # Model is loading - this is common on first request
                 ai_response = "The AI model is warming up (first-time load). Please wait 20 seconds and try again. This only happens once!"
             else:
-                ai_response = f"I'm having trouble connecting to the AI service right now. Please try again in a moment. (Status: {hf_response.status_code})"
-
-        except requests.Timeout:
-            ai_response = "The request took too long. Please try again with a shorter message."
-        except requests.RequestException as e:
-            ai_response = f"Network error connecting to AI service. Please check your connection and try again."
+                ai_response = f"I'm having trouble connecting to the AI service right now. Please try again in a moment. (Status: {e.code})"
+        except urllib.error.URLError as e:
+            ai_response = "Network error connecting to AI service. Please check your connection and try again."
+        except Exception as e:
+            ai_response = f"Unexpected error: {str(e)[:100]}"
 
         # Extract sources from the response (look for markdown links)
         sources = []
@@ -4926,24 +4933,30 @@ For this comparison question:
                 prompt += f"{role}: {content}\n\n"
             prompt += "ASSISTANT:"
 
-            # Make free API call
+            # Make free API call using built-in urllib
             try:
-                hf_response = requests.post(
+                # Prepare request
+                data = json.dumps({
+                    "inputs": prompt,
+                    "parameters": {
+                        "max_new_tokens": 2048,
+                        "temperature": 0.7,
+                        "top_p": 0.95,
+                        "return_full_text": False
+                    }
+                }).encode('utf-8')
+
+                req = urllib.request.Request(
                     api_url,
-                    json={
-                        "inputs": prompt,
-                        "parameters": {
-                            "max_new_tokens": 2048,
-                            "temperature": 0.7,
-                            "top_p": 0.95,
-                            "return_full_text": False
-                        }
-                    },
-                    timeout=30
+                    data=data,
+                    headers={'Content-Type': 'application/json'},
+                    method='POST'
                 )
 
-                if hf_response.status_code == 200:
-                    result = hf_response.json()
+                # Make request with timeout
+                with urllib.request.urlopen(req, timeout=30) as response:
+                    result = json.loads(response.read().decode('utf-8'))
+
                     # Handle both list and dict responses
                     if isinstance(result, list) and len(result) > 0:
                         ai_response = result[0].get("generated_text", "")
@@ -4963,18 +4976,18 @@ For this comparison question:
                         yield f"data: {json.dumps({'chunk': chunk})}\n\n"
                         time.sleep(0.01)  # Small delay to simulate streaming
 
-                elif hf_response.status_code == 503:
+            except urllib.error.HTTPError as e:
+                if e.code == 503:
                     error_msg = "The AI model is warming up (first-time load). Please wait 20 seconds and try again. This only happens once!"
                     yield f"data: {json.dumps({'chunk': error_msg})}\n\n"
                 else:
-                    error_msg = f"I'm having trouble connecting to the AI service right now. Please try again in a moment. (Status: {hf_response.status_code})"
+                    error_msg = f"I'm having trouble connecting to the AI service right now. Please try again in a moment. (Status: {e.code})"
                     yield f"data: {json.dumps({'chunk': error_msg})}\n\n"
-
-            except requests.Timeout:
-                yield f"data: {json.dumps({'error': 'Request timeout. Please try again with a shorter message.'})}\n\n"
-                return
-            except requests.RequestException as e:
+            except urllib.error.URLError as e:
                 yield f"data: {json.dumps({'error': 'Network error. Please check your connection.'})}\n\n"
+                return
+            except Exception as e:
+                yield f"data: {json.dumps({'error': f'Unexpected error: {str(e)[:100]}'})}\n\n"
                 return
 
             # Send final metadata
