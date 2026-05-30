@@ -73,6 +73,21 @@ function setStatus(message, type) {
   status.className = 'status-message ' + (type || '');
 }
 
+/* ─── Empty State Toggle ─── */
+function hideEmptyState() {
+  var es = document.getElementById('empty_state');
+  if (es) es.style.display = 'none';
+}
+function showEmptyState() {
+  var es = document.getElementById('empty_state');
+  if (es) es.style.display = '';
+}
+/* Set search from example/other click */
+function setSearch(val) {
+  var input = document.getElementById('term_input');
+  if (input) { input.value = val; searchPeptide(); }
+}
+
 /* ─── Helpers ─── */
 function escapeHtml(v) {
   return String(v || '').replace(/[&<>"']/g, function (m) {
@@ -518,6 +533,7 @@ async function searchPeptide() {
     return;
   }
 
+  hideEmptyState();
   saveRecent(term);
   resultsRoot.innerHTML = showLoading();
   setStatus('Loading research results…', 'loading');

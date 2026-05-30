@@ -8,10 +8,14 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Peptide Research Wiki">
   <title>Peptide Research Wiki</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v={{ cache_bust }}">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-512.svg">
   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.svg">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='16' fill='%2308080a'/><text x='50' y='68' font-size='56' fill='%23d93838' font-family='serif' text-anchor='middle'>P</text></svg>">
 </head>
 <body>
   <canvas id="particles"></canvas>
@@ -65,13 +69,13 @@
 
     <header class="hero">
       <div class="hero-brand">
-        <span class="brand-spike">+</span>
+        <span class="brand-spike">P</span>
         <div class="hero-copy">
           <span class="hero-badge">Research Database</span>
           <h1>Peptide Research Wiki</h1>
         </div>
       </div>
-      <p class="hero-desc">Search a peptide and get public research, trial details, plain-language summaries, methods, and source links.</p>
+      <p class="hero-desc">Search any peptide to retrieve clinical trials, PubMed evidence, mechanisms of action, safety profiles, and dosage references — all from public research databases.</p>
     </header>
 
     <section class="search-section">
@@ -101,6 +105,20 @@
         </button>
       </div>
       <div id="status_message" class="status-message">Enter a peptide name and press Search.</div>
+      <div id="empty_state" class="search-empty-state">
+        <div class="search-empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/><path d="M3 12a9 9 0 0 1 18 0" opacity="0.5"/></svg>
+        </div>
+        <div class="search-empty-title">Search the Peptide Research Wiki</div>
+        <div class="search-empty-sub">Enter a peptide name above to retrieve clinical trials, PubMed articles, mechanisms, and safety data from public research databases.</div>
+        <div class="search-empty-examples">
+          <span class="search-empty-example" onclick="setSearch('retatrutide')">retatrutide</span>
+          <span class="search-empty-example" onclick="setSearch('semaglutide')">semaglutide</span>
+          <span class="search-empty-example" onclick="setSearch('bpc-157')">bpc-157</span>
+          <span class="search-empty-example" onclick="setSearch('tesamorelin')">tesamorelin</span>
+          <span class="search-empty-example" onclick="setSearch('ss-31')">ss-31</span>
+        </div>
+      </div>
       <div class="recent-searches" id="recent_searches"></div>
     </section>
 
@@ -108,6 +126,18 @@
       <input class="search-filter-input" id="results_filter" type="text" placeholder="Filter results by keyword…" enterkeyhint="done">
     </div>
     <main id="results" class="results"></main>
+
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <div class="site-footer-links">
+          <a href="https://clinicaltrials.gov" target="_blank" rel="noopener">ClinicalTrials.gov</a>
+          <a href="https://pubmed.ncbi.nlm.nih.gov" target="_blank" rel="noopener">PubMed</a>
+          <a href="https://open.fda.gov" target="_blank" rel="noopener">OpenFDA</a>
+          <a href="https://en.wikipedia.org" target="_blank" rel="noopener">Wikipedia</a>
+        </div>
+        <div class="site-footer-meta">Data sourced from public research databases. Educational context only — not medical advice.</div>
+      </div>
+    </footer>
   </div>
 
   <div id="tilt-elements" aria-hidden="true"></div>
@@ -159,7 +189,6 @@
       if (e.key === '1') { navigateTo('/'); }
       if (e.key === '2') { navigateTo('/stacks'); }
       if (e.key === '3') { navigateTo('/tracker'); }
-      if (e.key === '4') { navigateTo('/ask'); }
     });
 
     // ─── Swipe between pages ───
@@ -170,11 +199,11 @@
         var dx = e.changedTouches[0].clientX - startX;
         var dy = e.changedTouches[0].clientY - startY;
         if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
-        var pages = ['/', '/stacks', '/tracker', '/ask'];
+        var pages = ['/', '/stacks', '/tracker'];
         var idx = pages.indexOf(window.location.pathname);
         if (idx < 0) return;
-        if (dx < 0 && idx < pages.length - 1) { showToast('→ ' + pages[idx + 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker').replace('ask', 'Ask AI') || 'Search'); setTimeout(function () { navigateTo(pages[idx + 1]); }, 200); }
-        if (dx > 0 && idx > 0) { showToast('← ' + pages[idx - 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker').replace('ask', 'Ask AI') || 'Home'); setTimeout(function () { navigateTo(pages[idx - 1]); }, 200); }
+        if (dx < 0 && idx < pages.length - 1) { showToast('→ ' + pages[idx + 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker') || 'Search'); setTimeout(function () { navigateTo(pages[idx + 1]); }, 200); }
+        if (dx > 0 && idx > 0) { showToast('← ' + pages[idx - 1].replace('/', '').replace('stacks', 'Stacks').replace('tracker', 'Tracker') || 'Home'); setTimeout(function () { navigateTo(pages[idx - 1]); }, 200); }
       }, { passive: true });
     })();
 
