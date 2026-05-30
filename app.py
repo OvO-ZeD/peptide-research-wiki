@@ -4498,13 +4498,46 @@ def api_ask():
                 "source": "llm",
             }), 200
 
-        # LLM unavailable (Vercel / cloud) — use whatever local DB found
-        if not answer_parts or all(p.strip() == "" for p in answer_parts):
+        # LLM unavailable (Vercel / cloud) — use PubMed directly
+        pubmed_articles = ask_llm.search_pubmed_general(question, retmax=5)
+        if pubmed_articles:
             answer_parts = [
-                "I couldn't find specific information about \"" + question + "\" in the local database.",
-                "Try searching for a specific peptide or condition, or rephrase your question.",
-                "You can also browse the **Stacks** tab for protocol recommendations.",
+                "I searched PubMed for **\"" + question + "\"** and found these research articles:",
+                "",
             ]
+            pubmed_citations = []
+            for a in pubmed_articles:
+                answer_parts.append("**" + a["title"] + "**")
+                if a.get("abstract"):
+                    answer_parts.append(a["abstract"][:400] + ("..." if len(a.get("abstract","")) > 400 else ""))
+                if a.get("authors"):
+                    answer_parts.append("*" + ", ".join(a["authors"][:3]) + " — " + (a.get("pubdate") or "") + "*")
+                answer_parts.append("*Source: " + (a.get("source") or "PubMed") + "*")
+                answer_parts.append("")
+                pubmed_citations.append({
+                    "source": a["pmid"],
+                    "label": a["title"][:60],
+                    "peptide": a["pmid"],
+                    "link": a["link"],
+                })
+            answer_parts.append("*Results from PubMed. Always consult a healthcare professional before starting any new protocol.*")
+
+            return jsonify({
+                "answer": "\n".join(answer_parts),
+                "citations": pubmed_citations,
+                "stacks": [],
+                "evidence": {},
+                "matched_conditions": [],
+                "matched_peptides": [],
+                "source": "pubmed",
+            }), 200
+
+        # No LLM, no PubMed results — show clean message, NOT weak local DB matches
+        answer_parts = [
+            "I couldn't find specific research about \"" + question + "\" in our database or PubMed.",
+            "Try searching for a specific peptide or condition, or rephrase your question.",
+            "You can also browse the **Stacks** tab for protocol recommendations.",
+        ]
 
     answer = "\n".join(answer_parts).strip()
 

@@ -63,19 +63,129 @@ def query_ollama(messages, model=DEFAULT_MODEL, max_tokens=1024):
         return None
 
 
+def _extract_medical_keywords(query):
+    """Extract meaningful medical keywords from a query, filtering slang/stop words."""
+    stop_words = {
+        "a","an","the","for","and","or","to","of","in","with","that",
+        "is","it","on","at","by","i","me","my","we","our","you",
+        "your","he","she","they","them","their","this","that","these",
+        "those","am","are","was","were","be","been","being","have",
+        "has","had","do","does","did","but","if","because","as",
+        "until","while","about","between","through","during","before",
+        "after","above","below","up","down","out","off","over","under",
+        "again","further","then","once","here","there","when","where",
+        "why","how","all","each","every","both","few","more","most",
+        "other","some","such","no","nor","not","only","own","same",
+        "so","than","too","very","just","get","something","need",
+        "help","want","looking","good","best","can","what","any",
+        "anything","tell","know","does","work","use","used","using",
+        "please","try","trying","like","would","could","should",
+        "gear","stack","cycle",
+    }
+    # Generic verbs that shouldn't be AND-required in PubMed search
+    generic_verbs = {
+        "prevent","prevention","reduce","reducing","reduction","stop","stopping",
+        "treat","treatment","treating","improve","improving","improvement",
+        "increase","increasing","decrease","decreasing","promote","promoting",
+        "support","supporting","enhance","enhancing","boost","boosting",
+        "fix","fixing","help","helping","avoid","avoiding","manage","managing",
+    }
+    slang_map = {
+        "gear": "anabolic steroids",
+        "juice": "anabolic steroids",
+        "hairfall": "hair loss",
+        "hairfalling": "hair loss",
+        "hair fall": "hair loss",
+        "fatburn": "fat oxidation",
+        "fat burn": "fat oxidation",
+        "gains": "muscle growth",
+        "cutting": "weight loss",
+        "bulking": "muscle hypertrophy",
+    }
+    q = query.lower().strip()
+    for slang, medical in slang_map.items():
+        if slang in q:
+            q = q.replace(slang, medical)
+    tokens = re.findall(r'[a-z]+', q)
+    # Remove stop words AND generic verbs for PubMed query construction
+    keywords = [t for t in tokens if t not in stop_words and t not in generic_verbs and len(t) > 2]
+    if not keywords:
+        keywords = [t for t in tokens if t not in stop_words and len(t) > 2]
+    return keywords
+
+
+def _build_pubmed_queries(keywords, raw_query):
+    """Build multiple search query strings to try against PubMed."""
+    queries = []
+
+    # Extract common bigrams/phrases from raw query (after slang mapping)
+    raw_lower = raw_query.lower()
+    common_phrases = [
+        "hair loss", "muscle growth", "weight loss", "fat loss",
+        "anabolic steroids", "growth hormone", "insulin resistance",
+        "blood pressure", "heart disease", "oxidative stress",
+        "immune system", "stem cell", "wound healing", "gut health",
+        "lean mass", "body composition", "joint pain", "muscle recovery",
+    ]
+    phrases_in_query = [f'"{p}"' for p in common_phrases if p in raw_lower]
+    # Also check conjunctions of keywords (e.g. "hair"+"loss" in keywords -> use phrase)
+    kw_set = set(keywords)
+    phrase_conjunctions = {
+        "hair": "loss", "fat": "loss", "anabolic": "steroids",
+        "growth": "hormone", "insulin": "resistance", "oxidative": "stress",
+        "immune": "system", "stem": "cell", "lean": "mass",
+        "body": "composition", "joint": "pain", "muscle": "recovery",
+        "wound": "healing", "gut": "health", "blood": "pressure",
+        "heart": "disease", "weight": "loss",
+    }
+    for w1, w2 in phrase_conjunctions.items():
+        if w1 in kw_set and w2 in kw_set:
+            phrase = f'"{w1} {w2}"'
+            if phrase not in phrases_in_query:
+                phrases_in_query.append(phrase)
+
+    if phrases_in_query:
+        # Use phrase + keyword combo
+        for phrase in phrases_in_query[:2]:
+            extra_kw = [k for k in keywords if k not in phrase.strip('"').split()]
+            if extra_kw:
+                queries.append(f"{phrase} AND {extra_kw[0]}")
+            else:
+                queries.append(phrase)
+
+    # Try AND with the most specific keywords
+    sorted_kw = sorted(set(keywords), key=lambda x: (-len(x), x))
+    if len(sorted_kw) >= 3:
+        queries.append(" AND ".join(sorted_kw[:3]))
+    if len(sorted_kw) >= 2:
+        queries.append(" AND ".join(sorted_kw[:2]))
+    # Try OR
+    if len(sorted_kw) >= 2:
+        queries.append(" OR ".join(sorted_kw))
+    # Single best keyword
+    if sorted_kw:
+        queries.append(sorted_kw[0])
+
+    return queries, sorted_kw
+
+
 def search_pubmed_general(query, retmax=6):
     """Search PubMed broadly for any medical/peptide topic.
     Returns list of {title, pubdate, source, authors, pmid, abstract}."""
-    # Use a broad search — no peptide-specific filter
-    search_url = (
-        f"{PUBMED_SEARCH_URL}?db=pubmed&retmode=json&retmax={retmax}"
-        f"&sort=relevance&term={urllib.parse.quote(query)}"
-    )
-    search_data = fetch_json(search_url)
-    if not search_data:
-        return []
+    keywords = _extract_medical_keywords(query)
+    if not keywords:
+        keywords = re.findall(r'[a-z]+', query.lower())
 
-    ids = search_data.get("esearchresult", {}).get("idlist", [])
+    # Build transformed query from keywords for phrase detection
+    transformed_query = " ".join(keywords)
+    search_queries, sorted_kw = _build_pubmed_queries(keywords, transformed_query)
+    ids = []
+
+    for search_term in search_queries:
+        ids = _exec_pubmed_search(search_term, retmax)
+        if ids:
+            break
+
     if not ids:
         return []
 
@@ -90,6 +200,18 @@ def search_pubmed_general(query, retmax=6):
 
     articles = _parse_pubmed_xml(xml_text, ids)
     return articles
+
+
+def _exec_pubmed_search(search_term, retmax):
+    """Execute a PubMed search and return ID list."""
+    search_url = (
+        f"{PUBMED_SEARCH_URL}?db=pubmed&retmode=json&retmax={retmax}"
+        f"&sort=relevance&term={urllib.parse.quote(search_term)}"
+    )
+    search_data = fetch_json(search_url)
+    if not search_data:
+        return []
+    return search_data.get("esearchresult", {}).get("idlist", [])
 
 
 def _parse_pubmed_xml(xml_text, ids):
