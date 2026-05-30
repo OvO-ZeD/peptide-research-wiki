@@ -4817,15 +4817,18 @@ For this comparison question:
                     ai_response = ai_response.split("ASSISTANT:")[-1].strip()
 
         except urllib.error.HTTPError as e:
+            error_body = e.read().decode('utf-8', errors='ignore')[:200]
             if e.code == 503:
                 # Model is loading - this is common on first request
                 ai_response = "The AI model is warming up (first-time load). Please wait 20 seconds and try again. This only happens once!"
             else:
-                ai_response = f"I'm having trouble connecting to the AI service right now. Please try again in a moment. (Status: {e.code})"
+                ai_response = f"AI service returned error {e.code}: {error_body}"
         except urllib.error.URLError as e:
-            ai_response = "Network error connecting to AI service. Please check your connection and try again."
+            ai_response = f"Network error: {str(e.reason)[:100]}. Please check your internet connection."
         except Exception as e:
-            ai_response = f"Unexpected error: {str(e)[:100]}"
+            import traceback
+            error_details = traceback.format_exc()[-200:]
+            ai_response = f"Error: {str(e)[:100]}\nDetails: {error_details}"
 
         # Extract sources from the response (look for markdown links)
         sources = []
@@ -4977,17 +4980,20 @@ For this comparison question:
                         time.sleep(0.01)  # Small delay to simulate streaming
 
             except urllib.error.HTTPError as e:
+                error_body = e.read().decode('utf-8', errors='ignore')[:200]
                 if e.code == 503:
                     error_msg = "The AI model is warming up (first-time load). Please wait 20 seconds and try again. This only happens once!"
                     yield f"data: {json.dumps({'chunk': error_msg})}\n\n"
                 else:
-                    error_msg = f"I'm having trouble connecting to the AI service right now. Please try again in a moment. (Status: {e.code})"
+                    error_msg = f"AI service error {e.code}: {error_body}"
                     yield f"data: {json.dumps({'chunk': error_msg})}\n\n"
             except urllib.error.URLError as e:
-                yield f"data: {json.dumps({'error': 'Network error. Please check your connection.'})}\n\n"
+                yield f"data: {json.dumps({'error': f'Network error: {str(e.reason)[:100]}'})}\n\n"
                 return
             except Exception as e:
-                yield f"data: {json.dumps({'error': f'Unexpected error: {str(e)[:100]}'})}\n\n"
+                import traceback
+                error_details = traceback.format_exc()[-200:]
+                yield f"data: {json.dumps({'error': f'{str(e)[:100]} | {error_details}'})}\n\n"
                 return
 
             # Send final metadata
