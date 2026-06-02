@@ -4416,7 +4416,7 @@ def build_clinical_snapshot(
 
 
 CACHE_BUST = str(int(time.time()))
-VERSION = "VER-010"
+VERSION = "VER-011"
 
 # ── Session conversation history for chat memory ──
 _conversation_history = {}  # ip_address → list of {"role": ..., "content": ...}
