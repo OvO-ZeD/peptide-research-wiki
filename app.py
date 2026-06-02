@@ -3685,7 +3685,7 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
     }
 
 CACHE_BUST = str(int(time.time()))
-VERSION = "VER-004"
+VERSION = "VER-005"
 
 
 # ── Evidence cache for Ask AI live data ──
@@ -4516,6 +4516,23 @@ def api_ask():
                 drug_names = [d.get("other_name", "") for d in drugs[:3] if d.get("other_name")]
                 answer_parts.append("- **" + disease.replace("_", " ").title() + "** associated drugs: " + ", ".join(drug_names))
 
+    # ── Try AI-generated response using research context ──
+    if matched_peptides:
+        try:
+            medical_terms = extract_medical_terms(question)
+            research_ctx = build_research_context(list(matched_peptides), medical_terms)
+            is_compare = detect_comparison_query(question)
+            sysp = ASK_SYSTEM_PROMPT
+            if research_ctx:
+                sysp += f"\n\n### Research Context (use this to inform your response):\n{research_ctx}"
+            ai_answer = generate_local_ai_response(
+                question, research_ctx, list(matched_peptides), is_compare, sysp
+            )
+            if ai_answer and len(ai_answer) > 100:
+                answer_parts = [ai_answer]
+        except Exception:
+            pass
+
     # Use LLM when no peptide name is directly mentioned in the question
     known_names = set(STACK_KNOWLEDGE.keys())
     known_names.update(a for a in ALIASES if len(a) >= 4)
@@ -4589,8 +4606,13 @@ def api_ask():
                 "source": "pubmed",
             }), 200
 
-        # Try Wikipedia as 3rd fallback
+        # Try Wikipedia as 3rd fallback — filter out generic/top-level articles
+        GENERIC_WIKI_TITLES = {"peptide", "peptides", "protein", "proteins", "drug", "drugs",
+                               "medicine", "health", "disease", "therapy", "chemical compound",
+                               "biology", "biochemistry", "pharmacology", "amino acid"}
         wiki_articles = ask_llm.search_wikipedia(question, max_results=2)
+        wiki_articles = [a for a in wiki_articles
+                         if a.get("title", "").lower().strip() not in GENERIC_WIKI_TITLES]
         if wiki_articles:
             answer_parts = [
                 "I found information on **Wikipedia** related to your question:",
