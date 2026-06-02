@@ -99,36 +99,44 @@
       margin-bottom: 4px;
     }
 
-    /* ─── Citations ─── */
-    .citations {
-      margin-top: 8px;
+    /* ─── Sources Cloud (compact) ─── */
+    .sources-cloud {
+      margin-top: 10px;
       padding-top: 8px;
-      border-top: 1px solid rgba(255,255,255,0.06);
+      border-top: 1px solid rgba(255,255,255,0.05);
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
+      justify-content: center;
     }
-    .citation-chip {
-      display: inline-block;
-      font-size: 0.7rem;
-      padding: 2px 8px;
+    .source-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.6rem;
+      font-weight: 500;
+      padding: 2px 7px;
       border-radius: var(--radius-pill);
-      background: rgba(217, 56, 56, 0.1);
-      border: 1px solid rgba(217, 56, 56, 0.2);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--hairline);
       color: var(--ink-muted);
-      text-decoration: none;
+      letter-spacing: 0.02em;
       transition: var(--transition);
     }
-    .citation-chip:hover {
-      background: rgba(217, 56, 56, 0.2);
-      color: var(--ink);
+    .source-pill svg {
+      width: 9px;
+      height: 9px;
+      flex-shrink: 0;
     }
-    .citation-chip svg {
-      vertical-align: middle;
-      margin-right: 2px;
-      width: 10px;
-      height: 10px;
-    }
+    .source-pill.pubmed { border-color: rgba(112, 185, 255, 0.2); background: rgba(112, 185, 255, 0.06); color: #70b9ff; }
+    .source-pill.clinicaltrials { border-color: rgba(76, 217, 100, 0.2); background: rgba(76, 217, 100, 0.06); color: #4cd964; }
+    .source-pill.primekg { border-color: rgba(175, 82, 222, 0.2); background: rgba(175, 82, 222, 0.06); color: #af52de; }
+    .source-pill.ckg { border-color: rgba(255, 159, 10, 0.2); background: rgba(255, 159, 10, 0.06); color: #ff9f0a; }
+    .source-pill.sider { border-color: rgba(90, 200, 250, 0.2); background: rgba(90, 200, 250, 0.06); color: #5ac8fa; }
+    .source-pill.drugbank { border-color: rgba(255, 69, 58, 0.2); background: rgba(255, 69, 58, 0.06); color: #ff453a; }
+    .source-pill.knowledgebase { border-color: rgba(217, 56, 56, 0.2); background: rgba(217, 56, 56, 0.06); color: var(--primary); }
+    .source-pill.wikipedia { border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); color: var(--ink-tertiary); }
+
 
     /* ─── Suggested questions ─── */
     .suggestions {
@@ -507,7 +515,7 @@
         </div>
         <div class="site-footer-meta">Data sourced from public research databases. Educational context only — not medical advice.</div>
       </div>
-      <span class="version-badge" style="position:absolute;right:16px;bottom:8px;font-size:12px;color:#666;">{{ version }}</span>
+      <span class="version-badge">{{ version }}</span>
     </footer>
   </div>
 

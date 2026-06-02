@@ -80,20 +80,18 @@
       content.innerHTML = html;
       div.appendChild(content);
 
-      /* Citations */
-      if (extra && extra.citations && extra.citations.length) {
-        var citeDiv = document.createElement('div');
-        citeDiv.className = 'citations';
-        for (var ci = 0; ci < extra.citations.length; ci++) {
-          var c = extra.citations[ci];
-          var chip = document.createElement('a');
-          chip.className = 'citation-chip';
-          chip.href = c.link || ('/search?term=' + encodeURIComponent(c.peptide || c.source));
-          chip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/></svg> ' + (c.label || c.source);
-          chip.target = '_blank';
-          citeDiv.appendChild(chip);
+      /* Sources cloud */
+      if (extra && extra.sources && extra.sources.length) {
+        var srcDiv = document.createElement('div');
+        srcDiv.className = 'sources-cloud';
+        for (var si = 0; si < extra.sources.length; si++) {
+          var s = extra.sources[si];
+          var pill = document.createElement('span');
+          pill.className = 'source-pill ' + (s.id || '');
+          pill.textContent = s.label || s.id;
+          srcDiv.appendChild(pill);
         }
-        div.appendChild(citeDiv);
+        div.appendChild(srcDiv);
       }
 
       /* Stack links */
@@ -349,7 +347,8 @@
         var data = JSON.parse(xhr.responseText);
         addMsg(data.answer, 'ai', {
           citations: data.citations || [],
-          stacks: data.stacks || []
+          stacks: data.stacks || [],
+          sources: data.sources || []
         });
       } else {
         var errData;

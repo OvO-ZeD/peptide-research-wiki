@@ -3685,7 +3685,7 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
     }
 
 CACHE_BUST = str(int(time.time()))
-VERSION = "VER-007"
+VERSION = "VER-008"
 
 # ── Session conversation history for chat memory ──
 _conversation_history = {}  # ip_address → list of {"role": ..., "content": ...}
@@ -4604,6 +4604,7 @@ def api_ask():
                 "matched_conditions": [],
                 "matched_peptides": [],
                 "source": "llm",
+                "sources": [{"id": "knowledgebase", "label": "Knowledge Base"}, {"id": "pubmed", "label": "PubMed"}],
             }), 200
 
         # LLM unavailable (Vercel / cloud) — use PubMed directly
@@ -4640,6 +4641,7 @@ def api_ask():
                 "matched_conditions": [],
                 "matched_peptides": [],
                 "source": "pubmed",
+                "sources": [{"id": "pubmed", "label": "PubMed"}],
             }), 200
 
         # Try Wikipedia as 3rd fallback — filter out generic/top-level articles
@@ -4679,6 +4681,7 @@ def api_ask():
                 "matched_conditions": [],
                 "matched_peptides": [],
                 "source": "wikipedia",
+                "sources": [{"id": "wikipedia", "label": "Wikipedia"}],
             }), 200
 
         # No results from any source
@@ -4735,6 +4738,23 @@ def api_ask():
     _add_to_history(_session_ip, "user", question)
     _add_to_history(_session_ip, "assistant", answer[:2000])
 
+    # ── Determine which sources contributed ──
+    _sources = []
+    if matched_peptides:
+        _sources.append({"id": "knowledgebase", "label": "Knowledge Base"})
+    if matched_peptides or _medical_terms:
+        _sources.append({"id": "pubmed", "label": "PubMed"})
+    if matched_peptides:
+        _sources.append({"id": "clinicaltrials", "label": "ClinicalTrials"})
+    if primekg_relations:
+        _sources.append({"id": "primekg", "label": "PrimeKG"})
+    if "SIDER" in answer:
+        _sources.append({"id": "sider", "label": "SIDER"})
+    if "DrugBank" in answer:
+        _sources.append({"id": "drugbank", "label": "DrugBank"})
+    if "Clinical Knowledge Graph" in answer or "CKG" in answer:
+        _sources.append({"id": "ckg", "label": "CKG"})
+
     # ── Stack links ──
     stacks = [rs["key"] for rs in relevant_stacks[:5]]
 
@@ -4747,6 +4767,7 @@ def api_ask():
         "matched_peptides": list(matched_peptides)[:10],
         "primekg": primekg_relations or None,
         "primekg_diseases": primekg_disease_info or None,
+        "sources": _sources,
     }), 200
 
 
