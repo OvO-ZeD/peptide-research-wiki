@@ -4416,7 +4416,7 @@ def build_clinical_snapshot(
 
 
 CACHE_BUST = str(int(time.time()))
-VERSION = "VER-009"
+VERSION = "VER-010"
 
 # ── Session conversation history for chat memory ──
 _conversation_history = {}  # ip_address → list of {"role": ..., "content": ...}
@@ -5407,6 +5407,70 @@ def api_ask():
             + str(len(all_pep_names))
             + " found):"
         )
+
+    # ═ Clinical summary — synthesized across all matched evidence ═
+    if peptide_data:
+        answer_parts.append("")
+        answer_parts.append("**Clinical Summary**")
+        # Top peptides with tier + primary effect
+        sorted_for_summary = sorted(
+            peptide_data.items(),
+            key=lambda x: (-x[1].get("score", 0), {"A": 0, "B": 1, "C": 2, "D": 3}.get(x[1]["tier"], 4)),
+        )
+        top_lines = []
+        for pep, pd in sorted_for_summary[:3]:
+            tier = pd.get("tier", "D")
+            effect = pd.get("primary_effect", "")
+            top_lines.append(
+                "**" + pep.title() + "** (Tier " + tier + ")"
+                + (" — " + effect if effect else "")
+            )
+        answer_parts.append("**Top candidates**: " + " | ".join(top_lines))
+        # Evidence context
+        ctx_parts = []
+        ctx_parts.append(str(len(all_pep_names)) + " peptides matched")
+        if matched_conditions:
+            ctx_parts.append(str(len(matched_conditions)) + " clinical conditions")
+        primekg_count = sum(len(v) for v in primekg_relations.values())
+        if primekg_count > 0:
+            ctx_parts.append(str(primekg_count) + " KG relationships")
+        if matched_goals:
+            ctx_parts.append(str(len(matched_goals)) + " therapeutic goals")
+        answer_parts.append("**Evidence context**: " + " | ".join(ctx_parts))
+        # Clinical bottom line
+        if matched_conditions:
+            top_cond = matched_conditions[0]
+            cond_name = top_cond["condition"].replace("_", " ").title()
+            cond_desc = top_cond.get("description", "")
+            # Trim description to first sentence
+            first_sent = cond_desc.split(".")[0] + "." if "." in cond_desc else cond_desc
+            top_pep_name = sorted_for_summary[0][0].title() if sorted_for_summary else ""
+            top_tier = sorted_for_summary[0][1].get("tier", "D") if sorted_for_summary else ""
+            answer_parts.append(
+                "**Clinical context**: "
+                + cond_name
+                + ". "
+                + first_sent
+                + " Primary candidate "
+                + top_pep_name
+                + " (Tier "
+                + top_tier
+                + ") is the highest-evidence option."
+            )
+        else:
+            top_pep_name = sorted_for_summary[0][0].title() if sorted_for_summary else ""
+            top_tier = sorted_for_summary[0][1].get("tier", "D") if sorted_for_summary else ""
+            top_eff = sorted_for_summary[0][1].get("primary_effect", "")
+            answer_parts.append(
+                "**Clinical context**: "
+                + top_pep_name
+                + " (Tier "
+                + top_tier
+                + ") leads with "
+                + (top_eff.lower() if top_eff else "clinical evidence")
+                + ". Review individual profiles below for detailed evidence, safety, and protocol data."
+            )
+        answer_parts.append("")
 
     if matched_conditions:
         answer_parts.append("")
