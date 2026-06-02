@@ -3685,7 +3685,7 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
     }
 
 CACHE_BUST = str(int(time.time()))
-VERSION = "VER-005"
+VERSION = "VER-006"
 
 
 # ── Evidence cache for Ask AI live data ──

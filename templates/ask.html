@@ -19,7 +19,7 @@
     .ask-page {
       display: flex;
       flex-direction: column;
-      min-height: calc(100vh - 100px);
+      min-height: calc(100vh - 80px);
     }
     .ask-disclaimer {
       text-align: center;
@@ -39,6 +39,7 @@
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: var(--radius-xxl);
       overflow: hidden;
+      margin-top: 8px;
       margin-bottom: 16px;
       box-shadow: 0 8px 48px rgba(0,0,0,0.3);
     }
@@ -156,7 +157,7 @@
     .chat-input-bar {
       display: flex;
       gap: 8px;
-      padding: 12px 16px 16px;
+      padding: 14px 16px 18px;
       background: rgba(0,0,0,0.15);
       border-top: 1px solid rgba(255,255,255,0.04);
     }
@@ -235,8 +236,8 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 40px 24px;
-      gap: 12px;
+      padding: 60px 24px 40px;
+      gap: 14px;
     }
     .welcome-icon {
       width: 56px;
@@ -410,9 +411,11 @@
 
     /* ─── Mobile ─── */
     @media (max-width: 540px) {
+      .ask-page { min-height: calc(100vh - 60px); }
       .chat-messages { max-height: calc(100vh - 260px); padding: 16px 12px 8px; }
       .msg { max-width: 92%; font-size: 0.85rem; padding: 10px 14px; }
-      .chat-input-bar { padding: 10px 12px 14px; }
+      .chat-input-bar { padding: 12px 12px 16px; }
+      .welcome-state { padding: 40px 20px 32px; gap: 10px; }
     }
   </style>
 </head>
