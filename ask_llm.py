@@ -294,16 +294,37 @@ def fetch_wikipedia_extract(title, max_chars=800):
 
 
 def _parse_pubmed_xml(xml_text, ids):
-    """Minimal XML parser for PubMed abstracts — no external deps."""
+    """Parse PubMed XML — extract per-PMID article blocks then extract tags from each."""
+    # Split XML into per-article blocks by PMID
+    article_blocks = {}
+    parts = xml_text.split("<PubmedArticle>")
+    for part in parts:
+        end = part.find("</PubmedArticle>")
+        if end == -1:
+            continue
+        block = part[:end]
+        pmid_s = block.find("<PMID")
+        if pmid_s == -1:
+            continue
+        pmid_s = block.find(">", pmid_s) + 1
+        pmid_e = block.find("</PMID>", pmid_s)
+        if pmid_e == -1:
+            continue
+        pmid = block[pmid_s:pmid_e].strip()
+        article_blocks[pmid] = block
+
     articles = []
     for pmid in ids:
-        title = _extract_tag(xml_text, pmid, "ArticleTitle")
-        abstract = _extract_abstract(xml_text, pmid)
-        pubdate = _extract_tag(xml_text, pmid, "PubDate")
-        source = _extract_tag(xml_text, pmid, "Journal")
+        block = article_blocks.get(pmid)
+        if not block:
+            continue
+        title = _extract_tag_from_block(block, "ArticleTitle")
+        abstract = _extract_abstract_from_block(block)
+        pubdate = _extract_tag_from_block(block, "PubDate")
+        source = _extract_tag_from_block(block, "Journal")
         if not source:
-            source = _extract_tag(xml_text, pmid, "Title")
-        authors = _extract_authors(xml_text, pmid)
+            source = _extract_tag_from_block(block, "Title")
+        authors = _extract_authors_from_block(block)
 
         if title:
             articles.append({
@@ -318,33 +339,26 @@ def _parse_pubmed_xml(xml_text, ids):
     return articles
 
 
-def _extract_tag(xml, pmid, tag):
-    """Extract first occurrence of <tag> after the PubmedArticle containing pmid."""
-    idx = xml.find(f'<PubmedArticle>{pmid}')
-    if idx == -1:
-        idx = 0
-    start = xml.find(f"<{tag}>", idx)
+def _extract_tag_from_block(block, tag):
+    """Extract first occurrence of <tag> within an article block."""
+    start = block.find(f"<{tag}>")
     if start == -1:
         return None
-    end = xml.find(f"</{tag}>", start)
+    end = block.find(f"</{tag}>", start)
     if end == -1:
         return None
-    return _strip_xml(xml[start + len(tag) + 2:end])
+    return _strip_xml(block[start + len(tag) + 2:end])
 
 
-def _extract_abstract(xml, pmid):
-    """Extract abstract text, handling multiple AbstractText sections."""
-    idx = xml.find(f'<PubmedArticle>{pmid}')
-    if idx == -1:
-        idx = 0
-    start = xml.find("<Abstract>", idx)
+def _extract_abstract_from_block(block):
+    """Extract abstract text from an article block."""
+    start = block.find("<Abstract>")
     if start == -1:
         return None
-    end = xml.find("</Abstract>", start)
+    end = block.find("</Abstract>", start)
     if end == -1:
         return None
-
-    abstract_xml = xml[start:end]
+    abstract_xml = block[start:end]
     parts = []
     pos = 0
     while True:
@@ -365,40 +379,28 @@ def _extract_abstract(xml, pmid):
         if text:
             parts.append(label + text)
         pos = content_end + 14
-
     return " ".join(parts) if parts else None
 
 
-def _extract_authors(xml, pmid):
-    """Extract author names."""
-    idx = xml.find(f'<PubmedArticle>{pmid}')
-    if idx == -1:
-        idx = 0
-    start = xml.find("<AuthorList>", idx)
-    if start == -1:
-        return []
-    end = xml.find("</AuthorList>", start)
-    if end == -1:
-        return []
-
+def _extract_authors_from_block(block):
+    """Extract author names from an article block."""
     authors = []
-    pos = start
+    pos = 0
     while True:
-        a_start = xml.find("<Author>", pos, end)
+        a_start = block.find("<Author>", pos)
         if a_start == -1:
             break
-        a_end = xml.find("</Author>", a_start)
+        a_end = block.find("</Author>", a_start)
         if a_end == -1:
             break
-
-        last = _extract_simple_tag(xml, a_start, "LastName")
-        first = _extract_simple_tag(xml, a_start, "ForeName")
-        if last:
-            name = f"{first or ''} {last}".strip()
-            if name:
-                authors.append(name)
+        author_xml = block[a_start:a_end]
+        last = _extract_tag_from_block(author_xml, "LastName")
+        first = _extract_tag_from_block(author_xml, "ForeName")
+        if last and first:
+            authors.append(f"{first} {last}")
+        elif last:
+            authors.append(last)
         pos = a_end + 9
-
     return authors[:5]
 
 
