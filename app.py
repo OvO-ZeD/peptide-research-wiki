@@ -16,6 +16,8 @@ load_dotenv()
 import ask_llm
 import primekg
 import ckg
+import sider_db
+import drugbank
 
 app = Flask(__name__, static_url_path="", static_folder=".")
 
@@ -3683,7 +3685,7 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
     }
 
 CACHE_BUST = str(int(time.time()))
-VERSION = "VER-003"
+VERSION = "VER-004"
 
 
 # ── Evidence cache for Ask AI live data ──
@@ -4752,13 +4754,17 @@ Guidelines:
 14. Cite Clinical Knowledge Graph (CKG) evidence when available — protein interactions, drug targets, pathways, disease associations, side effect profiles
 15. When research data is insufficient, offer guidance on how to find more information rather than inventing answers
 16. Maintain conversation context — refer to previous exchanges when relevant
+17. When SIDER side effect data is available in the research context, include relevant adverse reaction information for any discussed drugs or peptides — cite the specific side effects and mention they come from FDA label data
+18. When DrugBank pharmacology data is available, reference mechanisms of action, protein targets, and indications — this provides authoritative pharmacological context for any drug or peptide being discussed
 
 When research context is provided below, prioritize that data in your response and cite it appropriately.
 
 Important: Format citations as clickable links. For PubMed articles, use: [PubMed PMID:12345678](https://pubmed.ncbi.nlm.nih.gov/12345678)
 For clinical trials, use: [ClinicalTrials.gov NCT12345678](https://clinicaltrials.gov/study/NCT12345678)
 For PrimeKG knowledge graph, reference: [PrimeKG (Harvard)](https://github.com/mims-harvard/PrimeKG)
-For Clinical Knowledge Graph, reference: [CKG (MannLab)](https://github.com/MannLabs/CKG)"""
+For Clinical Knowledge Graph, reference: [CKG (MannLab)](https://github.com/MannLabs/CKG)
+For side effect data, reference: [SIDER (EMBL)](http://sideeffects.embl.de/)
+For pharmacology data, reference: [DrugBank](https://go.drugbank.com/)"""
 
 COMPARISON_PROMPT_EXTENSION = """\n\n### Comparison Query Detected
 For this comparison question:
@@ -4892,6 +4898,32 @@ def build_research_context(peptides, medical_terms=None):
                     context_parts.append(ctx + "\n")
         except Exception:
             pass
+
+        # ── SIDER side effects ──
+        try:
+            sider_ctx = sider_db.format_side_effects_for_context(peptide, max_results=10)
+            if sider_ctx:
+                context_parts.append(sider_ctx + "\n")
+        except Exception:
+            pass
+
+        # ── DrugBank pharmacology ──
+        try:
+            drugbank_ctx = drugbank.format_drugbank_for_context(peptide)
+            if drugbank_ctx:
+                context_parts.append(drugbank_ctx + "\n")
+        except Exception:
+            pass
+
+    # ── SIDER side effects for medical terms ──
+    if medical_terms:
+        for term in medical_terms[:2]:
+            try:
+                sider_ctx = sider_db.format_side_effects_for_context(term, max_results=8)
+                if sider_ctx:
+                    context_parts.append(sider_ctx + "\n")
+            except Exception:
+                pass
 
     # Process general medical terms (for semantic search)
     if medical_terms:
@@ -5216,7 +5248,7 @@ def ask_message():
         link_pattern = r'\[([^\]]+)\]\(([^)]+)\)'
         matches = re.findall(link_pattern, ai_response)
         for label, url in matches:
-            if any(k in url.lower() for k in ["pubmed", "clinicaltrials", "nih.gov", "primekg", "harvard", "mannlabs", "ckg"]):
+            if any(k in url.lower() for k in ["pubmed", "clinicaltrials", "nih.gov", "primekg", "harvard", "mannlabs", "ckg", "sideeffects", "drugbank"]):
                 sources.append({"label": label, "url": url})
 
         # Add knowledge graph sources if their data was included
@@ -5230,6 +5262,16 @@ def ask_message():
                 sources.append({
                     "label": "CKG (MannLab)",
                     "url": "https://github.com/MannLabs/CKG",
+                })
+            if "SIDER" in research_context:
+                sources.append({
+                    "label": "SIDER (EMBL)",
+                    "url": "http://sideeffects.embl.de/",
+                })
+            if "DrugBank" in research_context:
+                sources.append({
+                    "label": "DrugBank",
+                    "url": "https://go.drugbank.com/",
                 })
 
         return jsonify({
