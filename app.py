@@ -1,4 +1,11 @@
-from flask import Flask, render_template, request, jsonify, Response, stream_with_context
+from flask import (
+    Flask,
+    render_template,
+    request,
+    jsonify,
+    Response,
+    stream_with_context,
+)
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
@@ -82,7 +89,12 @@ EFFECT_KEYWORDS = {
     "inflammation": ["inflammation_hypothesis"],
     "chronic": ["inflammation_hypothesis", "stress_response"],
     "fat": ["fat_loss", "visceral_fat", "fat_loss_support", "metabolic_flexibility"],
-    "weight": ["fat_loss", "appetite_modulation", "visceral_fat", "metabolic_flexibility"],
+    "weight": [
+        "fat_loss",
+        "appetite_modulation",
+        "visceral_fat",
+        "metabolic_flexibility",
+    ],
     "lose": ["fat_loss", "appetite_modulation"],
     "belly": ["visceral_fat"],
     "visceral": ["visceral_fat"],
@@ -367,12 +379,54 @@ REGULATORY_STATUS = {
 }
 
 ORDER_CATALOG = [
-    {"id": "tesamorelin-5mg", "name": "Tesamorelin", "variant": "5mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
-    {"id": "retatrutide-10mg", "name": "Retatrutide", "variant": "10mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
-    {"id": "semaglutide-5mg", "name": "Semaglutide", "variant": "5mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
-    {"id": "tirzepatide-10mg", "name": "Tirzepatide", "variant": "10mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
-    {"id": "cjc1295-5mg", "name": "CJC-1295", "variant": "5mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
-    {"id": "bpc157-5mg", "name": "BPC-157", "variant": "5mg vial", "price": 120.0, "currency": "USD", "in_stock": True},
+    {
+        "id": "tesamorelin-5mg",
+        "name": "Tesamorelin",
+        "variant": "5mg vial",
+        "price": 120.0,
+        "currency": "USD",
+        "in_stock": True,
+    },
+    {
+        "id": "retatrutide-10mg",
+        "name": "Retatrutide",
+        "variant": "10mg vial",
+        "price": 120.0,
+        "currency": "USD",
+        "in_stock": True,
+    },
+    {
+        "id": "semaglutide-5mg",
+        "name": "Semaglutide",
+        "variant": "5mg vial",
+        "price": 120.0,
+        "currency": "USD",
+        "in_stock": True,
+    },
+    {
+        "id": "tirzepatide-10mg",
+        "name": "Tirzepatide",
+        "variant": "10mg vial",
+        "price": 120.0,
+        "currency": "USD",
+        "in_stock": True,
+    },
+    {
+        "id": "cjc1295-5mg",
+        "name": "CJC-1295",
+        "variant": "5mg vial",
+        "price": 120.0,
+        "currency": "USD",
+        "in_stock": True,
+    },
+    {
+        "id": "bpc157-5mg",
+        "name": "BPC-157",
+        "variant": "5mg vial",
+        "price": 120.0,
+        "currency": "USD",
+        "in_stock": True,
+    },
 ]
 
 INTERACTION_MATRIX = {
@@ -459,32 +513,188 @@ INTERACTION_MATRIX = {
 }
 
 DOSAGE_REFERENCE = {
-    "retatrutide": {"typical_dose": "1-12 mg weekly (titrated)", "route": "SubQ injection", "half_life": "~6 days", "notes": "Titrate over weeks. Starting 1-2 mg. Still in trials.", "max_safe": "12 mg/week"},
-    "tesamorelin": {"typical_dose": "1-2 mg daily", "route": "SubQ injection", "half_life": "~30 min", "notes": "Evening, empty stomach. 5 on, 2 off cycling.", "max_safe": "2 mg/day"},
-    "semaglutide": {"typical_dose": "0.25-2.4 mg weekly (titrated)", "route": "SubQ injection", "half_life": "~7 days", "notes": "Start 0.25 mg/wk x4. Wegovy max 2.4 mg, Ozempic max 1.0 mg.", "max_safe": "2.4 mg/week"},
-    "tirzepatide": {"typical_dose": "2.5-15 mg weekly (titrated)", "route": "SubQ injection", "half_life": "~5 days", "notes": "Start 2.5 mg x4 wk, +2.5 mg every 4 wk.", "max_safe": "15 mg/week"},
-    "liraglutide": {"typical_dose": "0.6-3.0 mg daily (titrated)", "route": "SubQ injection", "half_life": "~13 hours", "notes": "Victoza max 1.8 mg. Saxenda max 3.0 mg.", "max_safe": "3.0 mg/day"},
-    "cagrilintide": {"typical_dose": "0.3-2.4 mg weekly", "route": "SubQ injection", "half_life": "~8 days", "notes": "Investigational. Dosing in trials.", "max_safe": "2.4 mg/week"},
-    "sermorelin": {"typical_dose": "0.5-2.0 mg daily", "route": "SubQ injection", "half_life": "~15 min", "notes": "Evening, empty stomach.", "max_safe": "2 mg/day"},
-    "ipamorelin": {"typical_dose": "200-300 mcg daily", "route": "SubQ injection", "half_life": "~2 hours", "notes": "Evening. Can combine with GHRH in same syringe.", "max_safe": "300 mcg/day"},
-    "cjc-1295": {"typical_dose": "1-2 mg 2x/week (DAC) or 100 mcg daily", "route": "SubQ injection", "half_life": "~6-8 days (DAC)", "notes": "DAC 2x/week. Non-DAC daily.", "max_safe": "2 mg 2x/week"},
-    "ghrp-2": {"typical_dose": "100-200 mcg 2-3x daily", "route": "SubQ injection", "half_life": "~30 min", "notes": "Stronger GH pulse than ipamorelin.", "max_safe": "200 mcg/dose"},
-    "ghrp-6": {"typical_dose": "100-200 mcg 2-3x daily", "route": "SubQ injection", "half_life": "~30 min", "notes": "Strong appetite effect.", "max_safe": "200 mcg/dose"},
-    "hexarelin": {"typical_dose": "100-200 mcg daily", "route": "SubQ injection", "half_life": "~30 min", "notes": "Most potent GHRP, fastest desensitization.", "max_safe": "200 mcg/day"},
-    "mk-677": {"typical_dose": "10-25 mg daily", "route": "Oral", "half_life": "~24 hours", "notes": "Oral. Before bed. Monitor glucose.", "max_safe": "25 mg/day"},
-    "bpc-157": {"typical_dose": "200-500 mcg daily", "route": "SubQ injection or oral", "half_life": "~4 hours", "notes": "Local or systemic injection. Oral for gut.", "max_safe": "500 mcg/day"},
-    "tb-500": {"typical_dose": "2.5-5 mg 2x/week (loading)", "route": "SubQ injection", "half_life": "~4-6 hours", "notes": "Loading 2-4 weeks.", "max_safe": "10 mg/week"},
-    "ghk-cu": {"typical_dose": "1-5 mg daily or topical", "route": "SubQ injection or topical", "half_life": "~3 hours", "notes": "Cycle to avoid copper buildup.", "max_safe": "5 mg/day"},
-    "aod-9604": {"typical_dose": "300-600 mcg daily", "route": "SubQ injection", "half_life": "~1 hour", "notes": "Empty stomach. Mixed trial results.", "max_safe": "600 mcg/day"},
-    "semax": {"typical_dose": "400-1200 mcg daily", "route": "Intranasal", "half_life": "~20 min", "notes": "Intranasal drops/spray. Effects 4-6 hr.", "max_safe": "1200 mcg/day"},
-    "selank": {"typical_dose": "400-900 mcg daily", "route": "Intranasal", "half_life": "~20 min", "notes": "Calming within 15-30 min. Up to 3x daily.", "max_safe": "900 mcg/day"},
-    "dsip": {"typical_dose": "100-400 mcg daily", "route": "SubQ or intranasal", "half_life": "~30 min", "notes": "Before bed. Effects may take days.", "max_safe": "400 mcg/day"},
-    "ss-31": {"typical_dose": "10-40 mg daily", "route": "SubQ injection", "half_life": "~2 hours", "notes": "Investigational. Mitochondrial support.", "max_safe": "40 mg/day"},
-    "mots-c": {"typical_dose": "10-20 mg daily or EOD", "route": "SubQ injection", "half_life": "~1 hour", "notes": "Early-stage. Cycle 5 on, 2 off.", "max_safe": "20 mg/day"},
-    "pt-141": {"typical_dose": "0.75-1.75 mg as needed", "route": "SubQ injection", "half_life": "~2 hours", "notes": "Max 1 injection per 24 hr. Nausea common.", "max_safe": "1.75 mg/24hr"},
-    "thymosin-alpha-1": {"typical_dose": "1.5-6 mg twice weekly", "route": "SubQ injection", "half_life": "~2 hours", "notes": "2x/week dosing.", "max_safe": "6 mg 2x/week"},
-    "igf-1-lr3": {"typical_dose": "20-60 mcg daily or post-workout", "route": "SubQ injection", "half_life": "~20-30 hours", "notes": "Long half-life. Risk of hypoglycemia.", "max_safe": "60 mcg/day"},
-    "melanotan-2": {"typical_dose": "0.25-1.0 mg daily or EOD", "route": "SubQ injection", "half_life": "~36 hours", "notes": "Start 0.25 mg. Nausea common.", "max_safe": "1 mg/day"},
+    "retatrutide": {
+        "typical_dose": "1-12 mg weekly (titrated)",
+        "route": "SubQ injection",
+        "half_life": "~6 days",
+        "notes": "Titrate over weeks. Starting 1-2 mg. Still in trials.",
+        "max_safe": "12 mg/week",
+    },
+    "tesamorelin": {
+        "typical_dose": "1-2 mg daily",
+        "route": "SubQ injection",
+        "half_life": "~30 min",
+        "notes": "Evening, empty stomach. 5 on, 2 off cycling.",
+        "max_safe": "2 mg/day",
+    },
+    "semaglutide": {
+        "typical_dose": "0.25-2.4 mg weekly (titrated)",
+        "route": "SubQ injection",
+        "half_life": "~7 days",
+        "notes": "Start 0.25 mg/wk x4. Wegovy max 2.4 mg, Ozempic max 1.0 mg.",
+        "max_safe": "2.4 mg/week",
+    },
+    "tirzepatide": {
+        "typical_dose": "2.5-15 mg weekly (titrated)",
+        "route": "SubQ injection",
+        "half_life": "~5 days",
+        "notes": "Start 2.5 mg x4 wk, +2.5 mg every 4 wk.",
+        "max_safe": "15 mg/week",
+    },
+    "liraglutide": {
+        "typical_dose": "0.6-3.0 mg daily (titrated)",
+        "route": "SubQ injection",
+        "half_life": "~13 hours",
+        "notes": "Victoza max 1.8 mg. Saxenda max 3.0 mg.",
+        "max_safe": "3.0 mg/day",
+    },
+    "cagrilintide": {
+        "typical_dose": "0.3-2.4 mg weekly",
+        "route": "SubQ injection",
+        "half_life": "~8 days",
+        "notes": "Investigational. Dosing in trials.",
+        "max_safe": "2.4 mg/week",
+    },
+    "sermorelin": {
+        "typical_dose": "0.5-2.0 mg daily",
+        "route": "SubQ injection",
+        "half_life": "~15 min",
+        "notes": "Evening, empty stomach.",
+        "max_safe": "2 mg/day",
+    },
+    "ipamorelin": {
+        "typical_dose": "200-300 mcg daily",
+        "route": "SubQ injection",
+        "half_life": "~2 hours",
+        "notes": "Evening. Can combine with GHRH in same syringe.",
+        "max_safe": "300 mcg/day",
+    },
+    "cjc-1295": {
+        "typical_dose": "1-2 mg 2x/week (DAC) or 100 mcg daily",
+        "route": "SubQ injection",
+        "half_life": "~6-8 days (DAC)",
+        "notes": "DAC 2x/week. Non-DAC daily.",
+        "max_safe": "2 mg 2x/week",
+    },
+    "ghrp-2": {
+        "typical_dose": "100-200 mcg 2-3x daily",
+        "route": "SubQ injection",
+        "half_life": "~30 min",
+        "notes": "Stronger GH pulse than ipamorelin.",
+        "max_safe": "200 mcg/dose",
+    },
+    "ghrp-6": {
+        "typical_dose": "100-200 mcg 2-3x daily",
+        "route": "SubQ injection",
+        "half_life": "~30 min",
+        "notes": "Strong appetite effect.",
+        "max_safe": "200 mcg/dose",
+    },
+    "hexarelin": {
+        "typical_dose": "100-200 mcg daily",
+        "route": "SubQ injection",
+        "half_life": "~30 min",
+        "notes": "Most potent GHRP, fastest desensitization.",
+        "max_safe": "200 mcg/day",
+    },
+    "mk-677": {
+        "typical_dose": "10-25 mg daily",
+        "route": "Oral",
+        "half_life": "~24 hours",
+        "notes": "Oral. Before bed. Monitor glucose.",
+        "max_safe": "25 mg/day",
+    },
+    "bpc-157": {
+        "typical_dose": "200-500 mcg daily",
+        "route": "SubQ injection or oral",
+        "half_life": "~4 hours",
+        "notes": "Local or systemic injection. Oral for gut.",
+        "max_safe": "500 mcg/day",
+    },
+    "tb-500": {
+        "typical_dose": "2.5-5 mg 2x/week (loading)",
+        "route": "SubQ injection",
+        "half_life": "~4-6 hours",
+        "notes": "Loading 2-4 weeks.",
+        "max_safe": "10 mg/week",
+    },
+    "ghk-cu": {
+        "typical_dose": "1-5 mg daily or topical",
+        "route": "SubQ injection or topical",
+        "half_life": "~3 hours",
+        "notes": "Cycle to avoid copper buildup.",
+        "max_safe": "5 mg/day",
+    },
+    "aod-9604": {
+        "typical_dose": "300-600 mcg daily",
+        "route": "SubQ injection",
+        "half_life": "~1 hour",
+        "notes": "Empty stomach. Mixed trial results.",
+        "max_safe": "600 mcg/day",
+    },
+    "semax": {
+        "typical_dose": "400-1200 mcg daily",
+        "route": "Intranasal",
+        "half_life": "~20 min",
+        "notes": "Intranasal drops/spray. Effects 4-6 hr.",
+        "max_safe": "1200 mcg/day",
+    },
+    "selank": {
+        "typical_dose": "400-900 mcg daily",
+        "route": "Intranasal",
+        "half_life": "~20 min",
+        "notes": "Calming within 15-30 min. Up to 3x daily.",
+        "max_safe": "900 mcg/day",
+    },
+    "dsip": {
+        "typical_dose": "100-400 mcg daily",
+        "route": "SubQ or intranasal",
+        "half_life": "~30 min",
+        "notes": "Before bed. Effects may take days.",
+        "max_safe": "400 mcg/day",
+    },
+    "ss-31": {
+        "typical_dose": "10-40 mg daily",
+        "route": "SubQ injection",
+        "half_life": "~2 hours",
+        "notes": "Investigational. Mitochondrial support.",
+        "max_safe": "40 mg/day",
+    },
+    "mots-c": {
+        "typical_dose": "10-20 mg daily or EOD",
+        "route": "SubQ injection",
+        "half_life": "~1 hour",
+        "notes": "Early-stage. Cycle 5 on, 2 off.",
+        "max_safe": "20 mg/day",
+    },
+    "pt-141": {
+        "typical_dose": "0.75-1.75 mg as needed",
+        "route": "SubQ injection",
+        "half_life": "~2 hours",
+        "notes": "Max 1 injection per 24 hr. Nausea common.",
+        "max_safe": "1.75 mg/24hr",
+    },
+    "thymosin-alpha-1": {
+        "typical_dose": "1.5-6 mg twice weekly",
+        "route": "SubQ injection",
+        "half_life": "~2 hours",
+        "notes": "2x/week dosing.",
+        "max_safe": "6 mg 2x/week",
+    },
+    "igf-1-lr3": {
+        "typical_dose": "20-60 mcg daily or post-workout",
+        "route": "SubQ injection",
+        "half_life": "~20-30 hours",
+        "notes": "Long half-life. Risk of hypoglycemia.",
+        "max_safe": "60 mcg/day",
+    },
+    "melanotan-2": {
+        "typical_dose": "0.25-1.0 mg daily or EOD",
+        "route": "SubQ injection",
+        "half_life": "~36 hours",
+        "notes": "Start 0.25 mg. Nausea common.",
+        "max_safe": "1 mg/day",
+    },
 }
 
 SAFETY_NOTES = {
@@ -876,7 +1086,9 @@ STACK_PROTOCOLS = {
             },
         ],
         "post_cycle": "Taper off over 4 weeks to minimize appetite rebound and blood sugar fluctuations.",
-        "sources": ["FDA prescribing information for Ozempic/Wegovy and Mounjaro/Zepbound."],
+        "sources": [
+            "FDA prescribing information for Ozempic/Wegovy and Mounjaro/Zepbound."
+        ],
         "evidence_summary": "Both have extensive FDA-reviewed trial data. Combining them lacks safety data and is not recommended outside clinical trials.",
     },
     "cjc1295+ghrp2": {
@@ -1762,7 +1974,12 @@ STACK_PROTOCOLS = {
 GOAL_BLUEPRINTS = {
     "fat_loss": {
         "label": "Fat Loss",
-        "primary_targets": ["fat_loss", "appetite_modulation", "visceral_fat", "glycemic_support"],
+        "primary_targets": [
+            "fat_loss",
+            "appetite_modulation",
+            "visceral_fat",
+            "glycemic_support",
+        ],
         "optional_support": ["gh_axis", "metabolic_flexibility"],
         "default_priority": ["retatrutide", "tesamorelin"],
         "phase_note": "Research scenario: prioritize core metabolic/weight peptide first, then consider adjunct support signals in later phase if rationale remains strong.",
@@ -1804,14 +2021,22 @@ GOAL_BLUEPRINTS = {
     },
     "endurance_performance": {
         "label": "Endurance / Performance",
-        "primary_targets": ["exercise_tolerance", "mitochondrial_support", "metabolic_flexibility"],
+        "primary_targets": [
+            "exercise_tolerance",
+            "mitochondrial_support",
+            "metabolic_flexibility",
+        ],
         "optional_support": ["recovery", "lean_mass_support"],
         "default_priority": ["ss-31", "mots-c"],
         "phase_note": "Research scenario: prioritize exercise and mitochondrial objective fit, then test recovery adjuncts if rationale remains coherent.",
     },
     "metabolic_health": {
         "label": "Metabolic Health",
-        "primary_targets": ["glycemic_support", "appetite_modulation", "metabolic_flexibility"],
+        "primary_targets": [
+            "glycemic_support",
+            "appetite_modulation",
+            "metabolic_flexibility",
+        ],
         "optional_support": ["visceral_fat", "fat_loss_support"],
         "default_priority": ["retatrutide", "semaglutide"],
         "phase_note": "Research scenario: prioritize strongest glycemic and appetite evidence first, then evaluate narrower metabolic adjuncts.",
@@ -1821,17 +2046,42 @@ GOAL_BLUEPRINTS = {
 SYMPTOM_CONDITION_MAP = {
     # ─── Metabolic / Weight Management ───
     "obesity": {
-        "peptides": ["retatrutide", "semaglutide", "tirzepatide", "liraglutide", "cagrilintide"],
+        "peptides": [
+            "retatrutide",
+            "semaglutide",
+            "tirzepatide",
+            "liraglutide",
+            "cagrilintide",
+        ],
         "description": "Excess body fat accumulation. Incretin-based peptides (GLP-1/GIP/glucagon agonists) are the most studied class for significant weight reduction.",
         "category": "Metabolic/Weight Management",
     },
     "weight loss": {
-        "peptides": ["retatrutide", "semaglutide", "tirzepatide", "liraglutide", "cagrilintide", "aod-9604", "mazdutide", "survodutide"],
+        "peptides": [
+            "retatrutide",
+            "semaglutide",
+            "tirzepatide",
+            "liraglutide",
+            "cagrilintide",
+            "aod-9604",
+            "mazdutide",
+            "survodutide",
+        ],
         "description": "Reducing overall body weight through appetite suppression, metabolic acceleration, or fat breakdown signaling.",
         "category": "Metabolic/Weight Management",
     },
     "fat loss": {
-        "peptides": ["retatrutide", "semaglutide", "tirzepatide", "tesamorelin", "aod-9604", "liraglutide", "mazdutide", "survodutide", "cagrilintide"],
+        "peptides": [
+            "retatrutide",
+            "semaglutide",
+            "tirzepatide",
+            "tesamorelin",
+            "aod-9604",
+            "liraglutide",
+            "mazdutide",
+            "survodutide",
+            "cagrilintide",
+        ],
         "description": "Reducing body fat stores. Multiple peptide classes target fat loss through distinct mechanisms including incretin signaling, GH-axis activation, and lipolysis.",
         "category": "Metabolic/Weight Management",
     },
@@ -1846,17 +2096,35 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Metabolic/Weight Management",
     },
     "diabetes": {
-        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "mazdutide"],
+        "peptides": [
+            "semaglutide",
+            "tirzepatide",
+            "retatrutide",
+            "liraglutide",
+            "mazdutide",
+        ],
         "description": "Type 2 diabetes involves insulin resistance and elevated blood sugar. GLP-1 and dual GIP/GLP-1 agonists are FDA-approved for glycemic control.",
         "category": "Metabolic/Weight Management",
     },
     "type 2 diabetes": {
-        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "mazdutide"],
+        "peptides": [
+            "semaglutide",
+            "tirzepatide",
+            "retatrutide",
+            "liraglutide",
+            "mazdutide",
+        ],
         "description": "Characterized by insulin resistance and relative insulin deficiency. Incretin-based therapies are first-line treatments in many guidelines.",
         "category": "Metabolic/Weight Management",
     },
     "insulin resistance": {
-        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "humanin"],
+        "peptides": [
+            "semaglutide",
+            "tirzepatide",
+            "retatrutide",
+            "liraglutide",
+            "humanin",
+        ],
         "description": "Reduced cellular sensitivity to insulin leading to high blood sugar. Incretin therapies improve glycemic control; humanin has proposed insulin-sensitizing effects.",
         "category": "Metabolic/Weight Management",
     },
@@ -1866,12 +2134,26 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Metabolic/Weight Management",
     },
     "prediabetes": {
-        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "aod-9604"],
+        "peptides": [
+            "semaglutide",
+            "tirzepatide",
+            "retatrutide",
+            "liraglutide",
+            "aod-9604",
+        ],
         "description": "Blood sugar levels higher than normal but not yet diabetic. Early intervention with incretin therapies can prevent progression to type 2 diabetes.",
         "category": "Metabolic/Weight Management",
     },
     "metabolic syndrome": {
-        "peptides": ["retatrutide", "semaglutide", "tirzepatide", "tesamorelin", "liraglutide", "mots-c", "mazdutide"],
+        "peptides": [
+            "retatrutide",
+            "semaglutide",
+            "tirzepatide",
+            "tesamorelin",
+            "liraglutide",
+            "mots-c",
+            "mazdutide",
+        ],
         "description": "Cluster of conditions including high blood pressure, high blood sugar, excess body fat, and abnormal cholesterol. Multiple peptide classes address different components.",
         "category": "Metabolic/Weight Management",
     },
@@ -1881,32 +2163,71 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Metabolic/Weight Management",
     },
     "fatty liver": {
-        "peptides": ["retatrutide", "survodutide", "mazdutide", "semaglutide", "tirzepatide"],
+        "peptides": [
+            "retatrutide",
+            "survodutide",
+            "mazdutide",
+            "semaglutide",
+            "tirzepatide",
+        ],
         "description": "NAFLD and MASH involve fat accumulation in the liver. Dual GLP-1/glucagon agonists like survodutide show particular promise for liver fat reduction.",
         "category": "Metabolic/Weight Management",
     },
     "nafld": {
-        "peptides": ["retatrutide", "survodutide", "mazdutide", "semaglutide", "tirzepatide"],
+        "peptides": [
+            "retatrutide",
+            "survodutide",
+            "mazdutide",
+            "semaglutide",
+            "tirzepatide",
+        ],
         "description": "Non-alcoholic fatty liver disease. Glucagon-containing dual agonists target hepatic fat metabolism directly.",
         "category": "Metabolic/Weight Management",
     },
     "weight gain": {
-        "peptides": ["retatrutide", "semaglutide", "tirzepatide", "liraglutide", "cagrilintide", "aod-9604"],
+        "peptides": [
+            "retatrutide",
+            "semaglutide",
+            "tirzepatide",
+            "liraglutide",
+            "cagrilintide",
+            "aod-9604",
+        ],
         "description": "Unwanted increase in body weight. Incretin therapies address appetite and metabolic rate for weight reduction.",
         "category": "Metabolic/Weight Management",
     },
     "overweight": {
-        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "cagrilintide"],
+        "peptides": [
+            "semaglutide",
+            "tirzepatide",
+            "retatrutide",
+            "liraglutide",
+            "cagrilintide",
+        ],
         "description": "BMI above healthy range. GLP-1 and dual/triple agonists are indicated for weight management in overweight individuals with related conditions.",
         "category": "Metabolic/Weight Management",
     },
     "appetite control": {
-        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "cagrilintide", "ghrp-6", "aod-9604"],
+        "peptides": [
+            "semaglutide",
+            "tirzepatide",
+            "retatrutide",
+            "liraglutide",
+            "cagrilintide",
+            "ghrp-6",
+            "aod-9604",
+        ],
         "description": "Managing hunger and food intake. GLP-1 agonists slow gastric emptying and signal fullness to the brain. GHRP-6 notably increases appetite.",
         "category": "Metabolic/Weight Management",
     },
     "overeating": {
-        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "cagrilintide"],
+        "peptides": [
+            "semaglutide",
+            "tirzepatide",
+            "retatrutide",
+            "liraglutide",
+            "cagrilintide",
+        ],
         "description": "Excessive food consumption. Incretin-based therapies reduce appetite through multiple signaling pathways.",
         "category": "Metabolic/Weight Management",
     },
@@ -1916,12 +2237,25 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Metabolic/Weight Management",
     },
     "slow metabolism": {
-        "peptides": ["tesamorelin", "ipamorelin", "mk-677", "sermorelin", "mots-c", "aod-9604"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "mk-677",
+            "sermorelin",
+            "mots-c",
+            "aod-9604",
+        ],
         "description": "Reduced metabolic rate. GH-axis peptides and mitochondrial support peptides may help optimize metabolic function.",
         "category": "Metabolic/Weight Management",
     },
     "pcos": {
-        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "tesamorelin"],
+        "peptides": [
+            "semaglutide",
+            "tirzepatide",
+            "retatrutide",
+            "liraglutide",
+            "tesamorelin",
+        ],
         "description": "Polycystic ovary syndrome involves insulin resistance, metabolic dysfunction, and hormonal imbalance. Incretin therapies address the metabolic component.",
         "category": "Metabolic/Weight Management",
     },
@@ -1936,22 +2270,46 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Metabolic/Weight Management",
     },
     "hyperglycemia": {
-        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "mazdutide"],
+        "peptides": [
+            "semaglutide",
+            "tirzepatide",
+            "retatrutide",
+            "liraglutide",
+            "mazdutide",
+        ],
         "description": "High blood glucose levels. Incretin therapies enhance insulin secretion and reduce glucagon release.",
         "category": "Metabolic/Weight Management",
     },
     "glycemic control": {
-        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "mazdutide"],
+        "peptides": [
+            "semaglutide",
+            "tirzepatide",
+            "retatrutide",
+            "liraglutide",
+            "mazdutide",
+        ],
         "description": "Managing blood sugar levels within healthy range. Multiple incretin-based peptides are proven for glycemic management.",
         "category": "Metabolic/Weight Management",
     },
     "glucose intolerance": {
-        "peptides": ["semaglutide", "tirzepatide", "retatrutide", "liraglutide", "mots-c"],
+        "peptides": [
+            "semaglutide",
+            "tirzepatide",
+            "retatrutide",
+            "liraglutide",
+            "mots-c",
+        ],
         "description": "Impaired ability to process glucose. Incretin therapies and mitochondrial peptides may improve glucose handling.",
         "category": "Metabolic/Weight Management",
     },
     "diabesity": {
-        "peptides": ["retatrutide", "semaglutide", "tirzepatide", "liraglutide", "cagrilintide"],
+        "peptides": [
+            "retatrutide",
+            "semaglutide",
+            "tirzepatide",
+            "liraglutide",
+            "cagrilintide",
+        ],
         "description": "Co-occurring obesity and type 2 diabetes. Triple and dual incretin agonists address both conditions simultaneously through shared metabolic pathways.",
         "category": "Metabolic/Weight Management",
     },
@@ -1966,33 +2324,91 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Metabolic/Weight Management",
     },
     "menopause weight gain": {
-        "peptides": ["tesamorelin", "retatrutide", "semaglutide", "tirzepatide", "aod-9604"],
+        "peptides": [
+            "tesamorelin",
+            "retatrutide",
+            "semaglutide",
+            "tirzepatide",
+            "aod-9604",
+        ],
         "description": "Weight gain associated with hormonal changes during menopause. Metabolic and GH-axis peptides may help counteract age-related metabolic slowing.",
         "category": "Metabolic/Weight Management",
     },
     # ─── Muscle / Performance ───
     "muscle gain": {
-        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "mk-677", "ghrp-2", "sermorelin", "igf-1-lr3", "igf-1-des", "follistatin-344", "peg-mgf", "hexarelin", "ghrp-6", "mots-c"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "cjc-1295",
+            "mk-677",
+            "ghrp-2",
+            "sermorelin",
+            "igf-1-lr3",
+            "igf-1-des",
+            "follistatin-344",
+            "peg-mgf",
+            "hexarelin",
+            "ghrp-6",
+            "mots-c",
+        ],
         "description": "Building skeletal muscle mass. GH-axis peptides increase IGF-1 and protein synthesis signaling. IGF-1 analogs and myostatin inhibitors target anabolic pathways directly.",
         "category": "Muscle/Performance",
     },
     "lean mass": {
-        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "mk-677", "ghrp-2", "sermorelin", "igf-1-lr3", "follistatin-344", "peg-mgf"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "cjc-1295",
+            "mk-677",
+            "ghrp-2",
+            "sermorelin",
+            "igf-1-lr3",
+            "follistatin-344",
+            "peg-mgf",
+        ],
         "description": "Increasing lean body mass while minimizing fat gain. GH-axis peptides and anabolic signaling peptides support muscle protein synthesis.",
         "category": "Muscle/Performance",
     },
     "muscle mass": {
-        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "mk-677", "igf-1-lr3", "follistatin-344", "ghrp-2", "sermorelin"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "cjc-1295",
+            "mk-677",
+            "igf-1-lr3",
+            "follistatin-344",
+            "ghrp-2",
+            "sermorelin",
+        ],
         "description": "Total body muscle tissue. Multiple peptide pathways can influence muscle protein balance through GH-IGF axis and myostatin regulation.",
         "category": "Muscle/Performance",
     },
     "strength": {
-        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "mk-677", "igf-1-lr3", "follistatin-344", "ghrp-2"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "cjc-1295",
+            "mk-677",
+            "igf-1-lr3",
+            "follistatin-344",
+            "ghrp-2",
+        ],
         "description": "Muscular strength and power output. GH-axis peptides support the hormonal environment for strength gains from resistance training.",
         "category": "Muscle/Performance",
     },
     "muscle recovery": {
-        "peptides": ["bpc-157", "tb-500", "ghk-cu", "ipamorelin", "cjc-1295", "tesamorelin", "ss-31", "mk-677", "ghrp-2", "peg-mgf"],
+        "peptides": [
+            "bpc-157",
+            "tb-500",
+            "ghk-cu",
+            "ipamorelin",
+            "cjc-1295",
+            "tesamorelin",
+            "ss-31",
+            "mk-677",
+            "ghrp-2",
+            "peg-mgf",
+        ],
         "description": "Post-exercise muscle repair and regeneration. Recovery peptides support tissue healing through multiple mechanisms including blood flow, collagen synthesis, and GH signaling.",
         "category": "Muscle/Performance",
     },
@@ -2002,22 +2418,50 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Muscle/Performance",
     },
     "muscle loss": {
-        "peptides": ["tesamorelin", "ipamorelin", "mk-677", "cjc-1295", "follistatin-344", "sermorelin", "ghrp-2"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "mk-677",
+            "cjc-1295",
+            "follistatin-344",
+            "sermorelin",
+            "ghrp-2",
+        ],
         "description": "Preventing or treating sarcopenia and muscle wasting. GH-axis and myostatin-inhibiting peptides address age-related and pathological muscle loss.",
         "category": "Muscle/Performance",
     },
     "sarcopenia": {
-        "peptides": ["mk-677", "tesamorelin", "ipamorelin", "sermorelin", "follistatin-344"],
+        "peptides": [
+            "mk-677",
+            "tesamorelin",
+            "ipamorelin",
+            "sermorelin",
+            "follistatin-344",
+        ],
         "description": "Age-related muscle loss. MK-677 has been studied specifically in elderly populations for muscle preservation and IGF-1 elevation.",
         "category": "Muscle/Performance",
     },
     "muscle wasting": {
-        "peptides": ["tesamorelin", "ipamorelin", "mk-677", "follistatin-344", "sermorelin", "igf-1-lr3"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "mk-677",
+            "follistatin-344",
+            "sermorelin",
+            "igf-1-lr3",
+        ],
         "description": "Pathological loss of muscle tissue from disease or disuse. Anabolic and anti-myostatin peptides may help preserve muscle mass.",
         "category": "Muscle/Performance",
     },
     "athletic performance": {
-        "peptides": ["ss-31", "mots-c", "ipamorelin", "tesamorelin", "cjc-1295", "ghrp-2"],
+        "peptides": [
+            "ss-31",
+            "mots-c",
+            "ipamorelin",
+            "tesamorelin",
+            "cjc-1295",
+            "ghrp-2",
+        ],
         "description": "Sports and exercise performance enhancement. Mitochondrial peptides target energy production; GH-axis peptides support recovery and body composition.",
         "category": "Muscle/Performance",
     },
@@ -2037,17 +2481,41 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Muscle/Performance",
     },
     "bodybuilding": {
-        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "ghrp-2", "mk-677", "igf-1-lr3", "follistatin-344", "sermorelin", "hexarelin"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "cjc-1295",
+            "ghrp-2",
+            "mk-677",
+            "igf-1-lr3",
+            "follistatin-344",
+            "sermorelin",
+            "hexarelin",
+        ],
         "description": "Muscle growth for physique development. GH-axis peptides are commonly used in bodybuilding for their anabolic and fat-burning effects.",
         "category": "Muscle/Performance",
     },
     "muscle preservation": {
-        "peptides": ["tesamorelin", "ipamorelin", "mk-677", "follistatin-344", "sermorelin", "ghrp-2"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "mk-677",
+            "follistatin-344",
+            "sermorelin",
+            "ghrp-2",
+        ],
         "description": "Maintaining existing muscle mass during caloric deficit or periods of inactivity. GH-axis peptides help offset catabolic states.",
         "category": "Muscle/Performance",
     },
     "protein synthesis": {
-        "peptides": ["igf-1-lr3", "igf-1-des", "tesamorelin", "ipamorelin", "mk-677", "follistatin-344"],
+        "peptides": [
+            "igf-1-lr3",
+            "igf-1-des",
+            "tesamorelin",
+            "ipamorelin",
+            "mk-677",
+            "follistatin-344",
+        ],
         "description": "Cellular process of building proteins. IGF-1 analogs directly activate anabolic signaling pathways. GH-axis peptides increase endogenous IGF-1.",
         "category": "Muscle/Performance",
     },
@@ -2057,7 +2525,18 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Muscle/Performance",
     },
     "muscle growth": {
-        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "mk-677", "igf-1-lr3", "follistatin-344", "ghrp-2", "sermorelin", "hexarelin", "peg-mgf"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "cjc-1295",
+            "mk-677",
+            "igf-1-lr3",
+            "follistatin-344",
+            "ghrp-2",
+            "sermorelin",
+            "hexarelin",
+            "peg-mgf",
+        ],
         "description": "Hypertrophy and hyperplasia of muscle tissue. Multiple signaling pathways including GH-IGF axis and myostatin regulation influence muscle growth.",
         "category": "Muscle/Performance",
     },
@@ -2068,7 +2547,20 @@ SYMPTOM_CONDITION_MAP = {
     },
     # ─── Anti-Aging / Longevity ───
     "anti-aging": {
-        "peptides": ["ghk-cu", "epitalon", "humanin", "ss-31", "mots-c", "pinealon", "thymalin", "dsip", "tesamorelin", "ipamorelin", "mk-677", "aod-9604"],
+        "peptides": [
+            "ghk-cu",
+            "epitalon",
+            "humanin",
+            "ss-31",
+            "mots-c",
+            "pinealon",
+            "thymalin",
+            "dsip",
+            "tesamorelin",
+            "ipamorelin",
+            "mk-677",
+            "aod-9604",
+        ],
         "description": "Reducing or slowing visible and physiological signs of aging. Multiple peptide classes target different aging hallmarks including mitochondrial decline, GH-axis attenuation, and cellular senescence.",
         "category": "Anti-Aging/Longevity",
     },
@@ -2078,7 +2570,15 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Anti-Aging/Longevity",
     },
     "aging": {
-        "peptides": ["humanin", "ghk-cu", "ss-31", "epitalon", "mots-c", "tesamorelin", "pinealon"],
+        "peptides": [
+            "humanin",
+            "ghk-cu",
+            "ss-31",
+            "epitalon",
+            "mots-c",
+            "tesamorelin",
+            "pinealon",
+        ],
         "description": "Biological aging processes. Peptides targeting mitochondrial function, GH decline, and cellular repair may modulate age-related changes.",
         "category": "Anti-Aging/Longevity",
     },
@@ -2088,12 +2588,27 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Anti-Aging/Longevity",
     },
     "frailty": {
-        "peptides": ["mk-677", "tesamorelin", "sermorelin", "ipamorelin", "ss-31", "mots-c"],
+        "peptides": [
+            "mk-677",
+            "tesamorelin",
+            "sermorelin",
+            "ipamorelin",
+            "ss-31",
+            "mots-c",
+        ],
         "description": "Age-related physical vulnerability. GH-axis peptides have been studied in elderly populations for improving muscle mass and function.",
         "category": "Anti-Aging/Longevity",
     },
     "vitality": {
-        "peptides": ["ss-31", "mots-c", "tesamorelin", "ipamorelin", "ghk-cu", "humanin", "dsip"],
+        "peptides": [
+            "ss-31",
+            "mots-c",
+            "tesamorelin",
+            "ipamorelin",
+            "ghk-cu",
+            "humanin",
+            "dsip",
+        ],
         "description": "Overall energy, health, and well-being. Mitochondrial support and GH-axis peptides address fundamental drivers of vitality.",
         "category": "Anti-Aging/Longevity",
     },
@@ -2103,12 +2618,29 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Anti-Aging/Longevity",
     },
     "age-related decline": {
-        "peptides": ["mk-677", "tesamorelin", "ss-31", "humanin", "ghk-cu", "epitalon", "mots-c", "sermorelin"],
+        "peptides": [
+            "mk-677",
+            "tesamorelin",
+            "ss-31",
+            "humanin",
+            "ghk-cu",
+            "epitalon",
+            "mots-c",
+            "sermorelin",
+        ],
         "description": "General functional decline associated with aging. Multiple peptide classes address different aspects of age-related deterioration.",
         "category": "Anti-Aging/Longevity",
     },
     "healthy aging": {
-        "peptides": ["humanin", "ss-31", "mots-c", "ghk-cu", "epitalon", "tesamorelin", "pinealon"],
+        "peptides": [
+            "humanin",
+            "ss-31",
+            "mots-c",
+            "ghk-cu",
+            "epitalon",
+            "tesamorelin",
+            "pinealon",
+        ],
         "description": "Promoting wellness and function in later years. Combination approaches targeting mitochondria, GH axis, and cellular repair show the broadest potential.",
         "category": "Anti-Aging/Longevity",
     },
@@ -2199,7 +2731,15 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Cognitive/Neurological",
     },
     "brain health": {
-        "peptides": ["semax", "selank", "dihexa", "bpc-157", "epitalon", "humanin", "noopept"],
+        "peptides": [
+            "semax",
+            "selank",
+            "dihexa",
+            "bpc-157",
+            "epitalon",
+            "humanin",
+            "noopept",
+        ],
         "description": "Overall cognitive wellness and neurological function. Multiple peptides support different aspects of brain health through complementary mechanisms.",
         "category": "Cognitive/Neurological",
     },
@@ -2291,7 +2831,14 @@ SYMPTOM_CONDITION_MAP = {
     },
     # ─── Injury / Healing / Recovery ───
     "injury recovery": {
-        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv", "thymosin-alpha-1", "aod-9604"],
+        "peptides": [
+            "bpc-157",
+            "tb-500",
+            "ghk-cu",
+            "kpv",
+            "thymosin-alpha-1",
+            "aod-9604",
+        ],
         "description": "Healing from physical injuries. BPC-157 and TB-500 are the most discussed peptides for accelerating tissue repair through angiogenesis and collagen synthesis.",
         "category": "Injury/Healing/Recovery",
     },
@@ -2331,7 +2878,14 @@ SYMPTOM_CONDITION_MAP = {
         "category": "Injury/Healing/Recovery",
     },
     "post-surgery": {
-        "peptides": ["bpc-157", "tb-500", "ghk-cu", "kpv", "thymosin-alpha-1", "ipamorelin"],
+        "peptides": [
+            "bpc-157",
+            "tb-500",
+            "ghk-cu",
+            "kpv",
+            "thymosin-alpha-1",
+            "ipamorelin",
+        ],
         "description": "Recovery after surgical procedures. Healing and immune-supporting peptides may help accelerate post-surgical tissue repair and reduce recovery time.",
         "category": "Injury/Healing/Recovery",
     },
@@ -2387,7 +2941,14 @@ SYMPTOM_CONDITION_MAP = {
     },
     # ─── Immune / Inflammation ───
     "immune support": {
-        "peptides": ["thymosin-alpha-1", "thymulin", "vilon", "kpv", "ghk-cu", "bpc-157"],
+        "peptides": [
+            "thymosin-alpha-1",
+            "thymulin",
+            "vilon",
+            "kpv",
+            "ghk-cu",
+            "bpc-157",
+        ],
         "description": "Supporting the body's immune defense system. Thymic peptides modulate immune function through T-cell maturation and activity.",
         "category": "Immune/Inflammation",
     },
@@ -2683,27 +3244,69 @@ SYMPTOM_CONDITION_MAP = {
     },
     # ─── Hormonal / GH Optimization ───
     "growth hormone": {
-        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "sermorelin", "mk-677", "ghrp-2", "ghrp-6", "hexarelin", "aod-9604"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "cjc-1295",
+            "sermorelin",
+            "mk-677",
+            "ghrp-2",
+            "ghrp-6",
+            "hexarelin",
+            "aod-9604",
+        ],
         "description": "Increasing endogenous growth hormone production. GHRH analogs and GH secretagogues stimulate pituitary GH release through complementary mechanisms.",
         "category": "Hormonal/GH Optimization",
     },
     "gh deficiency": {
-        "peptides": ["tesamorelin", "sermorelin", "cjc-1295", "mk-677", "ghrp-2", "ipamorelin"],
+        "peptides": [
+            "tesamorelin",
+            "sermorelin",
+            "cjc-1295",
+            "mk-677",
+            "ghrp-2",
+            "ipamorelin",
+        ],
         "description": "Insufficient growth hormone production. GHRH analogs like tesamorelin and sermorelin have clinical data for GH deficiency indications.",
         "category": "Hormonal/GH Optimization",
     },
     "igf-1": {
-        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "mk-677", "sermorelin", "ghrp-2", "igf-1-lr3", "hexarelin"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "cjc-1295",
+            "mk-677",
+            "sermorelin",
+            "ghrp-2",
+            "igf-1-lr3",
+            "hexarelin",
+        ],
         "description": "Insulin-like growth factor 1 levels. GH-axis peptides increase endogenous IGF-1 production. IGF-1 LR3 provides direct receptor activation.",
         "category": "Hormonal/GH Optimization",
     },
     "hgh": {
-        "peptides": ["tesamorelin", "ipamorelin", "cjc-1295", "sermorelin", "mk-677", "ghrp-2", "ghrp-6", "hexarelin"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "cjc-1295",
+            "sermorelin",
+            "mk-677",
+            "ghrp-2",
+            "ghrp-6",
+            "hexarelin",
+        ],
         "description": "Human growth hormone signaling. GHRH analogs and GH secretagogues stimulate the body's own GH production rather than providing exogenous HGH.",
         "category": "Hormonal/GH Optimization",
     },
     "hormone optimization": {
-        "peptides": ["tesamorelin", "ipamorelin", "kisspeptin-10", "mk-677", "sermorelin", "cjc-1295"],
+        "peptides": [
+            "tesamorelin",
+            "ipamorelin",
+            "kisspeptin-10",
+            "mk-677",
+            "sermorelin",
+            "cjc-1295",
+        ],
         "description": "Balancing and optimizing hormone levels. GH-axis and reproductive hormone-modulating peptides support endocrine function.",
         "category": "Hormonal/GH Optimization",
     },
@@ -2779,14 +3382,18 @@ def normalize_term(term):
 
 def fetch_json(url, headers=None, data=None, timeout=8):
     try:
-        req = Request(url, data=data, headers=headers or {"User-Agent": "peptide-wiki/1.0"})
+        req = Request(
+            url, data=data, headers=headers or {"User-Agent": "peptide-wiki/1.0"}
+        )
         with urlopen(req, timeout=timeout) as response:
             return json.loads(response.read().decode("utf-8"))
     except (URLError, HTTPError, TimeoutError, json.JSONDecodeError):
         return None
 
 
-def source_status(wiki, trials, pubmed, fda_data, pubchem=None, rcsb=None, uniprot=None):
+def source_status(
+    wiki, trials, pubmed, fda_data, pubchem=None, rcsb=None, uniprot=None
+):
     return {
         "wikipedia": bool(wiki and wiki.get("summary")),
         "clinicaltrials": bool(trials),
@@ -2799,7 +3406,9 @@ def source_status(wiki, trials, pubmed, fda_data, pubchem=None, rcsb=None, unipr
 
 
 def fetch_pubchem(term):
-    endpoint = f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{quote(term)}/JSON"
+    endpoint = (
+        f"https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/{quote(term)}/JSON"
+    )
     data = fetch_json(endpoint)
     if not data:
         return None
@@ -2830,19 +3439,25 @@ def fetch_rcsb_pdb(term):
         "query": {
             "type": "group",
             "logical_operator": "and",
-            "nodes": [{
-                "type": "terminal",
-                "service": "full_text",
-                "parameters": {"value": term}
-            }]
+            "nodes": [
+                {
+                    "type": "terminal",
+                    "service": "full_text",
+                    "parameters": {"value": term},
+                }
+            ],
         },
         "return_type": "entry",
-        "rows": 3
+        "rows": 3,
     }
-    data = fetch_json("https://search.rcsb.org/rcsbsearch/v2/query", {
-        "User-Agent": "peptide-wiki/1.0",
-        "Content-Type": "application/json",
-    }, data=json.dumps(query).encode())
+    data = fetch_json(
+        "https://search.rcsb.org/rcsbsearch/v2/query",
+        {
+            "User-Agent": "peptide-wiki/1.0",
+            "Content-Type": "application/json",
+        },
+        data=json.dumps(query).encode(),
+    )
     if not data:
         return None
     hits = data.get("result_set", [])
@@ -2852,10 +3467,12 @@ def fetch_rcsb_pdb(term):
     for hit in hits[:3]:
         pdb_id = hit.get("identifier", "")
         if pdb_id:
-            structures.append({
-                "pdb_id": pdb_id,
-                "url": f"https://www.rcsb.org/structure/{pdb_id}",
-            })
+            structures.append(
+                {
+                    "pdb_id": pdb_id,
+                    "url": f"https://www.rcsb.org/structure/{pdb_id}",
+                }
+            )
     return structures if structures else None
 
 
@@ -2868,7 +3485,10 @@ def fetch_uniprot(term):
     result = {
         "accession": entry.get("primaryAccession"),
         "id": entry.get("uniProtkbId"),
-        "protein_name": entry.get("proteinDescription", {}).get("recommendedName", {}).get("fullName", {}).get("value"),
+        "protein_name": entry.get("proteinDescription", {})
+        .get("recommendedName", {})
+        .get("fullName", {})
+        .get("value"),
         "gene": entry.get("genes", [{}])[0].get("geneName", {}).get("value"),
     }
     for comment in entry.get("comments", []):
@@ -2936,11 +3556,16 @@ def fetch_clinical_trials(term):
         status = protocol.get("statusModule", {})
 
         nct_id = ident.get("nctId", "N/A")
-        title = ident.get("briefTitle") or ident.get("officialTitle") or "Untitled Study"
+        title = (
+            ident.get("briefTitle") or ident.get("officialTitle") or "Untitled Study"
+        )
         brief = desc.get("briefSummary") or "No brief summary available."
         phase_list = design.get("phases", [])
         phase = ", ".join(phase_list) if phase_list else "Not specified"
-        model = design.get("designInfo", {}).get("interventionModelDescription") or "Not specified"
+        model = (
+            design.get("designInfo", {}).get("interventionModelDescription")
+            or "Not specified"
+        )
         purpose = design.get("designInfo", {}).get("primaryPurpose") or "Not specified"
         allocation = design.get("designInfo", {}).get("allocation") or "Not specified"
         status_text = status.get("overallStatus") or "Not specified"
@@ -2966,7 +3591,9 @@ def fetch_clinical_trials(term):
                 "status": status_text,
                 "lay_summary": brief,
                 "methods": methods,
-                "link": f"https://clinicaltrials.gov/study/{nct_id}" if nct_id != "N/A" else "https://clinicaltrials.gov",
+                "link": f"https://clinicaltrials.gov/study/{nct_id}"
+                if nct_id != "N/A"
+                else "https://clinicaltrials.gov",
             }
         )
     return results
@@ -3015,7 +3642,17 @@ def parse_year(pubdate):
 def paper_strength(title, pubdate):
     score = 20
     t = (title or "").lower()
-    if any(k in t for k in ["randomized", "double-blind", "placebo", "controlled", "phase 3", "phase iii"]):
+    if any(
+        k in t
+        for k in [
+            "randomized",
+            "double-blind",
+            "placebo",
+            "controlled",
+            "phase 3",
+            "phase iii",
+        ]
+    ):
         score += 28
     elif any(k in t for k in ["phase 2", "phase ii", "clinical trial"]):
         score += 20
@@ -3147,7 +3784,12 @@ def build_stack_deep_research(goal, unique_stack):
                 "evidence_tier": tier,
             }
         )
-        if "focus" in effects or "stress_response" in effects or "calm" in effects or "sleep_support" in effects:
+        if (
+            "focus" in effects
+            or "stress_response" in effects
+            or "calm" in effects
+            or "sleep_support" in effects
+        ):
             neuroplasticity_notes.append(
                 {
                     "peptide": pep,
@@ -3310,7 +3952,9 @@ def build_stack_candidates(goal_key, priority_peptide):
             score += 5
         stack_key = "+".join(unique_stack)
         community_note = COMMUNITY_NOTES.get(stack_key)
-        evidence_tier = "HIGH" if score >= 70 else "MEDIUM" if score >= 50 else "LIMITED"
+        evidence_tier = (
+            "HIGH" if score >= 70 else "MEDIUM" if score >= 50 else "LIMITED"
+        )
         peptide_evidence = []
         for pep in unique_stack:
             meta = STACK_KNOWLEDGE.get(pep, {})
@@ -3338,7 +3982,10 @@ def build_stack_candidates(goal_key, priority_peptide):
                 "peptide_evidence": peptide_evidence,
                 "deep_research": deep_research,
                 "sources": [
-                    {"label": "ClinicalTrials.gov", "url": "https://clinicaltrials.gov/"},
+                    {
+                        "label": "ClinicalTrials.gov",
+                        "url": "https://clinicaltrials.gov/",
+                    },
                     {"label": "PubMed", "url": "https://pubmed.ncbi.nlm.nih.gov/"},
                 ],
             }
@@ -3361,9 +4008,19 @@ def fetch_openfda(term):
     best = None
     best_score = 0
     for item in results:
-        generic = (item.get("generic_name") or item.get("openfda", {}).get("generic_name", [""])[0] or "").lower()
-        brand = (item.get("brand_name") or item.get("openfda", {}).get("brand_name", [""])[0] or "").lower()
-        indications_text = (item.get("indications_and_usage", [""])[0] or "").lower()[:500]
+        generic = (
+            item.get("generic_name")
+            or item.get("openfda", {}).get("generic_name", [""])[0]
+            or ""
+        ).lower()
+        brand = (
+            item.get("brand_name")
+            or item.get("openfda", {}).get("brand_name", [""])[0]
+            or ""
+        ).lower()
+        indications_text = (item.get("indications_and_usage", [""])[0] or "").lower()[
+            :500
+        ]
         score = 0
         if term_lower in generic or term_lower in brand:
             score += 20
@@ -3383,12 +4040,26 @@ def fetch_openfda(term):
     indications = best.get("indications_and_usage", [""])
     warnings = best.get("warnings", [""])
     reactions = best.get("adverse_reactions", [""])
-    generic_name = best.get("generic_name") or best.get("openfda", {}).get("generic_name", [""])[0] or ""
-    brand_name = best.get("brand_name") or best.get("openfda", {}).get("brand_name", [""])[0] or ""
+    generic_name = (
+        best.get("generic_name")
+        or best.get("openfda", {}).get("generic_name", [""])[0]
+        or ""
+    )
+    brand_name = (
+        best.get("brand_name")
+        or best.get("openfda", {}).get("brand_name", [""])[0]
+        or ""
+    )
     return {
-        "indications": indications[0][:500] if indications and indications[0] else "No FDA indication text available.",
-        "warnings": warnings[0][:500] if warnings and warnings[0] else "No FDA warnings text available.",
-        "adverse": reactions[0][:500] if reactions and reactions[0] else "No FDA adverse reaction text available.",
+        "indications": indications[0][:500]
+        if indications and indications[0]
+        else "No FDA indication text available.",
+        "warnings": warnings[0][:500]
+        if warnings and warnings[0]
+        else "No FDA warnings text available.",
+        "adverse": reactions[0][:500]
+        if reactions and reactions[0]
+        else "No FDA adverse reaction text available.",
         "generic_name": generic_name,
         "brand_name": brand_name,
     }
@@ -3399,9 +4070,15 @@ def build_medical_definition(name, trials, fda_data, wiki_summary, uniprot_data=
     has_fda = bool(fda_data)
     trial_count = len(trials) if trials else 0
 
-    parts = [f"{name} is a peptide — a short chain of amino acids that acts like a signaling molecule in the body."]
+    parts = [
+        f"{name} is a peptide — a short chain of amino acids that acts like a signaling molecule in the body."
+    ]
 
-    if uniprot_data and uniprot_data.get("protein_name") and uniprot_data["protein_name"].lower() != name.lower():
+    if (
+        uniprot_data
+        and uniprot_data.get("protein_name")
+        and uniprot_data["protein_name"].lower() != name.lower()
+    ):
         parts.append(f"Its official protein name is {uniprot_data['protein_name']}.")
 
     if uniprot_data and uniprot_data.get("function"):
@@ -3423,7 +4100,9 @@ def build_medical_definition(name, trials, fda_data, wiki_summary, uniprot_data=
             f"The main study, '{top.get('title', 'N/A')}', is currently listed as {status}."
         )
         if phases:
-            parts.append(f"This places it in {phases[0]} — meaning it has{'already' if 'late' in phases[0] else ''} been tested in people to see if it works and is safe.")
+            parts.append(
+                f"This places it in {phases[0]} — meaning it has{'already' if 'late' in phases[0] else ''} been tested in people to see if it works and is safe."
+            )
     elif has_fda:
         parts.append(
             f"It is linked to regulated drug labeling through the FDA, meaning it has undergone formal regulatory review "
@@ -3433,22 +4112,34 @@ def build_medical_definition(name, trials, fda_data, wiki_summary, uniprot_data=
     if fda_data:
         ind = fda_data.get("indications", "")
         if ind and ind != "No FDA indication text available.":
-            parts.append(f"From FDA sources, its approved or investigated use involves: {ind[:400]}")
+            parts.append(
+                f"From FDA sources, its approved or investigated use involves: {ind[:400]}"
+            )
 
     if uniprot_data and uniprot_data.get("pharmaceutical"):
-        parts.append(f"Its pharmaceutical role, from protein databases: {uniprot_data['pharmaceutical'][:400]}")
+        parts.append(
+            f"Its pharmaceutical role, from protein databases: {uniprot_data['pharmaceutical'][:400]}"
+        )
 
-    if wiki_summary and "No encyclopedia" not in wiki_summary and "No summary" not in wiki_summary:
+    if (
+        wiki_summary
+        and "No encyclopedia" not in wiki_summary
+        and "No summary" not in wiki_summary
+    ):
         short_wiki = wiki_summary[:500]
         parts.append(f"General background: {short_wiki}")
 
     if not has_trials and not has_fda:
-        parts.append(f"Currently, detailed human study data is limited in public research databases. Core background: {wiki_summary[:400]}")
+        parts.append(
+            f"Currently, detailed human study data is limited in public research databases. Core background: {wiki_summary[:400]}"
+        )
 
     return " ".join(parts)
 
 
-def build_plain_summary(wiki_summary, trials, fda_data=None, pubchem=None, uniprot_data=None):
+def build_plain_summary(
+    wiki_summary, trials, fda_data=None, pubchem=None, uniprot_data=None
+):
     parts = []
 
     if trials:
@@ -3460,10 +4151,15 @@ def build_plain_summary(wiki_summary, trials, fda_data=None, pubchem=None, unipr
             m = t.get("methods", "")
             s = t.get("status", "")
             statuses.add(s)
-            if "Phase 3" in m: phases_found.add("Phase 3")
-            elif "Phase 2" in m: phases_found.add("Phase 2")
-            elif "Phase 1" in m: phases_found.add("Phase 1")
-        status_summary = ", ".join(s.replace("_", " ").title() for s in sorted(statuses) if s)
+            if "Phase 3" in m:
+                phases_found.add("Phase 3")
+            elif "Phase 2" in m:
+                phases_found.add("Phase 2")
+            elif "Phase 1" in m:
+                phases_found.add("Phase 1")
+        status_summary = ", ".join(
+            s.replace("_", " ").title() for s in sorted(statuses) if s
+        )
 
         parts.append(
             f"In everyday language: {first['title']}. "
@@ -3501,9 +4197,12 @@ def build_plain_summary(wiki_summary, trials, fda_data=None, pubchem=None, unipr
         log_p = pubchem.get("log_p")
         if formula or mw:
             chem = "Chemically, "
-            if formula: chem += f"its molecular formula is {formula}"
-            if formula and mw: chem += " and "
-            if mw: chem += f"it weighs about {mw} g/mol (a measure of molecular size)"
+            if formula:
+                chem += f"its molecular formula is {formula}"
+            if formula and mw:
+                chem += " and "
+            if mw:
+                chem += f"it weighs about {mw} g/mol (a measure of molecular size)"
             chem += "."
             parts.append(chem)
         if iupac:
@@ -3512,16 +4211,27 @@ def build_plain_summary(wiki_summary, trials, fda_data=None, pubchem=None, unipr
             try:
                 lp = float(log_p)
                 if lp < 0:
-                    parts.append(f"Its LogP value is {log_p}, meaning it dissolves easily in water (not fatty tissues).")
+                    parts.append(
+                        f"Its LogP value is {log_p}, meaning it dissolves easily in water (not fatty tissues)."
+                    )
                 elif lp < 3:
-                    parts.append(f"Its LogP value is {log_p}, meaning it has a balanced mix of water and fat solubility.")
+                    parts.append(
+                        f"Its LogP value is {log_p}, meaning it has a balanced mix of water and fat solubility."
+                    )
                 else:
-                    parts.append(f"Its LogP value is {log_p}, meaning it is more attracted to fatty tissues than water.")
+                    parts.append(
+                        f"Its LogP value is {log_p}, meaning it is more attracted to fatty tissues than water."
+                    )
             except (ValueError, TypeError):
                 # Skip LogP info if value is non-numeric
                 pass
 
-    if not trials and not fda_data and not pubchem and not (uniprot_data and uniprot_data.get("function")):
+    if (
+        not trials
+        and not fda_data
+        and not pubchem
+        and not (uniprot_data and uniprot_data.get("function"))
+    ):
         parts.append(wiki_summary[:600])
 
     return " ".join(parts)
@@ -3533,10 +4243,18 @@ def build_benefits_and_cons(trials, fda_data):
     if trials:
         statuses = {t.get("status", "") for t in trials}
         if "COMPLETED" in statuses:
-            benefits.append("Multiple completed clinical studies suggest meaningful evidence accumulation.")
-        benefits.append("Clinical trial programs define dose, intervention model, and treatment objective.")
-        cons.append("Some data may still be investigational and not yet definitive for broad real-world use.")
-        cons.append("Trial populations can differ from general populations, limiting direct generalization.")
+            benefits.append(
+                "Multiple completed clinical studies suggest meaningful evidence accumulation."
+            )
+        benefits.append(
+            "Clinical trial programs define dose, intervention model, and treatment objective."
+        )
+        cons.append(
+            "Some data may still be investigational and not yet definitive for broad real-world use."
+        )
+        cons.append(
+            "Trial populations can differ from general populations, limiting direct generalization."
+        )
     if fda_data:
         if fda_data.get("indications"):
             benefits.append(f"Regulatory context: {fda_data['indications']}")
@@ -3545,9 +4263,13 @@ def build_benefits_and_cons(trials, fda_data):
         if fda_data.get("adverse"):
             cons.append(f"Adverse reactions noted in labeling: {fda_data['adverse']}")
     if not benefits:
-        benefits.append("Public biomedical sources describe ongoing scientific interest.")
+        benefits.append(
+            "Public biomedical sources describe ongoing scientific interest."
+        )
     if not cons:
-        cons.append("Risk profile is not fully characterized from currently indexed sources alone.")
+        cons.append(
+            "Risk profile is not fully characterized from currently indexed sources alone."
+        )
     return benefits[:5], cons[:5]
 
 
@@ -3596,7 +4318,9 @@ def build_evidence_claims(trials, pubmed, fda_data):
     return claims
 
 
-def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubchem=None, uniprot_data=None):
+def build_clinical_snapshot(
+    term, trials, pubmed, fda_data, wiki_summary, pubchem=None, uniprot_data=None
+):
     base = SNAPSHOT_LIBRARY.get(term, {})
     primary_effect = base.get("primary_effect")
     mechanism_pathway = base.get("mechanism_pathway")
@@ -3610,7 +4334,7 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
     if not primary_effect:
         if trials:
             top = trials[0]
-            status = top.get('status', '').replace('_', ' ').title()
+            status = top.get("status", "").replace("_", " ").title()
             primary_effect = (
                 f"This peptide is being studied in humans to see what health effects it has. "
                 f"So far, {trial_count} trial{'s' if trial_count != 1 else ''} {'have' if trial_count != 1 else 'has'} been registered. "
@@ -3619,7 +4343,7 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
                 f"and whether it is safe for people to take."
             )
         elif fda_data:
-            ind = fda_data.get('indications', '')
+            ind = fda_data.get("indications", "")
             primary_effect = (
                 f"This peptide is mentioned in official FDA drug records, meaning it has some level of regulatory review behind it. "
                 f"According to the FDA, its documented medical purpose is: {ind[:400] if ind else 'Available in drug labeling databases.'}"
@@ -3674,7 +4398,13 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
         )
 
     evidence_points = int(bool(trials)) + int(bool(pubmed)) + int(bool(fda_data))
-    evidence_strength = "HIGH" if evidence_points >= 2 else "MODERATE" if evidence_points == 1 else "LIMITED"
+    evidence_strength = (
+        "HIGH"
+        if evidence_points >= 2
+        else "MODERATE"
+        if evidence_points == 1
+        else "LIMITED"
+    )
 
     return {
         "primary_effect": primary_effect,
@@ -3683,6 +4413,7 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
         "clinical_context": clinical_context,
         "evidence_strength": evidence_strength,
     }
+
 
 CACHE_BUST = str(int(time.time()))
 VERSION = "VER-008"
@@ -3742,7 +4473,9 @@ def fetch_peptide_evidence(pep):
         "peptide": pep,
         "trials": trials or [],
         "trial_count": len(trials) if trials else 0,
-        "completed_trials": sum(1 for t in (trials or []) if (t.get("status") or "") == "COMPLETED"),
+        "completed_trials": sum(
+            1 for t in (trials or []) if (t.get("status") or "") == "COMPLETED"
+        ),
         "pubmed": pubmed or [],
         "pubmed_count": len(pubmed) if pubmed else 0,
         "fda_data": fda_data,
@@ -3757,7 +4490,12 @@ def fetch_peptide_evidence(pep):
 
 
 def tier_badge_html(tier):
-    labels = {"A": "Trial-heavy", "B": "Observational", "C": "Mechanistic", "D": "Anecdotal"}
+    labels = {
+        "A": "Trial-heavy",
+        "B": "Observational",
+        "C": "Mechanistic",
+        "D": "Anecdotal",
+    }
     l = labels.get(tier, "Unknown")
     return f'<span class="badge badge-tier-{tier.lower()}">{tier} — {l}</span>'
 
@@ -3775,40 +4513,47 @@ def regulatory_badge_html(status):
 def inject_cache_bust():
     return dict(cache_bust=CACHE_BUST, version=VERSION)
 
-@app.route('/')
+
+@app.route("/")
 def index():
     all_peptides = sorted(set(ALIASES.values()) | set(STACK_KNOWLEDGE.keys()))
-    return render_template('index.html', all_peptides=all_peptides)
+    return render_template("index.html", all_peptides=all_peptides)
 
 
-@app.route('/stacks')
+@app.route("/stacks")
 def stacks_page():
     all_peptides = sorted(set(ALIASES.values()) | set(STACK_KNOWLEDGE.keys()))
     goals = {k: v["label"] for k, v in GOAL_BLUEPRINTS.items()}
-    return render_template('stacks.html', all_peptides=all_peptides, goals=goals)
+    return render_template("stacks.html", all_peptides=all_peptides, goals=goals)
 
 
-@app.route('/tracker')
+@app.route("/tracker")
 def tracker_page():
     all_peptides = sorted(set(ALIASES.values()) | set(STACK_KNOWLEDGE.keys()))
-    return render_template('tracker.html', all_peptides=all_peptides)
+    return render_template("tracker.html", all_peptides=all_peptides)
 
 
-@app.route('/healthz')
+@app.route("/healthz")
 def healthz():
     return jsonify({"status": "ok"}), 200
 
 
-@app.route('/catalog')
+@app.route("/catalog")
 def catalog():
     return jsonify({"items": ORDER_CATALOG}), 200
 
-@app.route('/search')
+
+@app.route("/search")
 def search():
     try:
         return _do_search()
     except Exception as e:
-        return jsonify({"error": "Search failed due to a server error. Some external databases may be temporarily unavailable. Please try again.", "detail": str(e)[:200]}), 500
+        return jsonify(
+            {
+                "error": "Search failed due to a server error. Some external databases may be temporarily unavailable. Please try again.",
+                "detail": str(e)[:200],
+            }
+        ), 500
 
 
 def _do_search():
@@ -3824,18 +4569,32 @@ def _do_search():
     pubchem = fetch_pubchem(term)
     rcsb = fetch_rcsb_pdb(term)
     uniprot_data = fetch_uniprot(term)
-    medical_definition = build_medical_definition(wiki["title"], trials, fda_data, wiki["summary"], uniprot_data)
-    plain_summary = build_plain_summary(wiki["summary"], trials, fda_data, pubchem, uniprot_data)
+    medical_definition = build_medical_definition(
+        wiki["title"], trials, fda_data, wiki["summary"], uniprot_data
+    )
+    plain_summary = build_plain_summary(
+        wiki["summary"], trials, fda_data, pubchem, uniprot_data
+    )
     benefits, cons = build_benefits_and_cons(trials, fda_data)
     timeline = build_timeline(trials)
     claims = build_evidence_claims(trials, pubmed, fda_data)
-    snapshot = build_clinical_snapshot(term, trials, pubmed, fda_data, wiki["summary"], pubchem, uniprot_data)
+    snapshot = build_clinical_snapshot(
+        term, trials, pubmed, fda_data, wiki["summary"], pubchem, uniprot_data
+    )
     evidence_score = build_evidence_score(trials, pubmed, fda_data, wiki)
-    source_ok = source_status(wiki, trials, pubmed, fda_data, pubchem, rcsb, uniprot_data)
+    source_ok = source_status(
+        wiki, trials, pubmed, fda_data, pubchem, rcsb, uniprot_data
+    )
     healthy_sources = sum(1 for ok in source_ok.values() if ok)
-    reliability = "HIGH" if healthy_sources >= 4 else ("MEDIUM" if healthy_sources >= 2 else "LOW")
+    reliability = (
+        "HIGH"
+        if healthy_sources >= 4
+        else ("MEDIUM" if healthy_sources >= 2 else "LOW")
+    )
 
-    method_block = trials[0]["methods"] if trials else "No trial method details available."
+    method_block = (
+        trials[0]["methods"] if trials else "No trial method details available."
+    )
 
     response = {
         "search_input": raw_term,
@@ -3863,12 +4622,30 @@ def _do_search():
         "last_updated_utc": datetime.now(timezone.utc).isoformat(),
         "sources": [
             {"label": "Wikipedia", "url": wiki["url"]},
-            {"label": "ClinicalTrials.gov search", "url": f"https://clinicaltrials.gov/search?term={quote(term)}"},
-            {"label": "PubMed search", "url": f"https://pubmed.ncbi.nlm.nih.gov/?term={quote(term)}"},
-            {"label": "OpenFDA drug labels", "url": f"https://api.fda.gov/drug/label.json?search={quote(term)}&limit=1"},
-            {"label": "PubChem", "url": f"https://pubchem.ncbi.nlm.nih.gov/#query={quote(term)}"},
-            {"label": "RCSB Protein Data Bank", "url": f"https://www.rcsb.org/search?request=%7B%22query%22%3A%7B%22type%22%3A%22group%22%2C%22logical_operator%22%3A%22and%22%2C%22nodes%22%3A%5B%7B%22type%22%3A%22terminal%22%2C%22service%22%3A%22full_text%22%2C%22parameters%22%3A%7B%22value%22%3A%22{quote(term)}%22%7D%7D%5D%7D%7D"},
-            {"label": "UniProt", "url": f"https://www.uniprot.org/uniprotkb?query={quote(term)}"},
+            {
+                "label": "ClinicalTrials.gov search",
+                "url": f"https://clinicaltrials.gov/search?term={quote(term)}",
+            },
+            {
+                "label": "PubMed search",
+                "url": f"https://pubmed.ncbi.nlm.nih.gov/?term={quote(term)}",
+            },
+            {
+                "label": "OpenFDA drug labels",
+                "url": f"https://api.fda.gov/drug/label.json?search={quote(term)}&limit=1",
+            },
+            {
+                "label": "PubChem",
+                "url": f"https://pubchem.ncbi.nlm.nih.gov/#query={quote(term)}",
+            },
+            {
+                "label": "RCSB Protein Data Bank",
+                "url": f"https://www.rcsb.org/search?request=%7B%22query%22%3A%7B%22type%22%3A%22group%22%2C%22logical_operator%22%3A%22and%22%2C%22nodes%22%3A%5B%7B%22type%22%3A%22terminal%22%2C%22service%22%3A%22full_text%22%2C%22parameters%22%3A%7B%22value%22%3A%22{quote(term)}%22%7D%7D%5D%7D%7D",
+            },
+            {
+                "label": "UniProt",
+                "url": f"https://www.uniprot.org/uniprotkb?query={quote(term)}",
+            },
         ],
         "protocol": STACK_PROTOCOLS.get(term),
         "stack_pairings": [
@@ -3886,7 +4663,8 @@ def _do_search():
             "stack_knowledge": STACK_KNOWLEDGE.get(term, {}),
             "snapshot": SNAPSHOT_LIBRARY.get(term, {}),
             "goals": [
-                gk for gk, gv in GOAL_BLUEPRINTS.items()
+                gk
+                for gk, gv in GOAL_BLUEPRINTS.items()
                 if any(
                     et in STACK_KNOWLEDGE.get(term, {}).get("effects", [])
                     for et in gv.get("primary_targets", [])
@@ -3897,7 +4675,7 @@ def _do_search():
     return jsonify(response)
 
 
-@app.route('/order-request', methods=['POST'])
+@app.route("/order-request", methods=["POST"])
 def order_request():
     payload = request.get_json(silent=True) or {}
     customer_name = (payload.get("customer_name") or "").strip()
@@ -3953,14 +4731,16 @@ def order_request():
     return jsonify({"ok": True, "order": order_record}), 200
 
 
-@app.route('/stack-protocol')
+@app.route("/stack-protocol")
 def stack_protocol():
     stack_key = (request.args.get("stack") or "").strip().lower()
     if not stack_key:
         return jsonify({"error": "No stack key provided."}), 400
     # Try exact match first, then search for any protocol containing all peptides
     if stack_key in STACK_PROTOCOLS:
-        return jsonify({"stack": stack_key, "protocol": STACK_PROTOCOLS[stack_key]}), 200
+        return jsonify(
+            {"stack": stack_key, "protocol": STACK_PROTOCOLS[stack_key]}
+        ), 200
     # Try partial match — check each protocol key if it contains all terms
     terms = stack_key.replace("+", " ").split()
     for key, proto in STACK_PROTOCOLS.items():
@@ -3970,7 +4750,7 @@ def stack_protocol():
     return jsonify({"error": "No protocol found for this stack combination."}), 404
 
 
-@app.route('/stack-recommend')
+@app.route("/stack-recommend")
 def stack_recommend():
     goal = (request.args.get("goal") or "fat_loss").strip().lower()
     priority = (request.args.get("priority") or "").strip().lower()
@@ -4002,7 +4782,7 @@ def stack_recommend():
     ), 200
 
 
-@app.route('/symptom-search')
+@app.route("/symptom-search")
 def symptom_search():
     raw_query = (request.args.get("q") or "").strip()
     if not raw_query:
@@ -4010,21 +4790,120 @@ def symptom_search():
 
     query = raw_query.lower().strip()
     stop_words = {
-        "a", "an", "the", "for", "and", "or", "to", "of", "in", "with", "that",
-        "is", "it", "on", "at", "by", "i", "me", "my", "we", "our", "you",
-        "your", "he", "she", "they", "them", "their", "this", "that", "these",
-        "those", "am", "are", "was", "were", "be", "been", "being", "have",
-        "has", "had", "do", "does", "did", "but", "if", "because", "as",
-        "until", "while", "about", "between", "through", "during", "before",
-        "after", "above", "below", "up", "down", "out", "off", "over", "under",
-        "again", "further", "then", "once", "here", "there", "when", "where",
-        "why", "how", "all", "each", "every", "both", "few", "more", "most",
-        "other", "some", "such", "no", "nor", "not", "only", "own", "same",
-        "so", "than", "too", "very", "just", "get", "something", "need",
-        "help", "want", "looking", "good", "best", "treat", "treatment",
-        "peptide", "peptides", "can", "what", "any", "anything",
+        "a",
+        "an",
+        "the",
+        "for",
+        "and",
+        "or",
+        "to",
+        "of",
+        "in",
+        "with",
+        "that",
+        "is",
+        "it",
+        "on",
+        "at",
+        "by",
+        "i",
+        "me",
+        "my",
+        "we",
+        "our",
+        "you",
+        "your",
+        "he",
+        "she",
+        "they",
+        "them",
+        "their",
+        "this",
+        "that",
+        "these",
+        "those",
+        "am",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "have",
+        "has",
+        "had",
+        "do",
+        "does",
+        "did",
+        "but",
+        "if",
+        "because",
+        "as",
+        "until",
+        "while",
+        "about",
+        "between",
+        "through",
+        "during",
+        "before",
+        "after",
+        "above",
+        "below",
+        "up",
+        "down",
+        "out",
+        "off",
+        "over",
+        "under",
+        "again",
+        "further",
+        "then",
+        "once",
+        "here",
+        "there",
+        "when",
+        "where",
+        "why",
+        "how",
+        "all",
+        "each",
+        "every",
+        "both",
+        "few",
+        "more",
+        "most",
+        "other",
+        "some",
+        "such",
+        "no",
+        "nor",
+        "not",
+        "only",
+        "own",
+        "same",
+        "so",
+        "than",
+        "too",
+        "very",
+        "just",
+        "get",
+        "something",
+        "need",
+        "help",
+        "want",
+        "looking",
+        "good",
+        "best",
+        "treat",
+        "treatment",
+        "peptide",
+        "peptides",
+        "can",
+        "what",
+        "any",
+        "anything",
     }
-    tokens = re.findall(r'[a-z]+', query)
+    tokens = re.findall(r"[a-z]+", query)
     tokens = [t for t in tokens if t not in stop_words and len(t) > 1]
 
     if not tokens:
@@ -4038,12 +4917,14 @@ def symptom_search():
             score += 100
         elif condition_key in query or query in condition_key:
             score += 60
-        key_tokens = set(re.findall(r'[a-z]+', condition_key))
+        key_tokens = set(re.findall(r"[a-z]+", condition_key))
         if tokens:
             overlap = sum(1 for t in tokens if t in condition_key)
             score += overlap * 20
             partial = sum(
-                1 for t in tokens for k in key_tokens
+                1
+                for t in tokens
+                for k in key_tokens
                 if len(t) > 2 and (t in k or k in t)
             )
             score += partial * 8
@@ -4054,17 +4935,29 @@ def symptom_search():
         for pep_name, meta in STACK_KNOWLEDGE.items():
             pep_lower = pep_name.lower()
             if pep_lower in query or query in pep_lower:
-                scored.append((pep_name, 90, {
-                    "peptides": [pep_name],
-                    "description": meta.get("summary", ""),
-                    "category": "Direct Peptide Match",
-                }))
+                scored.append(
+                    (
+                        pep_name,
+                        90,
+                        {
+                            "peptides": [pep_name],
+                            "description": meta.get("summary", ""),
+                            "category": "Direct Peptide Match",
+                        },
+                    )
+                )
             elif any(t in pep_lower for t in tokens):
-                scored.append((pep_name, 40, {
-                    "peptides": [pep_name],
-                    "description": meta.get("summary", ""),
-                    "category": "Direct Peptide Match",
-                }))
+                scored.append(
+                    (
+                        pep_name,
+                        40,
+                        {
+                            "peptides": [pep_name],
+                            "description": meta.get("summary", ""),
+                            "category": "Direct Peptide Match",
+                        },
+                    )
+                )
 
     scored.sort(key=lambda x: x[1], reverse=True)
 
@@ -4076,23 +4969,29 @@ def symptom_search():
             if pep in STACK_KNOWLEDGE and pep not in seen_peptides:
                 seen_peptides.add(pep)
                 sk = STACK_KNOWLEDGE[pep]
-                results.append({
-                    "peptide": pep,
-                    "condition_matched": condition_key,
-                    "match_score": score,
-                    "reason": entry["description"],
-                    "category": entry.get("category", "General"),
-                    "stack_knowledge": {
-                        "effects": sk.get("effects", []),
-                        "tier": sk.get("tier", "D"),
-                        "summary": sk.get("summary", ""),
-                    },
-                    "snapshot": {
-                        k: SNAPSHOT_LIBRARY.get(pep, {}).get(k, "")
-                        for k in ["primary_effect", "mechanism_pathway",
-                                  "expected_body_outcomes", "clinical_context"]
-                    },
-                })
+                results.append(
+                    {
+                        "peptide": pep,
+                        "condition_matched": condition_key,
+                        "match_score": score,
+                        "reason": entry["description"],
+                        "category": entry.get("category", "General"),
+                        "stack_knowledge": {
+                            "effects": sk.get("effects", []),
+                            "tier": sk.get("tier", "D"),
+                            "summary": sk.get("summary", ""),
+                        },
+                        "snapshot": {
+                            k: SNAPSHOT_LIBRARY.get(pep, {}).get(k, "")
+                            for k in [
+                                "primary_effect",
+                                "mechanism_pathway",
+                                "expected_body_outcomes",
+                                "clinical_context",
+                            ]
+                        },
+                    }
+                )
 
     matched_peptides_set = set(r["peptide"] for r in results)
     relevant_stacks = []
@@ -4102,42 +5001,50 @@ def symptom_search():
         if overlap:
             relevance = len(overlap) / len(stack_peps)
             first_pep = stack_peps[0]
-            relevant_stacks.append({
-                "stack_key": stack_key,
-                "name": proto.get("name", stack_key),
-                "goal": proto.get("goal", ""),
-                "matched_peptides": overlap,
-                "relevance": round(relevance, 2),
-                "protocol": {
-                    "cycle_weeks": proto.get("cycle_weeks", 0),
-                    "off_weeks": proto.get("off_weeks", 0),
-                    "phases": proto.get("phases", []),
-                    "post_cycle": proto.get("post_cycle", ""),
-                    "evidence_summary": proto.get("evidence_summary", ""),
-                },
-                "evidence_tier": STACK_KNOWLEDGE.get(first_pep, {}).get("tier", "D"),
-            })
-    relevant_stacks.sort(key=lambda s: (s["relevance"], len(s["matched_peptides"])), reverse=True)
+            relevant_stacks.append(
+                {
+                    "stack_key": stack_key,
+                    "name": proto.get("name", stack_key),
+                    "goal": proto.get("goal", ""),
+                    "matched_peptides": overlap,
+                    "relevance": round(relevance, 2),
+                    "protocol": {
+                        "cycle_weeks": proto.get("cycle_weeks", 0),
+                        "off_weeks": proto.get("off_weeks", 0),
+                        "phases": proto.get("phases", []),
+                        "post_cycle": proto.get("post_cycle", ""),
+                        "evidence_summary": proto.get("evidence_summary", ""),
+                    },
+                    "evidence_tier": STACK_KNOWLEDGE.get(first_pep, {}).get(
+                        "tier", "D"
+                    ),
+                }
+            )
+    relevant_stacks.sort(
+        key=lambda s: (s["relevance"], len(s["matched_peptides"])), reverse=True
+    )
     relevant_stacks = relevant_stacks[:5]
 
-    return jsonify({
-        "query": raw_query,
-        "normalized_query": query,
-        "matched_conditions": [c for c, s, e in scored[:10]],
-        "peptide_results": results[:15],
-        "matched_stacks": relevant_stacks,
-        "total_peptides_matched": len(results),
-        "total_stacks_matched": len(relevant_stacks),
-    }), 200
+    return jsonify(
+        {
+            "query": raw_query,
+            "normalized_query": query,
+            "matched_conditions": [c for c, s, e in scored[:10]],
+            "peptide_results": results[:15],
+            "matched_stacks": relevant_stacks,
+            "total_peptides_matched": len(results),
+            "total_stacks_matched": len(relevant_stacks),
+        }
+    ), 200
 
 
-@app.route('/ask')
+@app.route("/ask")
 def ask_page():
     all_peptides = sorted(set(ALIASES.values()) | set(STACK_KNOWLEDGE.keys()))
-    return render_template('ask.html', all_peptides=all_peptides)
+    return render_template("ask.html", all_peptides=all_peptides)
 
 
-@app.route('/api/ask', methods=['POST'])
+@app.route("/api/ask", methods=["POST"])
 def api_ask():
     data = request.get_json(silent=True) or {}
     question = (data.get("question") or "").strip()
@@ -4146,22 +5053,127 @@ def api_ask():
 
     q = question.lower().strip()
     stop_words = {
-        "a","an","the","for","and","or","to","of","in","with","that",
-        "is","it","on","at","by","i","me","my","we","our","you",
-        "your","he","she","they","them","their","this","that","these",
-        "those","am","are","was","were","be","been","being","have",
-        "has","had","do","does","did","but","if","because","as",
-        "until","while","about","between","through","during","before",
-        "after","above","below","up","down","out","off","over","under",
-        "again","further","then","once","here","there","when","where",
-        "why","how","all","each","every","both","few","more","most",
-        "other","some","such","no","nor","not","only","own","same",
-        "so","than","too","very","just","get","something","need",
-        "help","want","looking","good","best","treat","treatment",
-        "peptide","peptides","can","what","any","anything","tell",
-        "know","does","work","use","used","using",
+        "a",
+        "an",
+        "the",
+        "for",
+        "and",
+        "or",
+        "to",
+        "of",
+        "in",
+        "with",
+        "that",
+        "is",
+        "it",
+        "on",
+        "at",
+        "by",
+        "i",
+        "me",
+        "my",
+        "we",
+        "our",
+        "you",
+        "your",
+        "he",
+        "she",
+        "they",
+        "them",
+        "their",
+        "this",
+        "that",
+        "these",
+        "those",
+        "am",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "have",
+        "has",
+        "had",
+        "do",
+        "does",
+        "did",
+        "but",
+        "if",
+        "because",
+        "as",
+        "until",
+        "while",
+        "about",
+        "between",
+        "through",
+        "during",
+        "before",
+        "after",
+        "above",
+        "below",
+        "up",
+        "down",
+        "out",
+        "off",
+        "over",
+        "under",
+        "again",
+        "further",
+        "then",
+        "once",
+        "here",
+        "there",
+        "when",
+        "where",
+        "why",
+        "how",
+        "all",
+        "each",
+        "every",
+        "both",
+        "few",
+        "more",
+        "most",
+        "other",
+        "some",
+        "such",
+        "no",
+        "nor",
+        "not",
+        "only",
+        "own",
+        "same",
+        "so",
+        "than",
+        "too",
+        "very",
+        "just",
+        "get",
+        "something",
+        "need",
+        "help",
+        "want",
+        "looking",
+        "good",
+        "best",
+        "treat",
+        "treatment",
+        "peptide",
+        "peptides",
+        "can",
+        "what",
+        "any",
+        "anything",
+        "tell",
+        "know",
+        "does",
+        "work",
+        "use",
+        "used",
+        "using",
     }
-    tokens = re.findall(r'[a-z]+', q)
+    tokens = re.findall(r"[a-z]+", q)
     tokens = [t for t in tokens if t not in stop_words and len(t) > 1]
     if not tokens:
         tokens = [q]
@@ -4190,12 +5202,14 @@ def api_ask():
     scored_conditions.sort(key=lambda x: x[1], reverse=True)
 
     for cond_key, score, entry in scored_conditions[:5]:
-        matched_conditions.append({
-            "condition": cond_key,
-            "description": entry["description"],
-            "category": entry.get("category", "General"),
-            "peptides": entry["peptides"],
-        })
+        matched_conditions.append(
+            {
+                "condition": cond_key,
+                "description": entry["description"],
+                "category": entry.get("category", "General"),
+                "peptides": entry["peptides"],
+            }
+        )
         cond_reason = "Matched condition: " + cond_key.replace("_", " ").title()
         for pep in entry["peptides"]:
             pep = normalize_term(pep)
@@ -4204,7 +5218,9 @@ def api_ask():
             matched_peptides.add(pep)
             if pep not in pep_score:
                 pep_score[pep] = {"score": 0, "reasons": [], "matched_effects": []}
-            pep_score[pep]["score"] += score // 2  # halved since condition matching is per-condition not per-peptide
+            pep_score[pep]["score"] += (
+                score // 2
+            )  # halved since condition matching is per-condition not per-peptide
             if cond_reason not in pep_score[pep]["reasons"]:
                 pep_score[pep]["reasons"].append(cond_reason)
 
@@ -4251,7 +5267,11 @@ def api_ask():
                 if pep_name not in matched_peptides:
                     matched_peptides.add(pep_name)
                 if pep_name not in pep_score:
-                    pep_score[pep_name] = {"score": 0, "reasons": [], "matched_effects": []}
+                    pep_score[pep_name] = {
+                        "score": 0,
+                        "reasons": [],
+                        "matched_effects": [],
+                    }
                 pep_score[pep_name]["score"] += 30 * len(overlap)
                 for eid in overlap:
                     label = EFFECT_LABELS.get(eid, eid.replace("_", " ").title())
@@ -4265,7 +5285,12 @@ def api_ask():
     for pep_name, snap in SNAPSHOT_LIBRARY.items():
         if pep_name not in STACK_KNOWLEDGE:
             continue
-        fields = ["primary_effect", "mechanism_pathway", "expected_body_outcomes", "clinical_context"]
+        fields = [
+            "primary_effect",
+            "mechanism_pathway",
+            "expected_body_outcomes",
+            "clinical_context",
+        ]
         match_count = 0
         for field in fields:
             text = (snap.get(field) or "").lower()
@@ -4309,7 +5334,9 @@ def api_ask():
             if relations:
                 primekg_relations[pep] = relations
         for mc in matched_conditions[:3]:
-            disease_info = primekg.query_disease_relations(mc["condition"], max_results=8)
+            disease_info = primekg.query_disease_relations(
+                mc["condition"], max_results=8
+            )
             if disease_info and any(v for v in disease_info.values()):
                 primekg_disease_info[mc["condition"]] = disease_info
     except Exception:
@@ -4321,13 +5348,15 @@ def api_ask():
         stack_peps = stack_key.split("+")
         overlap = [p for p in stack_peps if p in matched_peptides]
         if overlap:
-            relevant_stacks.append({
-                "key": stack_key,
-                "name": proto.get("name", stack_key),
-                "goal": proto.get("goal", ""),
-                "cycle_weeks": proto.get("cycle_weeks", 0),
-                "matched_peptides": overlap,
-            })
+            relevant_stacks.append(
+                {
+                    "key": stack_key,
+                    "name": proto.get("name", stack_key),
+                    "goal": proto.get("goal", ""),
+                    "cycle_weeks": proto.get("cycle_weeks", 0),
+                    "matched_peptides": overlap,
+                }
+            )
 
     # ── Check community notes ──
     community_matches = []
@@ -4343,26 +5372,40 @@ def api_ask():
     # ── Intro paragraph ──
     all_pep_names = list(peptide_data.keys())
     if matched_conditions:
-        cond_names = [mc["condition"].replace("_", " ").title() for mc in matched_conditions[:2]]
+        cond_names = [
+            mc["condition"].replace("_", " ").title() for mc in matched_conditions[:2]
+        ]
         top_peps = all_pep_names[:3]
         pep_list_str = ", ".join(p.title() for p in top_peps)
         answer_parts.append(
-            "I found information matching **" + cond_names[0] + "** with "
-            + str(len(all_pep_names)) + " related peptides including " + pep_list_str + ". Here is the breakdown:"
+            "I found information matching **"
+            + cond_names[0]
+            + "** with "
+            + str(len(all_pep_names))
+            + " related peptides including "
+            + pep_list_str
+            + ". Here is the breakdown:"
         )
     elif matched_goals:
         goal_labels = [GOAL_BLUEPRINTS[gk]["label"] for gk in matched_goals[:2]]
         top_peps = all_pep_names[:3]
         pep_list_str = ", ".join(p.title() for p in top_peps)
         answer_parts.append(
-            "Your query relates to **" + goal_labels[0] + "** — here are "
-            + str(len(all_pep_names)) + " relevant peptides including " + pep_list_str + ":"
+            "Your query relates to **"
+            + goal_labels[0]
+            + "** — here are "
+            + str(len(all_pep_names))
+            + " relevant peptides including "
+            + pep_list_str
+            + ":"
         )
     elif all_pep_names:
         top_peps = all_pep_names[:3]
         pep_list_str = ", ".join(p.title() for p in top_peps)
         answer_parts.append(
-            "Based on your query, here are the most relevant peptides from our database (" + str(len(all_pep_names)) + " found):"
+            "Based on your query, here are the most relevant peptides from our database ("
+            + str(len(all_pep_names))
+            + " found):"
         )
 
     if matched_conditions:
@@ -4377,8 +5420,13 @@ def api_ask():
 
     if peptide_data:
         answer_parts.append("")
-        sorted_peps = sorted(peptide_data.items(),
-                             key=lambda x: (-x[1].get("score", 0), {"A": 0, "B": 1, "C": 2, "D": 3}.get(x[1]["tier"], 4)))
+        sorted_peps = sorted(
+            peptide_data.items(),
+            key=lambda x: (
+                -x[1].get("score", 0),
+                {"A": 0, "B": 1, "C": 2, "D": 3}.get(x[1]["tier"], 4),
+            ),
+        )
         shown = set()
         answered_peps = 0
         for pep, pd in sorted_peps:
@@ -4426,7 +5474,13 @@ def api_ask():
                 cc = ev.get("completed_trials", 0)
                 pc = ev.get("pubmed_count", 0)
                 if tc > 0:
-                    answer_parts.append("**Clinical Trials**: " + str(tc) + " registered, " + str(cc) + " completed")
+                    answer_parts.append(
+                        "**Clinical Trials**: "
+                        + str(tc)
+                        + " registered, "
+                        + str(cc)
+                        + " completed"
+                    )
                 if pc > 0:
                     answer_parts.append("**PubMed Articles**: " + str(pc) + " indexed")
 
@@ -4441,9 +5495,13 @@ def api_ask():
                 if fda.get("warnings"):
                     parts.append("Warning: " + fda["warnings"][:200])
                 if parts:
-                    answer_parts.append("**FDA Data**" + prefix + ": " + " | ".join(parts))
+                    answer_parts.append(
+                        "**FDA Data**" + prefix + ": " + " | ".join(parts)
+                    )
             elif ev and ev.get("fda_data") is None:
-                answer_parts.append("*No FDA drug labeling data found for this peptide — it is not an approved drug.*")
+                answer_parts.append(
+                    "*No FDA drug labeling data found for this peptide — it is not an approved drug.*"
+                )
 
             # Primary effect, mechanism, outcomes from local data
             if pd.get("summary"):
@@ -4455,7 +5513,9 @@ def api_ask():
             if pd.get("outcomes"):
                 answer_parts.append("**Expected outcomes**: " + pd["outcomes"])
             if pd.get("effects"):
-                effect_str = ", ".join(e.replace("_", " ").title() for e in pd["effects"])
+                effect_str = ", ".join(
+                    e.replace("_", " ").title() for e in pd["effects"]
+                )
                 answer_parts.append("**Effect profile**: " + effect_str)
 
             # ═ NEW: Safety inline ═
@@ -4475,26 +5535,40 @@ def api_ask():
                 if bd.get("trials"):
                     breakdown_items.append("Trial data: " + str(bd["trials"]) + " pts")
                 if bd.get("pubmed"):
-                    breakdown_items.append("PubMed quality: " + str(bd["pubmed"]) + " pts")
+                    breakdown_items.append(
+                        "PubMed quality: " + str(bd["pubmed"]) + " pts"
+                    )
                 if bd.get("fda"):
                     breakdown_items.append("FDA records: " + str(bd["fda"]) + " pts")
                 if bd.get("encyclopedia"):
-                    breakdown_items.append("Encyclopedia: " + str(bd["encyclopedia"]) + " pts")
+                    breakdown_items.append(
+                        "Encyclopedia: " + str(bd["encyclopedia"]) + " pts"
+                    )
                 if breakdown_items:
-                    answer_parts.append("**Evidence breakdown**: " + " | ".join(breakdown_items))
+                    answer_parts.append(
+                        "**Evidence breakdown**: " + " | ".join(breakdown_items)
+                    )
 
             # Distinguish approved vs research
             if reg_status == "fda_approved":
-                answer_parts.append("*This peptide is FDA-approved for specific medical indications.*")
+                answer_parts.append(
+                    "*This peptide is FDA-approved for specific medical indications.*"
+                )
             elif reg_status == "investigational":
-                answer_parts.append("*This peptide is under clinical investigation but not yet FDA-approved.*")
+                answer_parts.append(
+                    "*This peptide is under clinical investigation but not yet FDA-approved.*"
+                )
             elif reg_status == "research_chemical":
-                answer_parts.append("*This peptide is a research chemical — not FDA-approved. Long-term safety data is limited.*")
+                answer_parts.append(
+                    "*This peptide is a research chemical — not FDA-approved. Long-term safety data is limited.*"
+                )
 
             # ═ NEW: Community note inline ═
             for ck, note in COMMUNITY_NOTES.items():
                 stack_peps = ck.split("+")
-                if pep in stack_peps and any(p in stack_peps for p in shown if p != pep):
+                if pep in stack_peps and any(
+                    p in stack_peps for p in shown if p != pep
+                ):
                     answer_parts.append("*Community note*: " + note[:300])
                     break
 
@@ -4506,8 +5580,15 @@ def api_ask():
         answer_parts.append("")
         answer_parts.append("**Relevant Stack Protocols**")
         for rs in relevant_stacks[:3]:
-            answer_parts.append("- **" + rs["name"] + "**: " + rs["goal"] +
-                               " (" + str(rs["cycle_weeks"]) + " week cycle)")
+            answer_parts.append(
+                "- **"
+                + rs["name"]
+                + "**: "
+                + rs["goal"]
+                + " ("
+                + str(rs["cycle_weeks"])
+                + " week cycle)"
+            )
         answer_parts.append("*Tap a stack link below for full protocol details.*")
 
     if matched_goals:
@@ -4526,14 +5607,23 @@ def api_ask():
                 for line in kg.split("\n"):
                     if line.startswith("**"):
                         answer_parts.append("- " + line.strip("*"))
-        answer_parts.append("*Source: [PrimeKG](https://github.com/mims-harvard/PrimeKG) biomedical knowledge graph (Harvard).*")
+        answer_parts.append(
+            "*Source: [PrimeKG](https://github.com/mims-harvard/PrimeKG) biomedical knowledge graph (Harvard).*"
+        )
     if primekg_disease_info:
         answer_parts.append("")
         for disease, dinfo in primekg_disease_info.items():
             drugs = dinfo.get("drugs", [])
             if drugs:
-                drug_names = [d.get("other_name", "") for d in drugs[:3] if d.get("other_name")]
-                answer_parts.append("- **" + disease.replace("_", " ").title() + "** associated drugs: " + ", ".join(drug_names))
+                drug_names = [
+                    d.get("other_name", "") for d in drugs[:3] if d.get("other_name")
+                ]
+                answer_parts.append(
+                    "- **"
+                    + disease.replace("_", " ").title()
+                    + "** associated drugs: "
+                    + ", ".join(drug_names)
+                )
 
     # ── Session memory: retrieve conversation history ──
     _session_ip = request.remote_addr or "anonymous"
@@ -4556,7 +5646,11 @@ def api_ask():
             research_ctx = build_research_context(peptides, terms)
             if research_ctx:
                 is_compare = detect_comparison_query(question)
-                sysp = ASK_SYSTEM_PROMPT + _history_str + f"\n\n### Research Context (use this to inform your response):\n{research_ctx}"
+                sysp = (
+                    ASK_SYSTEM_PROMPT
+                    + _history_str
+                    + f"\n\n### Research Context (use this to inform your response):\n{research_ctx}"
+                )
                 ai_answer = generate_local_ai_response(
                     question, research_ctx, peptides, is_compare, sysp
                 )
@@ -4565,138 +5659,182 @@ def api_ask():
         except Exception:
             pass
 
-    # Use LLM when no peptide name is directly mentioned in the question
+    # Try Ollama to synthesize a better answer when no peptide is directly named
     known_names = set(STACK_KNOWLEDGE.keys())
     known_names.update(a for a in ALIASES if len(a) >= 4)
     known_names.update(a for a in ALIASES.values() if len(a) >= 4)
     has_direct_peptide_match = any(name in q for name in known_names)
-    should_use_llm = not has_direct_peptide_match and bool(answer_parts)
 
-    if not answer_parts or all(p.strip() == "" for p in answer_parts) or should_use_llm:
-        # ── LLM fallback via Ollama + PubMed ──
+    if not has_direct_peptide_match:
+        # Build a focused prompt using our local data (no extra PubMed call)
+        _ollama_context = ""
+        if answer_parts:
+            _ollama_context = "\n".join(answer_parts[:5])[:2000]
+        _ollama_prompt = (
+            f"The user asked: {question}\n\n"
+            f"Here is the research data from our knowledge base:\n{_ollama_context}\n\n"
+            "Based on this data, provide a concise clinical snapshot with evidence levels, "
+            "mechanism of action, expected outcomes, and protocol notes where available. "
+            "Cite specific findings. Keep it under 400 words."
+        )
         try:
-            llm_result = ask_llm.generate_answer(question)
+            llm_ollama_answer = ask_llm.query_ollama(
+                [{"role": "user", "content": _ollama_prompt}],
+                max_tokens=1024,
+            )
         except Exception as e:
             app.logger.warning("LLM fallback error: %s", e)
-            llm_result = None
+            llm_ollama_answer = None
 
-        if llm_result and llm_result.get("answer"):
-            # LLM succeeded — use AI answer
-            answer_parts = [llm_result["answer"]]
-            llm_citations = []
-            for cite in llm_result.get("citations", []):
-                llm_citations.append({
-                    "source": cite.get("pmid", ""),
-                    "label": cite.get("title", "PubMed Article")[:60],
-                    "peptide": cite.get("pmid", ""),
-                    "link": cite.get("link", ""),
-                })
-            source_tag = "\n\n*Answer generated by local AI (" + ask_llm.DEFAULT_MODEL + ") with PubMed references.*"
-            answer_parts.append(source_tag)
-            _add_to_history(_session_ip, "user", question)
-            _add_to_history(_session_ip, "assistant", "\n".join(answer_parts)[:2000])
-
-            return jsonify({
-                "answer": "\n".join(answer_parts),
-                "citations": llm_citations,
-                "stacks": [],
-                "evidence": {},
-                "matched_conditions": [],
-                "matched_peptides": [],
-                "source": "llm",
-                "sources": [{"id": "knowledgebase", "label": "Knowledge Base"}, {"id": "pubmed", "label": "PubMed"}],
-            }), 200
-
-        # LLM unavailable (Vercel / cloud) — use PubMed directly
-        pubmed_articles = ask_llm.search_pubmed_general(question, retmax=5)
-        if pubmed_articles:
+        if llm_ollama_answer and len(llm_ollama_answer) > 50:
             answer_parts = [
-                "I searched PubMed for **\"" + question + "\"** and found these research articles:",
-                "",
+                llm_ollama_answer,
+                "\n\n*Answer enhanced by local AI (llama3.1:8b) using knowledge base data.*",
             ]
-            pubmed_citations = []
-            for a in pubmed_articles:
-                answer_parts.append("**" + a["title"] + "**")
-                if a.get("abstract"):
-                    answer_parts.append(a["abstract"][:400] + ("..." if len(a.get("abstract","")) > 400 else ""))
-                if a.get("authors"):
-                    answer_parts.append("*" + ", ".join(a["authors"][:3]) + " — " + (a.get("pubdate") or "") + "*")
-                answer_parts.append("*Source: " + (a.get("source") or "PubMed") + "*")
-                answer_parts.append("")
-                pubmed_citations.append({
-                    "source": a["pmid"],
-                    "label": a["title"][:60],
-                    "peptide": a["pmid"],
-                    "link": a["link"],
-                })
-            answer_parts.append("*Results from PubMed. Always consult a healthcare professional before starting any new protocol.*")
-            _add_to_history(_session_ip, "user", question)
-            _add_to_history(_session_ip, "assistant", "\n".join(answer_parts)[:2000])
 
-            return jsonify({
-                "answer": "\n".join(answer_parts),
-                "citations": pubmed_citations,
-                "stacks": [],
-                "evidence": {},
-                "matched_conditions": [],
-                "matched_peptides": [],
-                "source": "pubmed",
-                "sources": [{"id": "pubmed", "label": "PubMed"}],
-            }), 200
-
-        # Try Wikipedia as 3rd fallback — filter out generic/top-level articles
-        GENERIC_WIKI_TITLES = {"peptide", "peptides", "protein", "proteins", "drug", "drugs",
-                               "medicine", "health", "disease", "therapy", "chemical compound",
-                               "biology", "biochemistry", "pharmacology", "amino acid"}
-        wiki_articles = ask_llm.search_wikipedia(question, max_results=2)
-        wiki_articles = [a for a in wiki_articles
-                         if a.get("title", "").lower().strip() not in GENERIC_WIKI_TITLES]
-        if wiki_articles:
+    # ── Only use PubMed/Wikipedia when we have NO answer at all ──
+    if not answer_parts or all(p.strip() == "" for p in answer_parts):
+        # ── Safety: never override local matches with raw external dumps ──
+        if matched_peptides or matched_conditions or _medical_terms:
             answer_parts = [
-                "I found information on **Wikipedia** related to your question:",
-                "",
+                "I found relevant peptides in our database matching your query. "
+                "Please try rephrasing your question for more specific results, "
+                "or browse the **Stacks** tab for protocol recommendations."
             ]
-            wiki_citations = []
-            for a in wiki_articles:
-                answer_parts.append("**" + a["title"] + "**")
-                if a.get("summary"):
-                    answer_parts.append(a["summary"])
-                answer_parts.append("*Source: [" + a["title"] + "](" + a["link"] + ")*")
-                answer_parts.append("")
-                wiki_citations.append({
-                    "source": a["title"],
-                    "label": a["title"][:60],
-                    "peptide": a["title"],
-                    "link": a["link"],
-                })
-            answer_parts.append("*Information from Wikipedia. Always consult a healthcare professional before starting any new protocol.*")
-            _add_to_history(_session_ip, "user", question)
-            _add_to_history(_session_ip, "assistant", "\n".join(answer_parts)[:2000])
+        else:
+            # Try PubMed directly — only for genuinely unknown queries
+            pubmed_articles = ask_llm.search_pubmed_general(question, retmax=5)
+            if pubmed_articles:
+                answer_parts = [
+                    'I searched PubMed for **"'
+                    + question
+                    + '"** and found these research articles:',
+                    "",
+                ]
+                pubmed_citations = []
+                for a in pubmed_articles:
+                    answer_parts.append("**" + a["title"] + "**")
+                    if a.get("abstract"):
+                        answer_parts.append(
+                            a["abstract"][:400]
+                            + ("..." if len(a.get("abstract", "")) > 400 else "")
+                        )
+                    if a.get("authors"):
+                        answer_parts.append(
+                            "*"
+                            + ", ".join(a["authors"][:3])
+                            + " — "
+                            + (a.get("pubdate") or "")
+                            + "*"
+                        )
+                    answer_parts.append("*Source: " + (a.get("source") or "PubMed") + "*")
+                    answer_parts.append("")
+                    pubmed_citations.append(
+                        {
+                            "source": a["pmid"],
+                            "label": a["title"][:60],
+                            "peptide": a["pmid"],
+                            "link": a["link"],
+                        }
+                    )
+                answer_parts.append(
+                    "*Results from PubMed. Always consult a healthcare professional before starting any new protocol.*"
+                )
+                _add_to_history(_session_ip, "user", question)
+                _add_to_history(_session_ip, "assistant", "\n".join(answer_parts)[:2000])
 
-            return jsonify({
-                "answer": "\n".join(answer_parts),
-                "citations": wiki_citations,
-                "stacks": [],
-                "evidence": {},
-                "matched_conditions": [],
-                "matched_peptides": [],
-                "source": "wikipedia",
-                "sources": [{"id": "wikipedia", "label": "Wikipedia"}],
-            }), 200
+                return jsonify(
+                    {
+                        "answer": "\n".join(answer_parts),
+                        "citations": pubmed_citations,
+                        "stacks": [],
+                        "evidence": {},
+                        "matched_conditions": [],
+                        "matched_peptides": [],
+                        "source": "pubmed",
+                        "sources": [{"id": "pubmed", "label": "PubMed"}],
+                    }
+                ), 200
 
-        # No results from any source
-        answer_parts = [
-            "I couldn't find specific research about \"" + question + "\" in our database or PubMed.",
-            "Try searching for a specific peptide or condition, or rephrase your question.",
-            "You can also browse the **Stacks** tab for protocol recommendations.",
-        ]
+            # Try Wikipedia as 3rd fallback — filter out generic/top-level articles
+            GENERIC_WIKI_TITLES = {
+                "peptide",
+                "peptides",
+                "protein",
+                "proteins",
+                "drug",
+                "drugs",
+                "medicine",
+                "health",
+                "disease",
+                "therapy",
+                "chemical compound",
+                "biology",
+                "biochemistry",
+                "pharmacology",
+                "amino acid",
+            }
+            wiki_articles = ask_llm.search_wikipedia(question, max_results=2)
+            wiki_articles = [
+                a
+                for a in wiki_articles
+                if a.get("title", "").lower().strip() not in GENERIC_WIKI_TITLES
+            ]
+            if wiki_articles:
+                answer_parts = [
+                    "I found information on **Wikipedia** related to your question:",
+                    "",
+                ]
+                wiki_citations = []
+                for a in wiki_articles:
+                    answer_parts.append("**" + a["title"] + "**")
+                    if a.get("summary"):
+                        answer_parts.append(a["summary"])
+                    answer_parts.append("*Source: [" + a["title"] + "](" + a["link"] + ")*")
+                    answer_parts.append("")
+                    wiki_citations.append(
+                        {
+                            "source": a["title"],
+                            "label": a["title"][:60],
+                            "peptide": a["title"],
+                            "link": a["link"],
+                        }
+                    )
+                answer_parts.append(
+                    "*Information from Wikipedia. Always consult a healthcare professional before starting any new protocol.*"
+                )
+                _add_to_history(_session_ip, "user", question)
+                _add_to_history(_session_ip, "assistant", "\n".join(answer_parts)[:2000])
+
+                return jsonify(
+                    {
+                        "answer": "\n".join(answer_parts),
+                        "citations": wiki_citations,
+                        "stacks": [],
+                        "evidence": {},
+                        "matched_conditions": [],
+                        "matched_peptides": [],
+                        "source": "wikipedia",
+                        "sources": [{"id": "wikipedia", "label": "Wikipedia"}],
+                    }
+                ), 200
+
+            # No results from any source
+            answer_parts = [
+                "I couldn't find specific research about \""
+                + question
+                + '" in our database or PubMed.',
+                "Try searching for a specific peptide or condition, or rephrase your question.",
+                "You can also browse the **Stacks** tab for protocol recommendations.",
+            ]
 
     answer = "\n".join(answer_parts).strip()
 
     # ── Build evidence dict for frontend ──
     evidence_data = {}
-    for pep in sorted(peptide_data.keys(),
-                      key=lambda p: -pep_score.get(p, {}).get("score", 0))[:8]:
+    for pep in sorted(
+        peptide_data.keys(), key=lambda p: -pep_score.get(p, {}).get("score", 0)
+    )[:8]:
         try:
             ev = fetch_peptide_evidence(pep)
             if ev:
@@ -4709,30 +5847,37 @@ def api_ask():
                     "completed_trials": ev.get("completed_trials", 0),
                     "pubmed_count": ev.get("pubmed_count", 0),
                     "has_fda": bool(ev.get("fda_data")),
-                    "regulatory_status": REGULATORY_STATUS.get(pep, "research_chemical"),
+                    "regulatory_status": REGULATORY_STATUS.get(
+                        pep, "research_chemical"
+                    ),
                 }
         except Exception:
             pass
 
     # ── Build citations ──
     citations = []
-    for pep in sorted(matched_peptides,
-                      key=lambda p: -pep_score.get(p, {}).get("score", 0))[:12]:
-        citations.append({
-            "source": pep,
-            "label": pep.title(),
-            "peptide": pep,
-        })
+    for pep in sorted(
+        matched_peptides, key=lambda p: -pep_score.get(p, {}).get("score", 0)
+    )[:12]:
+        citations.append(
+            {
+                "source": pep,
+                "label": pep.title(),
+                "peptide": pep,
+            }
+        )
     if community_matches:
         for ck, note in community_matches[:2]:
             parts = ck.split("+")
             for p in parts:
                 if p not in {c["source"] for c in citations}:
-                    citations.append({
-                        "source": p,
-                        "label": p.title(),
-                        "peptide": p,
-                    })
+                    citations.append(
+                        {
+                            "source": p,
+                            "label": p.title(),
+                            "peptide": p,
+                        }
+                    )
 
     # ── Store conversation history for session memory ──
     _add_to_history(_session_ip, "user", question)
@@ -4758,23 +5903,27 @@ def api_ask():
     # ── Stack links ──
     stacks = [rs["key"] for rs in relevant_stacks[:5]]
 
-    return jsonify({
-        "answer": answer,
-        "citations": citations,
-        "stacks": stacks,
-        "evidence": evidence_data,
-        "matched_conditions": [mc["condition"] for mc in matched_conditions],
-        "matched_peptides": list(matched_peptides)[:10],
-        "primekg": primekg_relations or None,
-        "primekg_diseases": primekg_disease_info or None,
-        "sources": _sources,
-    }), 200
+    return jsonify(
+        {
+            "answer": answer,
+            "citations": citations,
+            "stacks": stacks,
+            "evidence": evidence_data,
+            "matched_conditions": [mc["condition"] for mc in matched_conditions],
+            "matched_peptides": list(matched_peptides)[:10],
+            "primekg": primekg_relations or None,
+            "primekg_diseases": primekg_disease_info or None,
+            "sources": _sources,
+        }
+    ), 200
 
 
-@app.route('/api/interactions', methods=['POST'])
+@app.route("/api/interactions", methods=["POST"])
 def api_interactions():
     data = request.get_json(silent=True) or {}
-    peptides = [normalize_term(p.strip().lower()) for p in data.get("peptides", []) if p.strip()]
+    peptides = [
+        normalize_term(p.strip().lower()) for p in data.get("peptides", []) if p.strip()
+    ]
     if len(peptides) < 2:
         return jsonify({"interactions": []})
 
@@ -4784,18 +5933,20 @@ def api_interactions():
             a, b = sorted([peptides[i], peptides[j]])
             interaction = INTERACTION_MATRIX.get((a, b))
             if interaction:
-                results.append({
-                    "peptide_a": a,
-                    "peptide_b": b,
-                    "type": interaction["type"],
-                    "note": interaction["note"],
-                    "evidence": interaction.get("evidence", ""),
-                })
+                results.append(
+                    {
+                        "peptide_a": a,
+                        "peptide_b": b,
+                        "type": interaction["type"],
+                        "note": interaction["note"],
+                        "evidence": interaction.get("evidence", ""),
+                    }
+                )
 
     return jsonify({"interactions": results})
 
 
-@app.route('/api/dosage/<path:peptide>')
+@app.route("/api/dosage/<path:peptide>")
 def api_dosage(peptide):
     pep = normalize_term(peptide.strip().lower())
     data = DOSAGE_REFERENCE.get(pep)
@@ -4804,7 +5955,7 @@ def api_dosage(peptide):
     return jsonify({"peptide": pep, "dosage": data})
 
 
-@app.route('/api/safety/<path:peptide>')
+@app.route("/api/safety/<path:peptide>")
 def api_safety(peptide):
     pep = normalize_term(peptide.strip().lower())
     data = SAFETY_NOTES.get(pep)
@@ -4863,17 +6014,18 @@ For this comparison question:
 # AI CHAT HELPER FUNCTIONS
 # ══════════════════════════════════════════════════════════════════════════════
 
+
 def detect_comparison_query(message):
     """Detect if the message is asking for a treatment comparison."""
     comparison_patterns = [
-        r'\bvs\b',
-        r'\bversus\b',
-        r'\bcompare\b',
-        r'\bcomparison\b',
-        r'\bbetter than\b',
-        r'\bor\b.*\bfor\b',  # e.g., "minoxidil or finasteride for hair loss"
-        r'\bwhich is better\b',
-        r'\bdifference between\b',
+        r"\bvs\b",
+        r"\bversus\b",
+        r"\bcompare\b",
+        r"\bcomparison\b",
+        r"\bbetter than\b",
+        r"\bor\b.*\bfor\b",  # e.g., "minoxidil or finasteride for hair loss"
+        r"\bwhich is better\b",
+        r"\bdifference between\b",
     ]
     message_lower = message.lower()
     for pattern in comparison_patterns:
@@ -4886,15 +6038,49 @@ def extract_medical_terms(message):
     """Extract medical terms and treatment names from user message for semantic search."""
     # Common medical keywords that suggest the user wants research
     medical_keywords = [
-        'hair loss', 'alopecia', 'weight loss', 'obesity', 'diabetes',
-        'fat loss', 'muscle growth', 'anti-aging', 'longevity', 'aging',
-        'visceral fat', 'insulin resistance', 'glucose', 'metabolism',
-        'testosterone', 'growth hormone', 'hgh', 'healing', 'injury',
-        'inflammation', 'recovery', 'skin', 'wrinkles', 'collagen',
-        'neuroprotection', 'cognitive', 'memory', 'brain', 'nootropic',
-        'cardiovascular', 'heart', 'blood pressure', 'cholesterol',
-        'minoxidil', 'finasteride', 'dutasteride', 'rogaine',
-        'metformin', 'berberine', 'rapamycin', 'nad', 'nmn', 'resveratrol',
+        "hair loss",
+        "alopecia",
+        "weight loss",
+        "obesity",
+        "diabetes",
+        "fat loss",
+        "muscle growth",
+        "anti-aging",
+        "longevity",
+        "aging",
+        "visceral fat",
+        "insulin resistance",
+        "glucose",
+        "metabolism",
+        "testosterone",
+        "growth hormone",
+        "hgh",
+        "healing",
+        "injury",
+        "inflammation",
+        "recovery",
+        "skin",
+        "wrinkles",
+        "collagen",
+        "neuroprotection",
+        "cognitive",
+        "memory",
+        "brain",
+        "nootropic",
+        "cardiovascular",
+        "heart",
+        "blood pressure",
+        "cholesterol",
+        "minoxidil",
+        "finasteride",
+        "dutasteride",
+        "rogaine",
+        "metformin",
+        "berberine",
+        "rapamycin",
+        "nad",
+        "nmn",
+        "resveratrol",
     ]
 
     message_lower = message.lower()
@@ -4906,7 +6092,9 @@ def extract_medical_terms(message):
             extracted_terms.append(keyword)
 
     # Extract treatment names from comparison queries (e.g., "X vs Y")
-    comparison_match = re.search(r'(\w+(?:-\w+)*)\s+(?:vs|versus|or)\s+(\w+(?:-\w+)*)', message_lower)
+    comparison_match = re.search(
+        r"(\w+(?:-\w+)*)\s+(?:vs|versus|or)\s+(\w+(?:-\w+)*)", message_lower
+    )
     if comparison_match:
         extracted_terms.extend([comparison_match.group(1), comparison_match.group(2)])
 
@@ -4925,7 +6113,11 @@ def extract_peptide_mentions(message):
                 mentioned.append(canonical)
 
     # Check canonical names
-    all_peptides = set(ALIASES.values()) | set(STACK_KNOWLEDGE.keys()) | set(SNAPSHOT_LIBRARY.keys())
+    all_peptides = (
+        set(ALIASES.values())
+        | set(STACK_KNOWLEDGE.keys())
+        | set(SNAPSHOT_LIBRARY.keys())
+    )
     for peptide in all_peptides:
         if peptide.lower() in message_lower:
             if peptide not in mentioned:
@@ -4946,10 +6138,18 @@ def build_research_context(peptides, medical_terms=None):
         if term in SNAPSHOT_LIBRARY:
             snapshot = SNAPSHOT_LIBRARY[term]
             context_parts.append(f"\n### {peptide.upper()} - Clinical Snapshot\n")
-            context_parts.append(f"**Primary Effect:** {snapshot.get('primary_effect', 'N/A')}\n")
-            context_parts.append(f"**Mechanism:** {snapshot.get('mechanism_pathway', 'N/A')}\n")
-            context_parts.append(f"**Outcomes:** {snapshot.get('expected_body_outcomes', 'N/A')}\n")
-            context_parts.append(f"**Clinical Context:** {snapshot.get('clinical_context', 'N/A')}\n")
+            context_parts.append(
+                f"**Primary Effect:** {snapshot.get('primary_effect', 'N/A')}\n"
+            )
+            context_parts.append(
+                f"**Mechanism:** {snapshot.get('mechanism_pathway', 'N/A')}\n"
+            )
+            context_parts.append(
+                f"**Outcomes:** {snapshot.get('expected_body_outcomes', 'N/A')}\n"
+            )
+            context_parts.append(
+                f"**Clinical Context:** {snapshot.get('clinical_context', 'N/A')}\n"
+            )
 
         # Get clinical trials (limited)
         try:
@@ -4957,8 +6157,12 @@ def build_research_context(peptides, medical_terms=None):
             if trials:
                 context_parts.append(f"\n**Clinical Trials for {peptide}:**\n")
                 for trial in trials[:10]:  # Limit to 10 trials
-                    context_parts.append(f"- {trial.get('title', 'N/A')} (NCT ID: {trial.get('nct_id', 'N/A')})\n")
-                    context_parts.append(f"  Status: {trial.get('status', 'N/A')}, Phase: {trial.get('phase', 'N/A')}\n")
+                    context_parts.append(
+                        f"- {trial.get('title', 'N/A')} (NCT ID: {trial.get('nct_id', 'N/A')})\n"
+                    )
+                    context_parts.append(
+                        f"  Status: {trial.get('status', 'N/A')}, Phase: {trial.get('phase', 'N/A')}\n"
+                    )
         except:
             pass
 
@@ -4986,7 +6190,9 @@ def build_research_context(peptides, medical_terms=None):
 
         # ── SIDER side effects ──
         try:
-            sider_ctx = sider_db.format_side_effects_for_context(peptide, max_results=10)
+            sider_ctx = sider_db.format_side_effects_for_context(
+                peptide, max_results=10
+            )
             if sider_ctx:
                 context_parts.append(sider_ctx + "\n")
         except Exception:
@@ -5004,7 +6210,9 @@ def build_research_context(peptides, medical_terms=None):
     if medical_terms:
         for term in medical_terms[:2]:
             try:
-                sider_ctx = sider_db.format_side_effects_for_context(term, max_results=8)
+                sider_ctx = sider_db.format_side_effects_for_context(
+                    term, max_results=8
+                )
                 if sider_ctx:
                     context_parts.append(sider_ctx + "\n")
             except Exception:
@@ -5028,7 +6236,9 @@ def build_research_context(peptides, medical_terms=None):
     if peptides or medical_terms:
         ckg_domains = ckg.get_domain_summary()
         if ckg_domains:
-            context_parts.append("\n### Clinical Knowledge Graph (CKG) — Available Domains\n")
+            context_parts.append(
+                "\n### Clinical Knowledge Graph (CKG) — Available Domains\n"
+            )
             for domain in ckg_domains:
                 context_parts.append(
                     f"- **{domain['domain']}** ({domain['relevance']})\n"
@@ -5053,7 +6263,13 @@ def _build_ollama_messages(system_prompt, conversation_history, user_message):
     return messages
 
 
-def generate_local_ai_response(user_message, research_context, mentioned_peptides, is_comparison, system_prompt=None):
+def generate_local_ai_response(
+    user_message,
+    research_context,
+    mentioned_peptides,
+    is_comparison,
+    system_prompt=None,
+):
     """Generate an intelligent response using available research context.
 
     Strategy:
@@ -5071,7 +6287,11 @@ def generate_local_ai_response(user_message, research_context, mentioned_peptide
             llm_answer = ask_llm.query_ollama(ollama_msg, max_tokens=1024)
             if llm_answer and len(llm_answer) > 50:
                 disclaimer = ""
-                if mentioned_peptides or "treatment" in user_message.lower() or "dose" in user_message.lower():
+                if (
+                    mentioned_peptides
+                    or "treatment" in user_message.lower()
+                    or "dose" in user_message.lower()
+                ):
                     disclaimer = (
                         "\n\n---\n\n**Important:** This information is for educational purposes. "
                         "Consult with a qualified healthcare provider before starting any treatment protocol."
@@ -5085,10 +6305,14 @@ def generate_local_ai_response(user_message, research_context, mentioned_peptide
 
     # Opening line
     if is_comparison:
-        parts.append("Here is a comparison based on available clinical research and knowledge base data:\n\n")
+        parts.append(
+            "Here is a comparison based on available clinical research and knowledge base data:\n\n"
+        )
     elif mentioned_peptides:
         peptide_list = ", ".join(mentioned_peptides[:3])
-        parts.append(f"Here is what the research database shows about **{peptide_list}** in relation to your question:\n\n")
+        parts.append(
+            f"Here is what the research database shows about **{peptide_list}** in relation to your question:\n\n"
+        )
     else:
         parts.append("Here is what the available research indicates:\n\n")
 
@@ -5153,7 +6377,9 @@ def generate_local_ai_response(user_message, research_context, mentioned_peptide
                         count += 1
                     elif "PMID:" in text:
                         pmid = text.split("PMID:")[1].strip()
-                        parts.append(f"  [PubMed PMID:{pmid}](https://pubmed.ncbi.nlm.nih.gov/{pmid})\n")
+                        parts.append(
+                            f"  [PubMed PMID:{pmid}](https://pubmed.ncbi.nlm.nih.gov/{pmid})\n"
+                        )
                 parts.append("\n")
 
         # --- PubMed general medical research (FIX: marker was "Research for" not "Recent Research for") ---
@@ -5175,7 +6401,9 @@ def generate_local_ai_response(user_message, research_context, mentioned_peptide
                         count += 1
                     elif "PMID:" in text:
                         pmid = text.split("PMID:")[1].strip()
-                        parts.append(f"  [PubMed PMID:{pmid}](https://pubmed.ncbi.nlm.nih.gov/{pmid})\n")
+                        parts.append(
+                            f"  [PubMed PMID:{pmid}](https://pubmed.ncbi.nlm.nih.gov/{pmid})\n"
+                        )
                 parts.append("\n")
 
         # --- PrimeKG ---
@@ -5190,7 +6418,9 @@ def generate_local_ai_response(user_message, research_context, mentioned_peptide
                         if text.startswith("**") and ":**" in text:
                             key, _, val = text[2:].partition(":** ")
                             parts.append(f"- **{key}:** {val}\n")
-            parts.append("\n*Source: [PrimeKG (Harvard)](https://github.com/mims-harvard/PrimeKG)*\n\n")
+            parts.append(
+                "\n*Source: [PrimeKG (Harvard)](https://github.com/mims-harvard/PrimeKG)*\n\n"
+            )
 
         # --- CKG ---
         if "Clinical Knowledge Graph (CKG)" in research_context:
@@ -5203,7 +6433,9 @@ def generate_local_ai_response(user_message, research_context, mentioned_peptide
                         text = line.strip()
                         if text.startswith("- **"):
                             parts.append(f"{text}\n")
-            parts.append("\n*Source: [CKG (MannLab)](https://github.com/MannLabs/CKG)*\n\n")
+            parts.append(
+                "\n*Source: [CKG (MannLab)](https://github.com/MannLabs/CKG)*\n\n"
+            )
 
     # ── If we found research data but have no synthesised content, add snapshot/stack ──
     response_text = "".join(parts)
@@ -5218,15 +6450,21 @@ def generate_local_ai_response(user_message, research_context, mentioned_peptide
                 if snap.get("mechanism_pathway"):
                     parts.append(f"- **Mechanism:** {snap['mechanism_pathway']}\n")
                 if snap.get("expected_body_outcomes"):
-                    parts.append(f"- **Expected Outcomes:** {snap['expected_body_outcomes']}\n")
+                    parts.append(
+                        f"- **Expected Outcomes:** {snap['expected_body_outcomes']}\n"
+                    )
                 if snap.get("clinical_context"):
-                    parts.append(f"- **Clinical Context:** {snap['clinical_context']}\n")
+                    parts.append(
+                        f"- **Clinical Context:** {snap['clinical_context']}\n"
+                    )
                 parts.append("\n")
             stack = STACK_KNOWLEDGE.get(term)
             if stack and stack.get("description"):
                 parts.append(f"{stack['description']}\n\n")
                 if stack.get("benefits") and isinstance(stack["benefits"], list):
-                    parts.append(f"**Benefits:** {', '.join(stack['benefits'][:5])}\n\n")
+                    parts.append(
+                        f"**Benefits:** {', '.join(stack['benefits'][:5])}\n\n"
+                    )
 
     # ── If STILL nothing useful, give a contextual fallback (not the generic one) ──
     response_text = "".join(parts)
@@ -5242,7 +6480,9 @@ def generate_local_ai_response(user_message, research_context, mentioned_peptide
                 term = normalize_term(peptide)
                 snap = SNAPSHOT_LIBRARY.get(term)
                 if snap:
-                    parts.append(f"**{peptide.upper()}** — {snap.get('primary_effect', 'researched compound')}\n\n")
+                    parts.append(
+                        f"**{peptide.upper()}** — {snap.get('primary_effect', 'researched compound')}\n\n"
+                    )
                     if snap.get("clinical_context"):
                         parts.append(f"{snap['clinical_context']}\n\n")
                 stack = STACK_KNOWLEDGE.get(term)
@@ -5267,13 +6507,17 @@ def generate_local_ai_response(user_message, research_context, mentioned_peptide
 
     # ── Add disclaimer ──
     final = "".join(parts)
-    if mentioned_peptides or "treatment" in user_message.lower() or "dose" in user_message.lower():
+    if (
+        mentioned_peptides
+        or "treatment" in user_message.lower()
+        or "dose" in user_message.lower()
+    ):
         final += "\n\n---\n\n**Important:** This information is for educational purposes. Consult with a qualified healthcare provider before starting any treatment protocol."
 
     return final
 
 
-@app.route('/ask/message', methods=['POST'])
+@app.route("/ask/message", methods=["POST"])
 def ask_message():
     """Handle AI chat messages with free local research-based response."""
     try:
@@ -5285,7 +6529,9 @@ def ask_message():
             return jsonify({"error": "Message cannot be empty."}), 400
 
         if len(user_message) > 5000:
-            return jsonify({"error": "Message too long. Please limit to 5000 characters."}), 400
+            return jsonify(
+                {"error": "Message too long. Please limit to 5000 characters."}
+            ), 400
 
         # Extract peptide mentions and medical terms for semantic search
         mentioned_peptides = extract_peptide_mentions(user_message)
@@ -5325,53 +6571,80 @@ def ask_message():
             research_context,
             mentioned_peptides,
             is_comparison,
-            system_prompt
+            system_prompt,
         )
 
         # Extract sources from the response (look for markdown links)
         sources = []
-        link_pattern = r'\[([^\]]+)\]\(([^)]+)\)'
+        link_pattern = r"\[([^\]]+)\]\(([^)]+)\)"
         matches = re.findall(link_pattern, ai_response)
         for label, url in matches:
-            if any(k in url.lower() for k in ["pubmed", "clinicaltrials", "nih.gov", "primekg", "harvard", "mannlabs", "ckg", "sideeffects", "drugbank"]):
+            if any(
+                k in url.lower()
+                for k in [
+                    "pubmed",
+                    "clinicaltrials",
+                    "nih.gov",
+                    "primekg",
+                    "harvard",
+                    "mannlabs",
+                    "ckg",
+                    "sideeffects",
+                    "drugbank",
+                ]
+            ):
                 sources.append({"label": label, "url": url})
 
         # Add knowledge graph sources if their data was included
         if research_context:
             if "PrimeKG Knowledge Graph" in research_context:
-                sources.append({
-                    "label": "PrimeKG (Harvard)",
-                    "url": "https://github.com/mims-harvard/PrimeKG",
-                })
-            if "Clinical Knowledge Graph" in research_context or "CKG" in research_context:
-                sources.append({
-                    "label": "CKG (MannLab)",
-                    "url": "https://github.com/MannLabs/CKG",
-                })
+                sources.append(
+                    {
+                        "label": "PrimeKG (Harvard)",
+                        "url": "https://github.com/mims-harvard/PrimeKG",
+                    }
+                )
+            if (
+                "Clinical Knowledge Graph" in research_context
+                or "CKG" in research_context
+            ):
+                sources.append(
+                    {
+                        "label": "CKG (MannLab)",
+                        "url": "https://github.com/MannLabs/CKG",
+                    }
+                )
             if "SIDER" in research_context:
-                sources.append({
-                    "label": "SIDER (EMBL)",
-                    "url": "http://sideeffects.embl.de/",
-                })
+                sources.append(
+                    {
+                        "label": "SIDER (EMBL)",
+                        "url": "http://sideeffects.embl.de/",
+                    }
+                )
             if "DrugBank" in research_context:
-                sources.append({
-                    "label": "DrugBank",
-                    "url": "https://go.drugbank.com/",
-                })
+                sources.append(
+                    {
+                        "label": "DrugBank",
+                        "url": "https://go.drugbank.com/",
+                    }
+                )
 
-        return jsonify({
-            "response": ai_response,
-            "sources": sources,
-            "mentioned_peptides": mentioned_peptides,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "tokens_used": len(prompt.split()) + len(ai_response.split())  # Approximate token count
-        }), 200
+        return jsonify(
+            {
+                "response": ai_response,
+                "sources": sources,
+                "mentioned_peptides": mentioned_peptides,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "tokens_used": len(prompt.split())
+                + len(ai_response.split()),  # Approximate token count
+            }
+        ), 200
 
     except Exception as e:
         return jsonify({"error": f"Chat failed: {str(e)[:100]}"}), 500
 
 
-@app.route('/ask/stream')
+@app.route("/ask/stream")
 def ask_stream():
     """Stream AI chat responses using Server-Sent Events with free local research-based response."""
     user_message = request.args.get("message", "").strip()
@@ -5381,7 +6654,9 @@ def ask_stream():
         return jsonify({"error": "Message cannot be empty."}), 400
 
     if len(user_message) > 5000:
-        return jsonify({"error": "Message too long. Please limit to 5000 characters."}), 400
+        return jsonify(
+            {"error": "Message too long. Please limit to 5000 characters."}
+        ), 400
 
     try:
         conversation_history = json.loads(history_json)
@@ -5398,7 +6673,9 @@ def ask_stream():
             # Build research context
             research_context = None
             if mentioned_peptides or medical_terms:
-                research_context = build_research_context(mentioned_peptides, medical_terms)
+                research_context = build_research_context(
+                    mentioned_peptides, medical_terms
+                )
 
             # Build system prompt from shared constant
             system_prompt = ASK_SYSTEM_PROMPT
@@ -5426,13 +6703,13 @@ def ask_stream():
                 research_context,
                 mentioned_peptides,
                 is_comparison,
-                system_prompt
+                system_prompt,
             )
 
             # Simulate streaming by yielding response in chunks
             chunk_size = 50  # characters per chunk
             for i in range(0, len(ai_response), chunk_size):
-                chunk = ai_response[i:i + chunk_size]
+                chunk = ai_response[i : i + chunk_size]
                 yield f"data: {json.dumps({'chunk': chunk})}\n\n"
                 time.sleep(0.01)  # Small delay to simulate streaming
 
@@ -5442,9 +6719,9 @@ def ask_stream():
         except Exception as e:
             yield f"data: {json.dumps({'error': str(e)[:100]})}\n\n"
 
-    return Response(stream_with_context(generate()), mimetype='text/event-stream')
+    return Response(stream_with_context(generate()), mimetype="text/event-stream")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", "8000"))
     app.run(host="0.0.0.0", port=port)

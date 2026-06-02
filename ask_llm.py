@@ -11,7 +11,7 @@ import re
 import time
 
 OLLAMA_API = "http://localhost:11434/api/chat"
-DEFAULT_MODEL = "ministral-3:14b"
+DEFAULT_MODEL = "llama3.1:8b"
 PUBMED_SEARCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
 PUBMED_SUMMARY_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi"
 PUBMED_FETCH_URL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
