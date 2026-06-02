@@ -3683,6 +3683,7 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
     }
 
 CACHE_BUST = str(int(time.time()))
+VERSION = "VER-002"
 
 
 # ── Evidence cache for Ask AI live data ──
@@ -3751,7 +3752,7 @@ def regulatory_badge_html(status):
 
 @app.context_processor
 def inject_cache_bust():
-    return dict(cache_bust=CACHE_BUST)
+    return dict(cache_bust=CACHE_BUST, version=VERSION)
 
 @app.route('/')
 def index():
