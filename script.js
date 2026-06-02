@@ -393,6 +393,11 @@ function buildResponse(response, title) {
 
   var html = '';
 
+  // Clinical background — shown FIRST
+  if (response.clinical_snapshot) {
+    html += makePanel('Clinical Background', renderSnapshot(response.clinical_snapshot));
+  }
+
   // Overview card
   var chemInfo = '';
   if (response.pubchem) {
@@ -416,11 +421,6 @@ function buildResponse(response, title) {
       '<span class="metric-tag">Reliability: ' + escapeHtml(response.reliability || 'Unknown') + '</span>' +
     '</div>' +
   '</section>';
-
-  // Clinical snapshot
-  if (response.clinical_snapshot) {
-    html += makePanel('Clinical Snapshot', renderSnapshot(response.clinical_snapshot));
-  }
 
   // PDB structures
   if (response.pdb_structures && response.pdb_structures.length) {

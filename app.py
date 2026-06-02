@@ -254,25 +254,25 @@ SNAPSHOT_LIBRARY = {
         "primary_effect": "Hexarelin is a potent GH-releasing peptide that triggers strong pulses of growth hormone. It is one of the strongest GH secretagogues in its class.",
         "mechanism_pathway": "Hexarelin binds strongly to the ghrelin receptor (GHSR-1a) on the pituitary gland, triggering a rapid, large pulse of GH release — more potent than GHRP-2 or ipamorelin. Some research also suggests GH-independent effects on cardiovascular tissue through CD36 receptors.",
         "expected_body_outcomes": "A strong GH pulse within minutes. Potential benefits include improved recovery, fat metabolism, and lean mass. The GH spike is typically larger and shorter than from other GHRPs. This potency means desensitization (reduced response over time) may occur faster.",
-        "clinical_context": "Hexarelin has been studied in human trials but is not FDA approved. It is known for its potency — the strongest GH spike of common secretagogues. Sold as a research chemical.",
+        "clinical_context": "Hexarelin has been studied in small human trials for growth hormone deficiency and metabolic conditions but is not FDA approved for any medical indication and is sold as a research chemical. It is widely regarded as the most potent GH secretagogue among the common GHRP family, producing a rapid and strong pulse of growth hormone that surpasses GHRP-2, GHRP-6, and ipamorelin in amplitude. This potency comes with practical trade-offs: the strong GH spike may lead to faster desensitization (reduced response over time) compared to milder secretagogues, limiting its usefulness for extended protocols. Some research has also explored GH-independent cardiovascular effects through CD36 receptor interactions. Because of its potency, it is generally considered less suitable for beginners, and the lack of long-term human safety data is a significant consideration.",
     },
     "ghrp-6": {
         "primary_effect": "GHRP-6 stimulates growth hormone release and is notable for also significantly increasing appetite — useful when both GH support and hunger stimulation are desired.",
         "mechanism_pathway": "GHRP-6 binds to the ghrelin receptor (GHSR) in the pituitary and hypothalamus. This triggers GH release and also activates neuropeptide Y neurons, which strongly stimulate appetite. The hunger effect is much stronger than with GHRP-2 or ipamorelin.",
         "expected_body_outcomes": "GH pulse within 15-30 minutes. Noticeably increased appetite within minutes, lasting 30-60 minutes. Improved recovery and sleep quality with regular use.",
-        "clinical_context": "GHRP-6 is not FDA approved. It is one of the older GHRPs with the strongest hunger effect. Sold as a research chemical, typically injected subcutaneously.",
+        "clinical_context": "GHRP-6 is not FDA approved for medical use and is sold strictly as a research chemical, meaning it has not been evaluated by regulatory agencies for safety or effectiveness in humans. Discovered in the 1990s, it is one of the earliest growth hormone-releasing peptides and is known for triggering the strongest hunger response among the GHRP family due to its potent activation of the ghrelin receptor. This hunger effect can be pronounced enough that some users report difficulty tolerating it, especially when taken on an empty stomach. It is typically administered by subcutaneous injection, and while it has been used in some small human studies, long-term safety data is not available. The evidence supporting its use comes primarily from research contexts rather than established medical practice.",
     },
     "ghrp-2": {
         "primary_effect": "GHRP-2 stimulates growth hormone release with less appetite activation than GHRP-6. Commonly stacked with GHRH analogs (like CJC-1295) for a synergistic GH pulse.",
         "mechanism_pathway": "GHRP-2 binds to the ghrelin receptor (GHSR) and triggers GH release. Compared to GHRP-6, it has less effect on appetite pathways. It works synergistically with GHRH analogs — using both produces a larger GH pulse than either alone.",
         "expected_body_outcomes": "GH pulse within 15-30 minutes, milder than hexarelin but more consistent for daily use. Less appetite stimulation than GHRP-6. Better recovery and body composition when used consistently over months.",
-        "clinical_context": "GHRP-2 is not FDA approved. One of the most commonly used GHRPs in research. Often stacked with a GHRH analog. Sold as a research chemical.",
+        "clinical_context": "GHRP-2 is not FDA approved for any medical indication and is sold as a research chemical, meaning it has not undergone formal regulatory review for human safety. It is one of the most widely used growth hormone-releasing peptides in research settings, known for producing a reliable GH pulse with less pronounced appetite stimulation compared to GHRP-6. In practice, it is often stacked with a GHRH analog such as CJC-1295 or modified GRF(1-29) to produce a synergistic GH pulse — the GHRP stimulates the pituitary directly while the GHRH amplifies the signal. The majority of available information comes from research rather than clinical medical practice, and long-term safety in humans has not been established in controlled studies.",
     },
     "tb-500": {
         "primary_effect": "TB-500 (Thymosin Beta-4) is studied for accelerating healing of injuries — especially tendons, ligaments, and muscles.",
         "mechanism_pathway": "TB-500 is a synthetic version of Thymosin Beta-4, a protein found in all human cells. It binds to actin and promotes cell migration to injury sites, increases blood vessel growth (angiogenesis), reduces inflammation, and stimulates release of healing factors.",
         "expected_body_outcomes": "Anecdotal reports describe faster recovery from soft tissue injuries, reduced scar tissue, and improved flexibility in injured areas. Effects may take days to weeks.",
-        "clinical_context": "TB-500 is not FDA approved. Studied mainly in preclinical contexts. Sold as a research chemical.",
+        "clinical_context": "TB-500 (thymosin beta-4) is not FDA approved for any medical use and is sold as a research chemical. Most of its reported healing effects come from animal studies and anecdotal reports rather than large-scale human clinical trials, with preclinical research suggesting it promotes cell migration to injury sites and stimulates new blood vessel growth. It is studied mainly in preclinical contexts (cell cultures and animal models), so there is limited data on proper dosing, long-term safety, or potential drug interactions in humans. Regulatory agencies like the FDA and EMA have not evaluated it for safety or effectiveness in medical treatment, and users should be aware that the evidence gap between anecdotal reports and confirmed clinical outcomes is significant.",
     },
     "pt-141": {
         "primary_effect": "PT-141 (bremelanotide) is studied for sexual arousal and desire. Unlike Viagra, it works on the brain rather than blood flow.",
@@ -284,37 +284,37 @@ SNAPSHOT_LIBRARY = {
         "primary_effect": "Thymosin Alpha-1 helps regulate the immune system. Studied for immune support, infection response, and as an adjunct in vaccine therapy.",
         "mechanism_pathway": "Produced by the thymus gland, it acts as a biological response modifier. Activates T-cells, natural killer cells, and dendritic cells. Modulates cytokine production — helping dial the immune system to the right level.",
         "expected_body_outcomes": "Improved immune function, particularly in immunocompromised populations. Studied to reduce infections and improve vaccine responses in older adults.",
-        "clinical_context": "Approved as a medication in several countries (China, Russia, parts of Europe) for immune support and hepatitis. Not FDA approved in the US. Sold as a research chemical.",
+        "clinical_context": "Thymosin Alpha-1 has been approved as a prescription medication in several countries including China, Russia, and parts of Europe, where it is used for immune support and as an adjunct treatment for hepatitis B and C. Despite this international regulatory track record, it is not FDA approved in the United States and is sold as a research chemical there. The peptide has been studied in a range of immune-related conditions including chronic infections, vaccine response enhancement, and immune recovery in immunocompromised patients, with a body of published research spanning several decades. The different regulatory status across countries means that quality control, purity standards, and legal access vary significantly depending on location, and US consumers should be aware that products sold as research chemicals are not subject to FDA manufacturing oversight.",
     },
     "igf-1-lr3": {
         "primary_effect": "IGF-1 LR3 is a synthetic long-acting version of insulin-like growth factor 1. Studied for potent anabolic and metabolic effects.",
         "mechanism_pathway": "Binds to IGF-1 receptors on nearly all cell types, promoting protein synthesis, inhibiting protein breakdown, and supporting cell growth. The LR3 modification prevents binding to IGF-binding proteins, keeping it active much longer than natural IGF-1.",
         "expected_body_outcomes": "Increased lean muscle mass, improved recovery, better glucose uptake in muscles, and improved skin quality with consistent use.",
-        "clinical_context": "IGF-1 LR3 is not FDA approved. Sold as a research chemical. The LR3 variant is a research tool designed for longer half-life. Human safety data is limited.",
+        "clinical_context": "IGF-1 LR3 is a synthetic analog of insulin-like growth factor 1 that is not FDA approved and is sold exclusively as a research chemical, meaning it has not been evaluated by regulatory agencies for medical use. The LR3 modification (Long Arginine-3) was developed as a laboratory research tool to extend the molecule's half-life by preventing it from binding to IGF-binding proteins, keeping it active in circulation much longer than natural IGF-1. Human safety data is extremely limited — most available information comes from cell culture studies and animal research rather than controlled human trials. Users should understand that this compound was never intended or tested for human consumption outside of research contexts, and its potency and long half-life raise additional safety considerations compared to shorter-acting endogenous analogs.",
     },
     "aod-9604": {
         "primary_effect": "AOD-9604 is a fragment of human growth hormone studied for fat loss. Designed to stimulate fat breakdown without affecting blood sugar or growth.",
         "mechanism_pathway": "A 16-amino-acid fragment of the fat-burning region of GH. Activates lipolysis (fat breakdown) without binding to GH receptors that affect blood sugar and cell growth.",
         "expected_body_outcomes": "Proposed accelerated fat loss, particularly from stubborn areas. Human studies are limited and results mixed. Effects would likely be modest alongside diet and exercise.",
-        "clinical_context": "Completed Phase 2 trials for obesity but development was not continued to approval. Sold as a research chemical.",
+        "clinical_context": "AOD-9604 completed Phase 2 clinical trials for obesity, where it showed some potential for fat reduction, but development was ultimately not continued through to regulatory approval. The peptide is a synthetic 16-amino-acid fragment of human growth hormone that was specifically designed to stimulate fat breakdown (lipolysis) without affecting blood sugar or cell growth — essentially attempting to isolate the fat-burning properties of GH from its other effects. Despite the early clinical work, the mixed results and lack of progression to Phase 3 mean that the evidence for its effectiveness is inconclusive, and it is now sold primarily as a research chemical. Anyone considering it should be aware that the available human data is limited and did not meet the standard required for FDA or EMA approval.",
     },
     "semax": {
         "primary_effect": "Semax is a synthetic peptide used for cognitive enhancement — improving focus, memory, and mental stamina.",
         "mechanism_pathway": "Increases levels of BDNF (brain-derived neurotrophic factor), supporting neural growth and survival. Also modulates dopamine, serotonin, and acetylcholine — neurotransmitters involved in attention, mood, and memory.",
         "expected_body_outcomes": "Improved focus, mental clarity, better memory recall, reduced brain fog within hours. Some users report improved mood. Used both acutely and long-term.",
-        "clinical_context": "Approved as a prescription medication in Russia for stroke recovery and cognitive impairment. Not FDA approved in the US. Administered as nasal drops.",
+        "clinical_context": "Semax has been approved as a prescription medication in Russia since the 1990s, where it is used clinically for stroke recovery, cognitive impairment, and certain neurological conditions, with a body of published research from Russian institutions supporting its use. Despite this history of clinical use in Eastern Europe, it is not FDA approved in the United States and is sold as a research chemical there, meaning US consumers do not have the same regulatory protections. The peptide is a synthetic fragment of adrenocorticotropic hormone (ACTH) that is administered as nasal drops, which allows it to cross the blood-brain barrier and exert effects on neurotransmitter systems including BDNF, dopamine, and serotonin. The differences in regulatory standards between countries mean that product quality and purity can vary significantly in unregulated markets.",
     },
     "selank": {
         "primary_effect": "Selank is a synthetic peptide studied for reducing anxiety without sedation or cognitive dulling.",
         "mechanism_pathway": "Increases enkephalin and serotonin levels in the brain, promoting calmness. Does not act on GABA receptors like benzodiazepines, so it is less likely to cause sedation or memory issues.",
         "expected_body_outcomes": "Calm, clear-headed state without drowsiness. Reduced anxiety and better stress handling. Often described as making things 'bother you less' rather than a strong drug effect.",
-        "clinical_context": "Approved as a prescription medication in Russia for anxiety disorders. Not FDA approved in the US. Administered as nasal drops.",
+        "clinical_context": "Selank has been approved as a prescription medication in Russia since the early 2000s, where it is prescribed for anxiety disorders and stress-related conditions, with clinical research from Russian institutions documenting its effects. Like its peptide analog Semax, it is not FDA approved in the United States and is sold as a research chemical there, creating a gap in regulatory oversight for US consumers. Administered as nasal drops for direct brain access, Selank works by modulating enkephalin and serotonin levels to produce an anxiolytic effect without the sedation or cognitive dulling associated with benzodiazepines. The peptide's history of clinical use in Russia provides more safety data than most research chemicals, but its lack of FDA review means US buyers should exercise caution regarding product source and purity.",
     },
     "dsip": {
         "primary_effect": "DSIP (Delta Sleep-Inducing Peptide) promotes deep, restorative sleep and reduces stress.",
         "mechanism_pathway": "Promotes delta wave activity — the deepest stage of sleep. Also influences the stress axis (HPA axis) by modulating cortisol and ACTH. Not a sedative — it shifts sleep architecture toward more deep sleep.",
         "expected_body_outcomes": "Improved sleep quality, deeper and more restorative sleep. Better stress resilience. Effects may take days to develop.",
-        "clinical_context": "Studied in small human trials for sleep disorders. Not FDA approved. Sold as a research chemical. Research history dating back to the 1970s.",
+        "clinical_context": "DSIP (Delta Sleep-Inducing Peptide) was discovered in the 1970s and has been studied in small human trials for sleep disorders, stress-related conditions, and as an aid for opiate withdrawal, making it one of the longer-known peptides in research. Despite decades of study, it has not achieved FDA approval or widespread clinical adoption, partly because early research results were inconsistent and the peptide's instability in the body made it challenging to study. It is currently sold as a research chemical, and the available evidence, while spanning many years, comes from relatively small studies that do not meet modern standards for clinical evidence. The gap between its long research history and limited clinical adoption suggests that its real-world effects may be subtler than sometimes claimed in consumer contexts.",
     },
     "ss-31": {
         "primary_effect": "SS-31 (elamipretide) targets mitochondria to improve cellular energy production and exercise tolerance.",
@@ -326,13 +326,13 @@ SNAPSHOT_LIBRARY = {
         "primary_effect": "Humanin is a naturally occurring mitochondrial peptide with proposed protective effects against aging and cellular stress.",
         "mechanism_pathway": "Encoded by mitochondrial DNA, acts as a cellular stress signal. Reduces oxidative stress, inhibits cell death, and improves insulin sensitivity. Levels naturally decline with age.",
         "expected_body_outcomes": "Proposed metabolic health and inflammation benefits. Most evidence from animal and cell studies. Human research is very early stage.",
-        "clinical_context": "Discovered in 2001. Studied in animal models of Alzheimer's, heart disease, and metabolic disorders. Not approved by any regulatory agency.",
+        "clinical_context": "Humanin is a naturally occurring mitochondrial peptide discovered in 2001 that has been studied primarily in animal and cell culture models of age-related diseases including Alzheimer's, cardiovascular disease, and metabolic disorders. It is one of the more intriguing peptides in longevity research because it is encoded by mitochondrial DNA (rather than nuclear DNA) and appears to act as a cellular stress signal that reduces oxidative damage and improves insulin sensitivity. Despite promising preclinical findings spanning over two decades of research, humanin has not been evaluated by any regulatory agency for medical use, and published human studies are extremely limited. The translation from promising animal research to confirmed human effects remains an open question, and the peptide's natural decline with age adds complexity to understanding its role as a supplement.",
     },
     "cagrilintide": {
         "primary_effect": "Cagrilintide is an investigational peptide that mimics amylin, a hormone regulating appetite and blood sugar. Being developed for weight loss, often with semaglutide.",
         "mechanism_pathway": "A long-acting analog of amylin, a hormone released by the pancreas after meals. Slows gastric emptying, promotes satiety signals, and suppresses glucagon. Works through a different mechanism than GLP-1 drugs.",
         "expected_body_outcomes": "Reduced appetite, slower digestion, earlier fullness, weight loss. In trials, combination with semaglutide (CagriSema) produced greater weight loss than either alone.",
-        "clinical_context": "Developed by Novo Nordisk, completed Phase 2 trials. Not yet FDA approved. Being studied in combination with semaglutide for obesity.",
+        "clinical_context": "Cagrilintide is a long-acting amylin analog developed by Novo Nordisk that has completed Phase 2 clinical trials but is not yet FDA approved for medical use. It is being investigated primarily in combination with semaglutide (under the combination name CagriSema) for obesity and type 2 diabetes, with early trial results showing that the dual mechanism — amylin receptor activation combined with GLP-1 receptor activation — produces greater weight loss than either agent alone. As an investigational drug from a major pharmaceutical company, it has undergone more rigorous clinical testing than most research peptides, including formal dose-finding and safety studies in humans. However, until Phase 3 trials are completed and regulatory approval is obtained, access is limited to clinical trial participants, and the compound is not yet available as a prescription medication.",
     },
 }
 
@@ -6397,7 +6397,7 @@ def generate_local_ai_response(
                 if "Clinical Snapshot" in section:
                     lines = section.strip().split("\n")
                     name = lines[0].replace("- Clinical Snapshot", "").strip()
-                    parts.append(f"### {name} — Clinical Profile\n\n")
+                    parts.append(f"■ {name} — Clinical Profile\n\n")
                     for line in lines[1:]:
                         text = line.strip()
                         if text.startswith("**") and ":**" in text:
@@ -6408,7 +6408,7 @@ def generate_local_ai_response(
         # --- Clinical Trials ---
         if "Clinical Trials for" in research_context:
             has_trials = True
-            parts.append("### Clinical Trials\n\n")
+            parts.append("■ Clinical Trials\n\n")
             trials_sections = research_context.split("**Clinical Trials for")[1:]
             for tsec in trials_sections[:2]:
                 tlines = tsec.split("\n")
@@ -6426,7 +6426,7 @@ def generate_local_ai_response(
         # --- PubMed peptide research ---
         if "Recent Research for" in research_context:
             has_pubmed = True
-            parts.append("### Published Research\n\n")
+            parts.append("■ Published Research\n\n")
             rsections = research_context.split("**Recent Research for")[1:]
             for rsec in rsections[:2]:
                 rlines = rsec.split("\n")
@@ -6450,7 +6450,7 @@ def generate_local_ai_response(
         if "Research for '" in research_context:
             has_medical_research = True
             if not has_pubmed:
-                parts.append("### Published Research\n\n")
+                parts.append("■ Published Research\n\n")
             m_sections = research_context.split("**Research for '")[1:]
             for msec in m_sections[:2]:
                 mlines = msec.split("\n")
@@ -6473,7 +6473,7 @@ def generate_local_ai_response(
         # --- PrimeKG ---
         if "PrimeKG Knowledge Graph" in research_context:
             has_primekg = True
-            parts.append("### Knowledge Graph Connections (PrimeKG)\n\n")
+            parts.append("■ Knowledge Graph Connections (PrimeKG)\n\n")
             kg_sections = research_context.split("###")
             for section in kg_sections:
                 if "PrimeKG Knowledge Graph" in section:
@@ -6489,7 +6489,7 @@ def generate_local_ai_response(
         # --- CKG ---
         if "Clinical Knowledge Graph (CKG)" in research_context:
             has_ckg = True
-            parts.append("### Clinical Knowledge Graph — Available Evidence\n\n")
+            parts.append("■ Clinical Knowledge Graph — Available Evidence\n\n")
             ckg_sections = research_context.split("###")
             for section in ckg_sections:
                 if "Clinical Knowledge Graph (CKG)" in section:
@@ -6508,7 +6508,7 @@ def generate_local_ai_response(
             term = normalize_term(peptide)
             snap = SNAPSHOT_LIBRARY.get(term)
             if snap:
-                parts.append(f"### {peptide.upper()}\n\n")
+                parts.append(f"■ {peptide.upper()}\n\n")
                 if snap.get("primary_effect"):
                     parts.append(f"- **Primary Effect:** {snap['primary_effect']}\n")
                 if snap.get("mechanism_pathway"):

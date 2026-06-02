@@ -50,7 +50,12 @@
         var line = lines[i];
         line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
         line = line.replace(/`(.+?)`/g, '<code style="background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:3px;font-size:0.85em">$1</code>');
-        if (line.match(/^[-*]\s/)) {
+        var hm = line.match(/^(#{1,3})\s+(.+)/);
+        if (hm) {
+          var hLevel = hm[1].length;
+          var hClass = hLevel === 1 ? 'msg-h1' : hLevel === 2 ? 'msg-h2' : 'msg-h3';
+          html += '<div class="' + hClass + '">' + hm[2] + '</div>';
+        } else if (line.match(/^[-*]\s/)) {
           if (!inList) { html += '<ul>'; inList = true; }
           html += '<li>' + line.replace(/^[-*]\s/, '') + '</li>';
         } else {
