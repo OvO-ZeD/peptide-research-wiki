@@ -1,0 +1,9 @@
+.venv
+data
+.brain
+__pycache__
+*.pyc
+.env
+.env.*
+.DS_Store
+*.db
