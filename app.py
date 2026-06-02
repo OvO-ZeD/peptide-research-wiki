@@ -14,6 +14,8 @@ from functools import lru_cache
 
 load_dotenv()
 import ask_llm
+import primekg
+import ckg
 
 app = Flask(__name__, static_url_path="", static_folder=".")
 
@@ -3708,6 +3710,12 @@ def fetch_peptide_evidence(pep):
     evidence_score = build_evidence_score(trials, pubmed, fda_data, wiki)
     claims = build_evidence_claims(trials, pubmed, fda_data)
 
+    # ── PrimeKG enrichment ──
+    try:
+        primekg_data = primekg.get_entity_summary(term)
+    except Exception:
+        primekg_data = None
+
     result = {
         "peptide": pep,
         "trials": trials or [],
@@ -3719,6 +3727,7 @@ def fetch_peptide_evidence(pep):
         "wiki": wiki,
         "evidence_score": evidence_score,
         "claims": claims or [],
+        "primekg": primekg_data,
         "cached_at": now,
     }
     EVIDENCE_CACHE[pep] = result
@@ -4269,6 +4278,21 @@ def api_ask():
             "matched_effects": sc["matched_effects"],
         }
 
+    # ── PrimeKG Knowledge Graph enrichment ──
+    primekg_relations = {}
+    primekg_disease_info = {}
+    try:
+        for pep in list(matched_peptides)[:5]:
+            relations = primekg.query_drug_relations(pep, max_results=10)
+            if relations:
+                primekg_relations[pep] = relations
+        for mc in matched_conditions[:3]:
+            disease_info = primekg.query_disease_relations(mc["condition"], max_results=8)
+            if disease_info and any(v for v in disease_info.values()):
+                primekg_disease_info[mc["condition"]] = disease_info
+    except Exception:
+        app.logger.warning("PrimeKG query failed", exc_info=True)
+
     # ── Find relevant stacks ──
     relevant_stacks = []
     for stack_key, proto in STACK_PROTOCOLS.items():
@@ -4469,6 +4493,26 @@ def api_ask():
         answer_parts.append("")
         answer_parts.append("**Related Goals**: " + ", ".join(goal_labels))
 
+    # ── PrimeKG knowledge graph evidence section ──
+    if primekg_relations:
+        answer_parts.append("")
+        answer_parts.append("**Knowledge Graph Relationships**")
+        for pep, relations in primekg_relations.items():
+            kg = primekg.format_relations_for_context(relations, pep)
+            if kg:
+                # Extract only the bullet lines, skip header/source
+                for line in kg.split("\n"):
+                    if line.startswith("**"):
+                        answer_parts.append("- " + line.strip("*"))
+        answer_parts.append("*Source: [PrimeKG](https://github.com/mims-harvard/PrimeKG) biomedical knowledge graph (Harvard).*")
+    if primekg_disease_info:
+        answer_parts.append("")
+        for disease, dinfo in primekg_disease_info.items():
+            drugs = dinfo.get("drugs", [])
+            if drugs:
+                drug_names = [d.get("other_name", "") for d in drugs[:3] if d.get("other_name")]
+                answer_parts.append("- **" + disease.replace("_", " ").title() + "** associated drugs: " + ", ".join(drug_names))
+
     # Use LLM when no peptide name is directly mentioned in the question
     known_names = set(STACK_KNOWLEDGE.keys())
     known_names.update(a for a in ALIASES if len(a) >= 4)
@@ -4634,6 +4678,8 @@ def api_ask():
         "evidence": evidence_data,
         "matched_conditions": [mc["condition"] for mc in matched_conditions],
         "matched_peptides": list(matched_peptides)[:10],
+        "primekg": primekg_relations or None,
+        "primekg_diseases": primekg_disease_info or None,
     }), 200
 
 
@@ -4682,7 +4728,47 @@ def api_safety(peptide):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# AI CHAT HELPER FUNCTIONS - Enhanced for Claude Opus 4.5 Streaming
+# ══════════════════════════════════════════════════════════════════════════════
+# AI CHAT SYSTEM PROMPT - Shared across /ask/message and /ask/stream
+# ══════════════════════════════════════════════════════════════════════════════
+
+ASK_SYSTEM_PROMPT = """You are an expert research assistant specializing in peptides, pharmaceuticals, and evidence-based medicine. You generate responses using ONLY the research context provided below — no paid APIs, no external AI services.
+
+Guidelines:
+1. Provide accurate, evidence-based information with citations from research literature
+2. Reference clinical trials, PubMed articles, and research data when available
+3. Compare treatments objectively with supporting evidence — discuss efficacy, safety, mechanisms, and clinical outcomes
+4. When comparing treatments, provide structured analysis with pros/cons for each option
+5. Suggest peptide alternatives when they have superior or complementary evidence
+6. Include clinical protocol recommendations and dosages when backed by research
+7. Be conversational yet professional — explain complex concepts in accessible terms
+8. Admit when evidence is limited, conflicting, or when more research is needed
+9. Always prioritize safety and mention when medical supervision is recommended
+10. For dosing and protocols, only provide information backed by clinical research
+11. Answer general medical questions beyond just peptides — cover pharmaceuticals, supplements, and lifestyle interventions
+12. When discussing off-label uses, clearly distinguish between FDA-approved indications and experimental applications
+13. Cite PrimeKG knowledge graph relationships when available — drug-disease associations, protein interactions, and disease phenotypes
+14. Cite Clinical Knowledge Graph (CKG) evidence when available — protein interactions, drug targets, pathways, disease associations, side effect profiles
+15. When research data is insufficient, offer guidance on how to find more information rather than inventing answers
+16. Maintain conversation context — refer to previous exchanges when relevant
+
+When research context is provided below, prioritize that data in your response and cite it appropriately.
+
+Important: Format citations as clickable links. For PubMed articles, use: [PubMed PMID:12345678](https://pubmed.ncbi.nlm.nih.gov/12345678)
+For clinical trials, use: [ClinicalTrials.gov NCT12345678](https://clinicaltrials.gov/study/NCT12345678)
+For PrimeKG knowledge graph, reference: [PrimeKG (Harvard)](https://github.com/mims-harvard/PrimeKG)
+For Clinical Knowledge Graph, reference: [CKG (MannLab)](https://github.com/MannLabs/CKG)"""
+
+COMPARISON_PROMPT_EXTENSION = """\n\n### Comparison Query Detected
+For this comparison question:
+- Present a balanced analysis of both/all treatments mentioned
+- Discuss mechanisms of action, clinical efficacy, side effect profiles, and cost considerations
+- Cite specific studies comparing the treatments when available
+- Provide evidence-based recommendations with appropriate caveats
+- Consider synergy potential if both could be used together"""
+
+# ══════════════════════════════════════════════════════════════════════════════
+# AI CHAT HELPER FUNCTIONS
 # ══════════════════════════════════════════════════════════════════════════════
 
 def detect_comparison_query(message):
@@ -4796,6 +4882,16 @@ def build_research_context(peptides, medical_terms=None):
         except:
             pass
 
+        # ── PrimeKG Knowledge Graph evidence ──
+        try:
+            relations = primekg.query_drug_relations(peptide, max_results=8)
+            if relations:
+                ctx = primekg.format_relations_for_context(relations, peptide)
+                if ctx:
+                    context_parts.append(ctx + "\n")
+        except Exception:
+            pass
+
     # Process general medical terms (for semantic search)
     if medical_terms:
         for term in medical_terms[:3]:  # Limit to 3 terms
@@ -4809,6 +4905,20 @@ def build_research_context(peptides, medical_terms=None):
                         context_parts.append(f"  PMID: {article.get('pmid', 'N/A')}\n")
             except:
                 pass
+
+    # ── Append CKG domain context for clinical grounding ──
+    if peptides or medical_terms:
+        ckg_domains = ckg.get_domain_summary()
+        if ckg_domains:
+            context_parts.append("\n### Clinical Knowledge Graph (CKG) — Available Domains\n")
+            for domain in ckg_domains:
+                context_parts.append(
+                    f"- **{domain['domain']}** ({domain['relevance']})\n"
+                )
+            context_parts.append(
+                "*Source: [MannLabs/CKG](https://github.com/MannLabs/CKG) — "
+                "16M+ nodes, 220M+ relationships*\n\n"
+            )
 
     return "".join(context_parts) if context_parts else None
 
@@ -4864,6 +4974,35 @@ def generate_local_ai_response(user_message, research_context, mentioned_peptide
                         response_parts.append(f"{line.strip()}\n")
                 response_parts.append("\n")
 
+        # ── Parse PrimeKG Knowledge Graph section ──
+        if "PrimeKG Knowledge Graph" in research_context:
+            response_parts.append("\n**Knowledge Graph Relationships**\n\n")
+            kg_sections = research_context.split("###")
+            for section in kg_sections:
+                if "PrimeKG Knowledge Graph" in section:
+                    lines = section.strip().split("\n")
+                    for line in lines[1:]:  # Skip the header line
+                        line = line.strip()
+                        if line.startswith("**") and ":**" in line:
+                            response_parts.append(f"{line}\n")
+                        elif line.startswith("*Source:"):
+                            response_parts.append(f"*{line.strip('*')} — [GitHub](https://github.com/mims-harvard/PrimeKG)*\n")
+                    response_parts.append("\n")
+
+        # ── Parse CKG Clinical Knowledge Graph section ──
+        if "Clinical Knowledge Graph (CKG)" in research_context:
+            response_parts.append("\n**Clinical Knowledge Graph — Available Evidence Domains**\n\n")
+            ckg_sections = research_context.split("###")
+            for section in ckg_sections:
+                if "Clinical Knowledge Graph (CKG)" in section:
+                    for line in section.split("\n"):
+                        line = line.strip()
+                        if line.startswith("- **"):
+                            response_parts.append(f"{line}\n")
+                        elif line.startswith("*Source:"):
+                            response_parts.append(f"*{line.strip('*')} — [GitHub](https://github.com/MannLabs/CKG)*\n")
+                    response_parts.append("\n")
+
     # Add peptide-specific info from SNAPSHOT_LIBRARY if not already covered
     if mentioned_peptides and (not research_context or len("".join(response_parts)) < 200):
         for peptide in mentioned_peptides[:2]:  # Limit to first 2
@@ -4901,7 +5040,9 @@ def generate_local_ai_response(user_message, research_context, mentioned_peptide
             "**Recommendations:**\n\n",
             "- Search our peptide catalog for specific compounds\n",
             "- Check PubMed for recent studies at [pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov)\n",
-            "- Review clinical trials at [ClinicalTrials.gov](https://clinicaltrials.gov)\n\n",
+            "- Review clinical trials at [ClinicalTrials.gov](https://clinicaltrials.gov)\n",
+            "- Explore PrimeKG biomedical knowledge graph at [github.com/mims-harvard/PrimeKG](https://github.com/mims-harvard/PrimeKG)\n",
+        "- Explore Clinical Knowledge Graph (CKG) at [github.com/MannLabs/CKG](https://github.com/MannLabs/CKG)\n\n",
             "Please ask about specific peptides, treatments, or mechanisms for more detailed information from our research database.\n\n",
             "**Note:** Always consult healthcare professionals before starting any new treatment protocol."
         ]
@@ -4916,7 +5057,7 @@ def generate_local_ai_response(user_message, research_context, mentioned_peptide
 
 @app.route('/ask/message', methods=['POST'])
 def ask_message():
-    """Handle AI chat messages with Claude Opus 4.5 response."""
+    """Handle AI chat messages with free local research-based response."""
     try:
         payload = request.get_json(silent=True) or {}
         user_message = (payload.get("message") or "").strip()
@@ -4938,43 +5079,18 @@ def ask_message():
         if mentioned_peptides or medical_terms:
             research_context = build_research_context(mentioned_peptides, medical_terms)
 
-        # Build system prompt with enhanced comparison capabilities
-        system_prompt = """You are an expert research assistant specializing in peptides, pharmaceuticals, and evidence-based medicine.
-
-Guidelines:
-1. Provide accurate, evidence-based information with citations from research literature
-2. Reference clinical trials, PubMed articles, and research data when available
-3. Compare treatments objectively with supporting evidence - discuss efficacy, safety, mechanisms, and clinical outcomes
-4. When comparing treatments, provide structured analysis with pros/cons for each option
-5. Suggest peptide alternatives when they have superior or complementary evidence
-6. Include clinical protocol recommendations and dosages when backed by research
-7. Be conversational yet professional - explain complex concepts in accessible terms
-8. Admit when evidence is limited, conflicting, or when more research is needed
-9. Always prioritize safety and mention when medical supervision is recommended
-10. For dosing and protocols, only provide information backed by clinical research
-11. Answer general medical questions beyond just peptides - cover pharmaceuticals, supplements, and lifestyle interventions
-12. When discussing off-label uses, clearly distinguish between FDA-approved indications and experimental applications
-
-When research context is provided below, prioritize that data in your response and cite it appropriately.
-
-Important: Format citations as clickable links. For PubMed articles, use: [PubMed PMID:12345678](https://pubmed.ncbi.nlm.nih.gov/12345678)
-For clinical trials, use: [ClinicalTrials.gov NCT12345678](https://clinicaltrials.gov/study/NCT12345678)"""
+        # Build system prompt from shared constant
+        system_prompt = ASK_SYSTEM_PROMPT
 
         # Add comparison-specific instructions
         if is_comparison:
-            system_prompt += """\n\n### Comparison Query Detected
-For this comparison question:
-- Present a balanced analysis of both/all treatments mentioned
-- Discuss mechanisms of action, clinical efficacy, side effect profiles, and cost considerations
-- Cite specific studies comparing the treatments when available
-- Provide evidence-based recommendations with appropriate caveats
-- Consider synergy potential if both could be used together"""
+            system_prompt += COMPARISON_PROMPT_EXTENSION
 
         # Add research context if available
         if research_context:
             system_prompt += f"\n\n### Research Context (use this to inform your response):\n{research_context}"
 
-        # Build conversation for Claude
+        # Build conversation messages from history
         messages = []
         for msg in conversation_history[-10:]:  # Limit to last 10 messages
             role = "user" if msg.get("role") == "user" else "assistant"
@@ -4998,8 +5114,21 @@ For this comparison question:
         link_pattern = r'\[([^\]]+)\]\(([^)]+)\)'
         matches = re.findall(link_pattern, ai_response)
         for label, url in matches:
-            if "pubmed" in url.lower() or "clinicaltrials" in url.lower() or "nih.gov" in url.lower():
+            if any(k in url.lower() for k in ["pubmed", "clinicaltrials", "nih.gov", "primekg", "harvard", "mannlabs", "ckg"]):
                 sources.append({"label": label, "url": url})
+
+        # Add knowledge graph sources if their data was included
+        if research_context:
+            if "PrimeKG Knowledge Graph" in research_context:
+                sources.append({
+                    "label": "PrimeKG (Harvard)",
+                    "url": "https://github.com/mims-harvard/PrimeKG",
+                })
+            if "Clinical Knowledge Graph" in research_context or "CKG" in research_context:
+                sources.append({
+                    "label": "CKG (MannLab)",
+                    "url": "https://github.com/MannLabs/CKG",
+                })
 
         return jsonify({
             "response": ai_response,
@@ -5015,7 +5144,7 @@ For this comparison question:
 
 @app.route('/ask/stream')
 def ask_stream():
-    """Stream AI chat responses using Server-Sent Events with FREE Hugging Face API."""
+    """Stream AI chat responses using Server-Sent Events with free local research-based response."""
     user_message = request.args.get("message", "").strip()
     history_json = request.args.get("history", "[]")
 
@@ -5042,37 +5171,12 @@ def ask_stream():
             if mentioned_peptides or medical_terms:
                 research_context = build_research_context(mentioned_peptides, medical_terms)
 
-            # Build system prompt with enhanced comparison capabilities
-            system_prompt = """You are an expert research assistant specializing in peptides, pharmaceuticals, and evidence-based medicine.
-
-Guidelines:
-1. Provide accurate, evidence-based information with citations from research literature
-2. Reference clinical trials, PubMed articles, and research data when available
-3. Compare treatments objectively with supporting evidence - discuss efficacy, safety, mechanisms, and clinical outcomes
-4. When comparing treatments, provide structured analysis with pros/cons for each option
-5. Suggest peptide alternatives when they have superior or complementary evidence
-6. Include clinical protocol recommendations and dosages when backed by research
-7. Be conversational yet professional - explain complex concepts in accessible terms
-8. Admit when evidence is limited, conflicting, or when more research is needed
-9. Always prioritize safety and mention when medical supervision is recommended
-10. For dosing and protocols, only provide information backed by clinical research
-11. Answer general medical questions beyond just peptides - cover pharmaceuticals, supplements, and lifestyle interventions
-12. When discussing off-label uses, clearly distinguish between FDA-approved indications and experimental applications
-
-When research context is provided below, prioritize that data in your response and cite it appropriately.
-
-Important: Format citations as clickable links. For PubMed articles, use: [PubMed PMID:12345678](https://pubmed.ncbi.nlm.nih.gov/12345678)
-For clinical trials, use: [ClinicalTrials.gov NCT12345678](https://clinicaltrials.gov/study/NCT12345678)"""
+            # Build system prompt from shared constant
+            system_prompt = ASK_SYSTEM_PROMPT
 
             # Add comparison-specific instructions
             if is_comparison:
-                system_prompt += """\n\n### Comparison Query Detected
-For this comparison question:
-- Present a balanced analysis of both/all treatments mentioned
-- Discuss mechanisms of action, clinical efficacy, side effect profiles, and cost considerations
-- Cite specific studies comparing the treatments when available
-- Provide evidence-based recommendations with appropriate caveats
-- Consider synergy potential if both could be used together"""
+                system_prompt += COMPARISON_PROMPT_EXTENSION
 
             if research_context:
                 system_prompt += f"\n\n### Research Context (use this to inform your response):\n{research_context}"

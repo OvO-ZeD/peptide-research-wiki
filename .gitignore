@@ -6,3 +6,4 @@ gateway.log
 order_requests.jsonl
 autodeploy.log
 *.log
+data/
