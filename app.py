@@ -3683,7 +3683,7 @@ def build_clinical_snapshot(term, trials, pubmed, fda_data, wiki_summary, pubche
     }
 
 CACHE_BUST = str(int(time.time()))
-VERSION = "VER-002"
+VERSION = "VER-003"
 
 
 # ── Evidence cache for Ask AI live data ──
@@ -4924,136 +4924,236 @@ def build_research_context(peptides, medical_terms=None):
     return "".join(context_parts) if context_parts else None
 
 
-def generate_local_ai_response(user_message, research_context, mentioned_peptides, is_comparison):
-    """Generate AI-like responses using local research context only - no external API calls."""
+def _build_ollama_messages(system_prompt, conversation_history, user_message):
+    """Build a message list for Ollama from the system prompt and conversation."""
+    messages = [{"role": "system", "content": system_prompt}]
+    for msg in conversation_history[-10:]:
+        role = "user" if msg.get("role") == "user" else "assistant"
+        content = msg.get("content", "")
+        if content:
+            messages.append({"role": role, "content": content})
+    messages.append({"role": "user", "content": user_message})
+    return messages
 
-    # Build response based on available research
-    response_parts = []
 
+def generate_local_ai_response(user_message, research_context, mentioned_peptides, is_comparison, system_prompt=None):
+    """Generate an intelligent response using available research context.
+
+    Strategy:
+      1. Try Ollama (local LLM) if running — gives the best response quality
+      2. Fall back to synthesized template response using research context data
+    """
+
+    # ── Strategy 1: Try Ollama if available ──
+    if system_prompt and len(system_prompt) < 15000:
+        try:
+            ollama_msg = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message},
+            ]
+            llm_answer = ask_llm.query_ollama(ollama_msg, max_tokens=1024)
+            if llm_answer and len(llm_answer) > 50:
+                disclaimer = ""
+                if mentioned_peptides or "treatment" in user_message.lower() or "dose" in user_message.lower():
+                    disclaimer = (
+                        "\n\n---\n\n**Important:** This information is for educational purposes. "
+                        "Consult with a qualified healthcare provider before starting any treatment protocol."
+                    )
+                return llm_answer.strip() + disclaimer
+        except Exception:
+            pass  # Fall through to template strategy
+
+    # ── Strategy 2: Synthesized template response ──
+    parts = []
+
+    # Opening line
     if is_comparison:
-        response_parts.append("Based on the available clinical research:\n\n")
+        parts.append("Here is a comparison based on available clinical research and knowledge base data:\n\n")
+    elif mentioned_peptides:
+        peptide_list = ", ".join(mentioned_peptides[:3])
+        parts.append(f"Here is what the research database shows about **{peptide_list}** in relation to your question:\n\n")
     else:
-        response_parts.append("Based on current research:\n\n")
+        parts.append("Here is what the available research indicates:\n\n")
 
-    # Extract information from research context
+    # ── Parse research context sections ──
+    has_snapshot = False
+    has_trials = False
+    has_pubmed = False
+    has_medical_research = False
+    has_primekg = False
+    has_ckg = False
+
     if research_context:
-        # Parse clinical snapshot
+        # --- Clinical Snapshots ---
         if "Clinical Snapshot" in research_context:
+            has_snapshot = True
             sections = research_context.split("###")
             for section in sections:
                 if "Clinical Snapshot" in section:
                     lines = section.strip().split("\n")
-                    response_parts.append(f"**{lines[0].replace('- Clinical Snapshot', '').strip()}**\n\n")
-                    for line in lines[1:6]:  # First 5 lines of snapshot
-                        if line.strip():
-                            response_parts.append(f"{line.strip()}\n")
-                    response_parts.append("\n")
+                    name = lines[0].replace("- Clinical Snapshot", "").strip()
+                    parts.append(f"### {name} — Clinical Profile\n\n")
+                    for line in lines[1:]:
+                        text = line.strip()
+                        if text.startswith("**") and ":**" in text:
+                            key, _, val = text[2:].partition(":** ")
+                            parts.append(f"- **{key}:** {val}\n")
+                    parts.append("\n")
 
-        # Parse clinical trials
+        # --- Clinical Trials ---
         if "Clinical Trials for" in research_context:
-            trials_section = research_context.split("**Clinical Trials for")[1:]
-            for section in trials_section[:2]:  # First 2 peptides
-                lines = section.split("\n")
-                response_parts.append(f"\n**Clinical Trials for{lines[0]}**\n")
-                for line in lines[1:6]:  # First 5 trials
-                    if line.strip() and (line.strip().startswith("-") or "Status:" in line or "NCT" in line):
-                        response_parts.append(f"{line.strip()}\n")
-                response_parts.append("\n")
+            has_trials = True
+            parts.append("### Clinical Trials\n\n")
+            trials_sections = research_context.split("**Clinical Trials for")[1:]
+            for tsec in trials_sections[:2]:
+                tlines = tsec.split("\n")
+                peptide_label = tlines[0].strip().rstrip(":**")
+                parts.append(f"**{peptide_label}:**\n")
+                count = 0
+                for line in tlines[1:]:
+                    if line.strip().startswith("-") and count < 5:
+                        parts.append(f"- {line.strip().lstrip('- ')}\n")
+                        count += 1
+                    elif "NCT" in line and count <= 5:
+                        parts.append(f"  {line.strip()}\n")
+                parts.append("\n")
 
-        # Parse PubMed research
+        # --- PubMed peptide research ---
         if "Recent Research for" in research_context:
-            research_section = research_context.split("**Recent Research for")[1:]
-            for section in research_section[:2]:  # First 2 peptides
-                lines = section.split("\n")
-                response_parts.append(f"\n**Recent Research for{lines[0]}**\n")
-                for line in lines[1:6]:  # First 5 articles
-                    if line.strip() and (line.strip().startswith("-") or "PMID:" in line):
-                        # Convert PMID to clickable link
-                        if "PMID:" in line:
-                            pmid = line.split("PMID:")[1].strip()
-                            line = f"  [PubMed PMID:{pmid}](https://pubmed.ncbi.nlm.nih.gov/{pmid})"
-                        response_parts.append(f"{line.strip()}\n")
-                response_parts.append("\n")
+            has_pubmed = True
+            parts.append("### Published Research\n\n")
+            rsections = research_context.split("**Recent Research for")[1:]
+            for rsec in rsections[:2]:
+                rlines = rsec.split("\n")
+                peptide_label = rlines[0].strip().rstrip(":**")
+                parts.append(f"**{peptide_label} — Recent Studies:**\n")
+                count = 0
+                for line in rlines[1:]:
+                    text = line.strip()
+                    if text.startswith("-") and count < 5:
+                        title = text.lstrip("- ")
+                        parts.append(f"- {title}\n")
+                        count += 1
+                    elif "PMID:" in text:
+                        pmid = text.split("PMID:")[1].strip()
+                        parts.append(f"  [PubMed PMID:{pmid}](https://pubmed.ncbi.nlm.nih.gov/{pmid})\n")
+                parts.append("\n")
 
-        # ── Parse PrimeKG Knowledge Graph section ──
+        # --- PubMed general medical research (FIX: marker was "Research for" not "Recent Research for") ---
+        if "Research for '" in research_context:
+            has_medical_research = True
+            if not has_pubmed:
+                parts.append("### Published Research\n\n")
+            m_sections = research_context.split("**Research for '")[1:]
+            for msec in m_sections[:2]:
+                mlines = msec.split("\n")
+                term = mlines[0].strip().rstrip("':**")
+                parts.append(f"**{term.capitalize()}:**\n")
+                count = 0
+                for line in mlines[1:]:
+                    text = line.strip()
+                    if text.startswith("-") and count < 5:
+                        title = text.lstrip("- ")
+                        parts.append(f"- {title}\n")
+                        count += 1
+                    elif "PMID:" in text:
+                        pmid = text.split("PMID:")[1].strip()
+                        parts.append(f"  [PubMed PMID:{pmid}](https://pubmed.ncbi.nlm.nih.gov/{pmid})\n")
+                parts.append("\n")
+
+        # --- PrimeKG ---
         if "PrimeKG Knowledge Graph" in research_context:
-            response_parts.append("\n**Knowledge Graph Relationships**\n\n")
+            has_primekg = True
+            parts.append("### Knowledge Graph Connections (PrimeKG)\n\n")
             kg_sections = research_context.split("###")
             for section in kg_sections:
                 if "PrimeKG Knowledge Graph" in section:
-                    lines = section.strip().split("\n")
-                    for line in lines[1:]:  # Skip the header line
-                        line = line.strip()
-                        if line.startswith("**") and ":**" in line:
-                            response_parts.append(f"{line}\n")
-                        elif line.startswith("*Source:"):
-                            response_parts.append(f"*{line.strip('*')} — [GitHub](https://github.com/mims-harvard/PrimeKG)*\n")
-                    response_parts.append("\n")
+                    for line in section.strip().split("\n"):
+                        text = line.strip()
+                        if text.startswith("**") and ":**" in text:
+                            key, _, val = text[2:].partition(":** ")
+                            parts.append(f"- **{key}:** {val}\n")
+            parts.append("\n*Source: [PrimeKG (Harvard)](https://github.com/mims-harvard/PrimeKG)*\n\n")
 
-        # ── Parse CKG Clinical Knowledge Graph section ──
+        # --- CKG ---
         if "Clinical Knowledge Graph (CKG)" in research_context:
-            response_parts.append("\n**Clinical Knowledge Graph — Available Evidence Domains**\n\n")
+            has_ckg = True
+            parts.append("### Clinical Knowledge Graph — Available Evidence\n\n")
             ckg_sections = research_context.split("###")
             for section in ckg_sections:
                 if "Clinical Knowledge Graph (CKG)" in section:
                     for line in section.split("\n"):
-                        line = line.strip()
-                        if line.startswith("- **"):
-                            response_parts.append(f"{line}\n")
-                        elif line.startswith("*Source:"):
-                            response_parts.append(f"*{line.strip('*')} — [GitHub](https://github.com/MannLabs/CKG)*\n")
-                    response_parts.append("\n")
+                        text = line.strip()
+                        if text.startswith("- **"):
+                            parts.append(f"{text}\n")
+            parts.append("\n*Source: [CKG (MannLab)](https://github.com/MannLabs/CKG)*\n\n")
 
-    # Add peptide-specific info from SNAPSHOT_LIBRARY if not already covered
-    if mentioned_peptides and (not research_context or len("".join(response_parts)) < 200):
-        for peptide in mentioned_peptides[:2]:  # Limit to first 2
-            term = normalize_term(peptide)
-            if term in SNAPSHOT_LIBRARY:
-                snap = SNAPSHOT_LIBRARY[term]
-                response_parts.append(f"\n**{peptide.upper()}:**\n\n")
-                if snap.get("primary_effect"):
-                    response_parts.append(f"**Primary Effect:** {snap['primary_effect']}\n\n")
-                if snap.get("mechanism_pathway"):
-                    response_parts.append(f"**Mechanism:** {snap['mechanism_pathway']}\n\n")
-                if snap.get("expected_body_outcomes"):
-                    response_parts.append(f"**Expected Outcomes:** {snap['expected_body_outcomes']}\n\n")
-                if snap.get("clinical_context"):
-                    response_parts.append(f"**Clinical Context:** {snap['clinical_context']}\n\n")
-
-    # Add stack knowledge if available
-    if mentioned_peptides:
+    # ── If we found research data but have no synthesised content, add snapshot/stack ──
+    response_text = "".join(parts)
+    if mentioned_peptides and len(response_text) < 200:
         for peptide in mentioned_peptides[:2]:
             term = normalize_term(peptide)
-            if term in STACK_KNOWLEDGE:
-                stack_info = STACK_KNOWLEDGE[term]
-                if stack_info.get("description"):
-                    response_parts.append(f"\n**About {peptide}:** {stack_info['description']}\n\n")
-                if stack_info.get("benefits"):
-                    benefits = stack_info["benefits"]
-                    if isinstance(benefits, list):
-                        response_parts.append(f"**Benefits:** {', '.join(benefits[:5])}\n\n")
+            snap = SNAPSHOT_LIBRARY.get(term)
+            if snap:
+                parts.append(f"### {peptide.upper()}\n\n")
+                if snap.get("primary_effect"):
+                    parts.append(f"- **Primary Effect:** {snap['primary_effect']}\n")
+                if snap.get("mechanism_pathway"):
+                    parts.append(f"- **Mechanism:** {snap['mechanism_pathway']}\n")
+                if snap.get("expected_body_outcomes"):
+                    parts.append(f"- **Expected Outcomes:** {snap['expected_body_outcomes']}\n")
+                if snap.get("clinical_context"):
+                    parts.append(f"- **Clinical Context:** {snap['clinical_context']}\n")
+                parts.append("\n")
+            stack = STACK_KNOWLEDGE.get(term)
+            if stack and stack.get("description"):
+                parts.append(f"{stack['description']}\n\n")
+                if stack.get("benefits") and isinstance(stack["benefits"], list):
+                    parts.append(f"**Benefits:** {', '.join(stack['benefits'][:5])}\n\n")
 
-    # If no research context, provide general guidance
-    if not response_parts or len("".join(response_parts)) < 100:
-        response_parts = [
-            "I can provide information based on our peptide research database.\n\n",
-            f"**Your Question:** {user_message[:200]}\n\n",
-            "**Recommendations:**\n\n",
-            "- Search our peptide catalog for specific compounds\n",
-            "- Check PubMed for recent studies at [pubmed.ncbi.nlm.nih.gov](https://pubmed.ncbi.nlm.nih.gov)\n",
-            "- Review clinical trials at [ClinicalTrials.gov](https://clinicaltrials.gov)\n",
-            "- Explore PrimeKG biomedical knowledge graph at [github.com/mims-harvard/PrimeKG](https://github.com/mims-harvard/PrimeKG)\n",
-        "- Explore Clinical Knowledge Graph (CKG) at [github.com/MannLabs/CKG](https://github.com/MannLabs/CKG)\n\n",
-            "Please ask about specific peptides, treatments, or mechanisms for more detailed information from our research database.\n\n",
-            "**Note:** Always consult healthcare professionals before starting any new treatment protocol."
-        ]
+    # ── If STILL nothing useful, give a contextual fallback (not the generic one) ──
+    response_text = "".join(parts)
+    if not response_text or len(response_text) < 100:
+        # Build a contextual fallback that references the question
+        question_preview = user_message[:150]
+        if mentioned_peptides:
+            parts = [
+                f"I've identified **{', '.join(mentioned_peptides[:3])}** in your question.\n\n",
+                "Here's what I can tell you from our research database:\n\n",
+            ]
+            for peptide in mentioned_peptides[:2]:
+                term = normalize_term(peptide)
+                snap = SNAPSHOT_LIBRARY.get(term)
+                if snap:
+                    parts.append(f"**{peptide.upper()}** — {snap.get('primary_effect', 'researched compound')}\n\n")
+                    if snap.get("clinical_context"):
+                        parts.append(f"{snap['clinical_context']}\n\n")
+                stack = STACK_KNOWLEDGE.get(term)
+                if stack and stack.get("description"):
+                    parts.append(f"{stack['description']}\n\n")
+            parts.append(
+                "**To get more specific information, I recommend:**\n\n"
+                "- Checking [PubMed](https://pubmed.ncbi.nlm.nih.gov) for recent studies\n"
+                "- Reviewing [ClinicalTrials.gov](https://clinicaltrials.gov) for ongoing trials\n"
+                "- Exploring [PrimeKG](https://github.com/mims-harvard/PrimeKG) or [CKG](https://github.com/MannLabs/CKG) biomedical knowledge graphs\n\n"
+            )
+        else:
+            parts = [
+                f"I understand you're asking about: _{question_preview}_\n\n"
+                "I wasn't able to find specific research data in our database for this topic.\n\n"
+                "**You can try:**\n\n"
+                "- Asking about a specific peptide or compound (e.g., BPC-157, semaglutide, MK-677)\n"
+                "- Checking [PubMed](https://pubmed.ncbi.nlm.nih.gov) for scientific literature\n"
+                "- Reviewing [ClinicalTrials.gov](https://clinicaltrials.gov) for clinical studies\n"
+                "- Exploring [PrimeKG](https://github.com/mims-harvard/PrimeKG) or [CKG](https://github.com/MannLabs/CKG) knowledge graphs\n\n"
+            ]
 
-    # Add professional disclaimer
-    final_response = "".join(response_parts)
+    # ── Add disclaimer ──
+    final = "".join(parts)
     if mentioned_peptides or "treatment" in user_message.lower() or "dose" in user_message.lower():
-        final_response += "\n\n---\n\n**Important:** This information is for educational purposes. Consult with a qualified healthcare provider before starting any treatment protocol."
+        final += "\n\n---\n\n**Important:** This information is for educational purposes. Consult with a qualified healthcare provider before starting any treatment protocol."
 
-    return final_response
+    return final
 
 
 @app.route('/ask/message', methods=['POST'])
@@ -5107,7 +5207,8 @@ def ask_message():
             user_message,
             research_context,
             mentioned_peptides,
-            is_comparison
+            is_comparison,
+            system_prompt
         )
 
         # Extract sources from the response (look for markdown links)
@@ -5197,7 +5298,8 @@ def ask_stream():
                 user_message,
                 research_context,
                 mentioned_peptides,
-                is_comparison
+                is_comparison,
+                system_prompt
             )
 
             # Simulate streaming by yielding response in chunks
