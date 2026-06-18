@@ -9,6 +9,7 @@
 
   /* ─── State ─── */
   var isSending = false;
+  var conversationHistory = [];
 
   /* ─── Toast ─── */
   function showToast(msg) {
@@ -22,6 +23,120 @@
   /* ─── Helpers ─── */
   function scrollBottom() {
     messages.scrollTop = messages.scrollHeight;
+  }
+
+  /* ─── 1A: Typewriter streaming text reveal ─── */
+  function revealText(element, html, onDone) {
+    var tokens = html.split(/(<[^>]+>|&[a-z]+;)/g).filter(Boolean);
+    var i = 0;
+    var current = '';
+    var interval = setInterval(function () {
+      if (i >= tokens.length) {
+        clearInterval(interval);
+        element.innerHTML = html; // Set final to ensure clean HTML
+        if (onDone) onDone();
+        return;
+      }
+      // Append up to 3 tokens per tick for speed
+      for (var j = 0; j < 3 && i < tokens.length; j++, i++) {
+        current += tokens[i];
+      }
+      element.innerHTML = current;
+      // Auto-scroll as text reveals
+      var msgs = document.getElementById('chat_messages');
+      if (msgs) msgs.scrollTop = msgs.scrollHeight;
+    }, 18); // ~55 words/sec
+    return interval;
+  }
+
+  /* ─── 1B: Follow-up question chips ─── */
+  function addFollowUpChips(citations) {
+    var chips = [];
+    if (citations && citations.length > 0) {
+      var pep = citations[0].peptide || citations[0].label || '';
+      if (pep) {
+        chips.push('Show dosage protocol for ' + pep);
+        chips.push('What are the side effects of ' + pep + '?');
+        chips.push('How long does ' + pep + ' take to work?');
+      }
+      if (citations.length >= 2) {
+        var pep2 = citations[1].peptide || citations[1].label || '';
+        if (pep2 && pep2 !== pep) {
+          chips.push('Compare ' + pep + ' vs ' + pep2);
+        }
+      }
+    } else {
+      chips.push('What peptides help with recovery?');
+      chips.push('What is the safest peptide to start with?');
+      chips.push('How do GLP-1 agonists work?');
+    }
+    chips = chips.slice(0, 3);
+
+    var chipWrap = document.createElement('div');
+    chipWrap.className = 'followup-chips';
+    chips.forEach(function (q) {
+      var chip = document.createElement('button');
+      chip.className = 'followup-chip';
+      chip.textContent = q;
+      chip.onclick = function () {
+        chipWrap.remove();
+        sendMessage(q);
+      };
+      chipWrap.appendChild(chip);
+    });
+    messages.appendChild(chipWrap);
+    scrollBottom();
+  }
+
+  /* ─── 1C: Comparison table rendering ─── */
+  function renderComparisonTable(compData) {
+    var treatments = compData.treatments || [];
+    if (!treatments.length) return null;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'comparison-table-wrap';
+
+    var title = document.createElement('div');
+    title.className = 'comparison-title';
+    title.textContent = compData.title || 'Treatment Comparison';
+    wrap.appendChild(title);
+
+    var table = document.createElement('div');
+    table.className = 'comparison-grid';
+    table.style.gridTemplateColumns = 'repeat(' + treatments.length + ', 1fr)';
+
+    treatments.forEach(function (tx) {
+      var col = document.createElement('div');
+      col.className = 'comparison-col';
+
+      var tierClass = 'tier-' + (tx.evidence_tier || 'c').toLowerCase();
+      col.innerHTML =
+        '<div class="comp-name">' + tx.name + '</div>' +
+        '<div class="comp-tier ' + tierClass + '">Tier ' + (tx.evidence_tier || '?') + '</div>' +
+        '<div class="comp-type">' + tx.type + '</div>' +
+        '<div class="comp-section-label">Efficacy</div>' +
+        '<div class="comp-value">' + tx.efficacy + '</div>' +
+        '<div class="comp-section-label">Safety</div>' +
+        '<div class="comp-value">' + tx.safety + '</div>' +
+        '<div class="comp-section-label">Cost</div>' +
+        '<div class="comp-value">' + tx.cost + '</div>' +
+        '<div class="comp-section-label">Pros</div>' +
+        '<ul class="comp-list pros">' + (tx.pros || []).map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ul>' +
+        '<div class="comp-section-label">Cons</div>' +
+        '<ul class="comp-list cons">' + (tx.cons || []).map(function (c) { return '<li>' + c + '</li>'; }).join('') + '</ul>';
+
+      table.appendChild(col);
+    });
+    wrap.appendChild(table);
+
+    if (compData.recommendation) {
+      var rec = document.createElement('div');
+      rec.className = 'comp-recommendation';
+      rec.innerHTML = '<strong>Recommendation:</strong> ' + compData.recommendation;
+      wrap.appendChild(rec);
+    }
+
+    return wrap;
   }
 
   function addMsg(text, role, extra) {
@@ -82,12 +197,12 @@
       div.appendChild(label);
 
       var content = document.createElement('div');
-      content.innerHTML = html;
       div.appendChild(content);
 
       /* Sources cloud */
+      var srcDiv = null;
       if (extra && extra.sources && extra.sources.length) {
-        var srcDiv = document.createElement('div');
+        srcDiv = document.createElement('div');
         srcDiv.className = 'sources-cloud';
         for (var si = 0; si < extra.sources.length; si++) {
           var s = extra.sources[si];
@@ -96,26 +211,25 @@
           pill.textContent = s.label || s.id;
           srcDiv.appendChild(pill);
         }
-        div.appendChild(srcDiv);
       }
 
       /* Stack links */
+      var stackDiv = null;
       if (extra && extra.stacks && extra.stacks.length) {
-        var stackDiv = document.createElement('div');
+        stackDiv = document.createElement('div');
         stackDiv.style.cssText = 'margin-top:8px;display:flex;flex-wrap:wrap;gap:4px';
-        for (var si = 0; si < extra.stacks.length; si++) {
-          var s = extra.stacks[si];
+        for (var si2 = 0; si2 < extra.stacks.length; si2++) {
+          var s2 = extra.stacks[si2];
           var chip = document.createElement('a');
           chip.className = 'citation-chip';
-          chip.href = '/stacks?s=' + encodeURIComponent(s);
-          chip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M6 10 V8a2 2 0 0 1 2-2 h8a2 2 0 0 1 2 2 v2"/></svg> ' + s;
+          chip.href = '/stacks?s=' + encodeURIComponent(s2);
+          chip.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="4" y="10" width="16" height="10" rx="1.5"/><path d="M6 10 V8a2 2 0 0 1 2-2 h8a2 2 0 0 1 2 2 v2"/></svg> ' + s2;
           chip.target = '_blank';
           stackDiv.appendChild(chip);
         }
-        div.appendChild(stackDiv);
       }
 
-      /* Action buttons: Copy, Dosage, Safety, Interactions */
+      /* Action buttons — built after reveal */
       var actions = document.createElement('div');
       actions.className = 'msg-actions';
 
@@ -138,27 +252,32 @@
       actions.appendChild(copyBtn);
 
       /* Dosage, Safety, Interactions — require citations */
+      var firstPep = null;
+      var pepList = [];
       if (extra && extra.citations && extra.citations.length) {
-        var pepList = [];
         for (var ci2 = 0; ci2 < extra.citations.length; ci2++) {
           pepList.push(extra.citations[ci2].peptide || extra.citations[ci2].source);
         }
-        var firstPep = pepList[0];
+        firstPep = pepList[0];
 
         var dosageBtn = document.createElement('button');
         dosageBtn.className = 'msg-action-btn';
         dosageBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Dosage';
-        dosageBtn.addEventListener('click', function () {
-          fetchDosage(firstPep, dosageBtn);
-        });
+        (function (pep, btn) {
+          btn.addEventListener('click', function () {
+            fetchDosage(pep, btn);
+          });
+        }(firstPep, dosageBtn));
         actions.appendChild(dosageBtn);
 
         var safetyBtn = document.createElement('button');
         safetyBtn.className = 'msg-action-btn';
         safetyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5"/></svg> Safety';
-        safetyBtn.addEventListener('click', function () {
-          fetchSafety(firstPep, safetyBtn);
-        });
+        (function (pep, btn) {
+          btn.addEventListener('click', function () {
+            fetchSafety(pep, btn);
+          });
+        }(firstPep, safetyBtn));
         actions.appendChild(safetyBtn);
 
         /* Interactions button — only when 2+ citations */
@@ -166,14 +285,30 @@
           var ixBtn = document.createElement('button');
           ixBtn.className = 'msg-action-btn';
           ixBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg> Interactions';
-          ixBtn.addEventListener('click', function () {
-            showInteractions(pepList);
-          });
+          (function (peps, btn) {
+            btn.addEventListener('click', function () {
+              showInteractions(peps);
+            });
+          }(pepList, ixBtn));
           actions.appendChild(ixBtn);
         }
       }
 
-      div.appendChild(actions);
+      /* Append the message bubble now, then reveal text */
+      messages.appendChild(div);
+      scrollBottom();
+
+      /* 1A: Reveal text word-by-word, then show decorations */
+      revealText(content, html, function () {
+        if (srcDiv) div.appendChild(srcDiv);
+        if (stackDiv) div.appendChild(stackDiv);
+        div.appendChild(actions);
+        scrollBottom();
+        /* 1B: Follow-up chips */
+        addFollowUpChips(extra ? extra.citations : null);
+      });
+
+      return; // Early return — appendChild already done above
     }
 
     messages.appendChild(div);
@@ -184,7 +319,14 @@
     var div = document.createElement('div');
     div.className = 'msg msg-ai';
     div.id = 'typing_indicator';
-    div.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+    div.innerHTML =
+      '<div class="msg-label">Ask AI</div>' +
+      '<div class="typing-indicator">' +
+        '<div class="typing-pulse"></div>' +
+        '<div class="typing-pulse"></div>' +
+        '<div class="typing-pulse"></div>' +
+        '<span class="typing-label">Searching research database…</span>' +
+      '</div>';
     messages.appendChild(div);
     scrollBottom();
   }
@@ -330,9 +472,36 @@
     addMsg(html, 'interaction');
   }
 
+  /* ─── 1F: Export conversation ─── */
+  function exportConversation() {
+    var msgs = document.querySelectorAll('.msg');
+    if (!msgs.length) { showToast('No conversation to export'); return; }
+    var lines = ['Peptide Research Wiki — Ask AI Conversation', 'Exported: ' + new Date().toLocaleString(), '---', ''];
+    msgs.forEach(function (m) {
+      if (m.classList.contains('msg-user')) {
+        lines.push('YOU: ' + m.textContent.trim());
+      } else if (m.classList.contains('msg-ai')) {
+        var labelEl = m.querySelector('.msg-label');
+        var contentEl = m.querySelector('div:not(.msg-label):not(.msg-actions):not(.citations)');
+        lines.push('AI: ' + (contentEl ? contentEl.textContent.trim() : m.textContent.trim()));
+      }
+      lines.push('');
+    });
+    var blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'peptide-ai-conversation.txt';
+    a.click();
+    showToast('Conversation exported');
+  }
+
   /* ─── Send ─── */
   function sendMessage(text) {
     if (!text.trim() || isSending) return;
+
+    /* 1E: Push to history */
+    conversationHistory.push({ role: 'user', content: text.trim() });
+    conversationHistory = conversationHistory.slice(-6);
 
     addMsg(text.trim(), 'user');
     input.value = '';
@@ -350,6 +519,21 @@
 
       if (xhr.status === 200) {
         var data = JSON.parse(xhr.responseText);
+
+        /* 1E: Push AI response to history */
+        if (data.answer) {
+          conversationHistory.push({ role: 'assistant', content: data.answer });
+          conversationHistory = conversationHistory.slice(-6);
+        }
+
+        /* 1C: Render comparison table above the text message */
+        if (data.comparison_data) {
+          var tableEl = renderComparisonTable(data.comparison_data);
+          if (tableEl) {
+            messages.appendChild(tableEl);
+          }
+        }
+
         addMsg(data.answer, 'ai', {
           citations: data.citations || [],
           stacks: data.stacks || [],
@@ -377,7 +561,8 @@
       scrollBottom();
     };
 
-    xhr.send(JSON.stringify({ question: text.trim() }));
+    /* 1E: Include history in request */
+    xhr.send(JSON.stringify({ question: text.trim(), history: conversationHistory }));
   }
 
   /* ─── Events ─── */
@@ -403,6 +588,72 @@
         sendMessage(chip.getAttribute('data-q'));
       }
     });
+  }
+
+  /* ─── 4C: Animated border on input focus ─── */
+  var inputWrap = document.querySelector('.ask-input-wrap');
+  if (inputWrap) {
+    var inp = inputWrap.querySelector('textarea, input');
+    if (inp) {
+      inp.addEventListener('focus', function () { inputWrap.classList.add('focused'); });
+      inp.addEventListener('blur', function () { inputWrap.classList.remove('focused'); });
+    }
+  }
+
+  /* ─── 1D: Voice input via Web Speech API ─── */
+  function initVoiceInput() {
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return; // Not supported — don't show button
+
+    var micBtn = document.getElementById('ask_mic_btn');
+    if (!micBtn) return;
+
+    var recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    var recording = false;
+
+    micBtn.addEventListener('click', function () {
+      if (recording) {
+        recognition.stop();
+        return;
+      }
+      recognition.start();
+    });
+
+    recognition.onstart = function () {
+      recording = true;
+      micBtn.classList.add('recording');
+      micBtn.title = 'Listening... click to stop';
+    };
+
+    recognition.onresult = function (e) {
+      var transcript = e.results[0][0].transcript;
+      input.value = transcript;
+      sendBtn.disabled = !transcript.trim();
+      input.focus();
+    };
+
+    recognition.onend = function () {
+      recording = false;
+      micBtn.classList.remove('recording');
+      micBtn.title = 'Voice input';
+    };
+
+    recognition.onerror = function () {
+      recording = false;
+      micBtn.classList.remove('recording');
+      showToast('Voice input not available');
+    };
+  }
+  initVoiceInput();
+
+  /* ─── Export button wiring ─── */
+  var exportBtn = document.getElementById('ask_export_btn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', exportConversation);
   }
 
   /* ─── Init ─── */

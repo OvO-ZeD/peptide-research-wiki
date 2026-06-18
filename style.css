@@ -1967,3 +1967,396 @@ body::before {
     }
   }
 }
+
+/* ─── Glassmorphism panels (Search results) (3A) ─── */
+.panel, .overview-card {
+  background: rgba(14, 14, 18, 0.72) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s ease,
+              border-color 0.25s ease;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(217,56,56,0.2), transparent);
+  pointer-events: none;
+}
+
+.panel:hover {
+  border-color: rgba(217,56,56,0.18) !important;
+  box-shadow: 0 8px 32px rgba(217,56,56,0.08), 0 2px 12px rgba(0,0,0,0.25);
+}
+
+/* ─── Staggered entry (3B) ─── */
+.stagger-in {
+  animation: staggerFadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--stagger-i, 0) * 55ms);
+}
+
+@keyframes staggerFadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Skeleton loaders (3C) ─── */
+.skeleton-panel {
+  background: rgba(14,14,18,0.72);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: var(--radius-xl);
+  padding: 20px 24px;
+  animation: skeletonFadeIn 0.4s ease both;
+  animation-delay: calc(var(--i, 0) * 80ms);
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.04) 75%);
+  background-size: 400% 100%;
+  animation: shimmerSkeleton 1.6s ease-in-out infinite;
+  margin-bottom: 10px;
+  width: 80%;
+}
+
+.skeleton-title {
+  height: 18px;
+  width: 45%;
+  margin-bottom: 14px;
+  background: linear-gradient(90deg,
+    rgba(217,56,56,0.08) 25%,
+    rgba(217,56,56,0.14) 50%,
+    rgba(217,56,56,0.08) 75%);
+  background-size: 400% 100%;
+}
+
+.skeleton-metrics { display: flex; gap: 8px; margin-top: 12px; }
+.skeleton-tag {
+  height: 24px;
+  width: 80px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.03) 25%,
+    rgba(255,255,255,0.07) 50%,
+    rgba(255,255,255,0.03) 75%);
+  background-size: 400% 100%;
+  animation: shimmerSkeleton 1.6s ease-in-out infinite;
+}
+
+@keyframes shimmerSkeleton {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: -100% 50%; }
+}
+
+@keyframes skeletonFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Bottom nav sliding pill (3D) ─── */
+.bottom-nav-inner {
+  position: relative;
+}
+
+.bottom-nav-pill {
+  position: absolute;
+  bottom: 6px;
+  height: calc(100% - 12px);
+  background: var(--primary-soft);
+  border-radius: var(--radius-lg);
+  transition: left 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bottom-nav-btn {
+  position: relative;
+  z-index: 1;
+}
+
+.bottom-nav-btn.active {
+  background: transparent !important;
+  color: var(--primary) !important;
+}
+
+/* ─── Animated border on Ask AI input focus (3E) ─── */
+.ask-input-wrap {
+  position: relative;
+  border-radius: var(--radius-xl);
+}
+
+.ask-input-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--angle, 0deg), transparent 20%, rgba(217,56,56,0.5) 40%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.ask-input-wrap.focused::before {
+  opacity: 1;
+  animation: rotateBorder 3s linear infinite;
+}
+
+@property --angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes rotateBorder {
+  to { --angle: 360deg; }
+}
+
+/* ─── Chat message spring animation (3F) ─── */
+.msg {
+  animation: msgSpring 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes msgSpring {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ─── Micro-interactions (3G) ─── */
+button, .nav-btn, .search-btn, .bottom-nav-btn, .msg-action-btn,
+.suggestion-chip, .fav-chip, .recent-chip, .citation-chip {
+  transition: transform 0.12s ease, opacity 0.12s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+button:active, .nav-btn:active, .search-btn:active, .bottom-nav-btn:active {
+  transform: scale(0.95) !important;
+}
+
+.search-btn:active { transform: scale(0.94) !important; }
+
+.msg-action-btn:hover {
+  background: var(--surface-3) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+/* ─── Comparison Table (3H) ─── */
+.comparison-table-wrap {
+  width: 100%;
+  margin: 8px 0 16px;
+  animation: msgSpring 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.comparison-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--primary);
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+
+.comparison-grid {
+  display: grid;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.comparison-col {
+  background: rgba(14,14,18,0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  min-width: 200px;
+}
+
+.comparison-col:hover {
+  border-color: rgba(217,56,56,0.2);
+  box-shadow: 0 4px 20px rgba(217,56,56,0.07);
+}
+
+.comp-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  margin-bottom: 4px;
+  color: var(--ink);
+}
+
+.comp-tier {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.tier-a { background: rgba(39,166,68,0.15); color: #27a644; border: 1px solid rgba(39,166,68,0.3); }
+.tier-b { background: rgba(245,166,35,0.15); color: #f5a623; border: 1px solid rgba(245,166,35,0.3); }
+.tier-c { background: rgba(217,56,56,0.12); color: var(--primary); border: 1px solid rgba(217,56,56,0.25); }
+.tier-d { background: rgba(255,255,255,0.04); color: var(--ink-subtle); border: 1px solid var(--hairline); }
+
+.comp-type { color: var(--ink-subtle); font-size: 0.72rem; margin-bottom: 10px; }
+.comp-section-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-subtle); margin: 8px 0 2px; }
+.comp-value { color: var(--ink-muted); }
+
+.comp-list { margin: 2px 0 0 14px; padding: 0; color: var(--ink-muted); }
+.comp-list.pros li::marker { color: #27a644; }
+.comp-list.cons li::marker { color: var(--primary); }
+
+.comp-recommendation {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: rgba(217,56,56,0.06);
+  border: 1px solid rgba(217,56,56,0.15);
+  border-radius: var(--radius-lg);
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--ink-muted);
+}
+
+/* ─── Follow-up chips (3I) ─── */
+.followup-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 0 8px;
+  animation: msgSpring 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.15s;
+}
+
+.followup-chip {
+  padding: 6px 12px;
+  background: rgba(217,56,56,0.06);
+  border: 1px solid rgba(217,56,56,0.2);
+  border-radius: var(--radius-pill);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.12s ease;
+  white-space: nowrap;
+}
+
+.followup-chip:hover {
+  background: rgba(217,56,56,0.12);
+  border-color: rgba(217,56,56,0.4);
+  transform: translateY(-1px);
+}
+
+.followup-chip:active { transform: scale(0.95); }
+
+/* ─── Upgraded AI thinking animation (3J) ─── */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+}
+
+.typing-pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: typingPulse 1.4s ease-in-out infinite;
+}
+
+.typing-pulse:nth-child(2) { animation-delay: 0.2s; }
+.typing-pulse:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingPulse {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40%           { transform: scale(1.0); opacity: 1; }
+}
+
+.typing-label {
+  font-size: 0.72rem;
+  color: var(--ink-subtle);
+  font-style: italic;
+  animation: typingLabelFade 2s ease-in-out infinite;
+}
+
+@keyframes typingLabelFade {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+
+/* ─── Voice input button (3K) ─── */
+.ask-mic-btn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline);
+  background: var(--surface-2);
+  color: var(--ink-subtle);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.ask-mic-btn:hover {
+  background: var(--surface-3);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.ask-mic-btn.recording {
+  background: rgba(217,56,56,0.15);
+  border-color: var(--primary);
+  color: var(--primary);
+  animation: micPulse 1s ease-in-out infinite;
+}
+
+@keyframes micPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(217,56,56,0.3); }
+  50%      { box-shadow: 0 0 0 8px rgba(217,56,56,0); }
+}
+
+/* ─── Atmosphere reacts to loading (3L) ─── */
+body.is-loading::before {
+  animation-duration: 4s !important;
+  opacity: 1 !important;
+}
+
+/* ─── Export conversation button (3M) ─── */
+.ask-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  color: var(--ink-subtle);
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ask-export-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}

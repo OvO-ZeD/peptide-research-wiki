@@ -143,23 +143,27 @@ function initTypeahead(inputId, listId) {
   var peptides = [];
   for (var i = 0; i < options.length; i++) peptides.push(options[i].value);
 
+  var typeaheadTimer = null;
   input.addEventListener('input', function () {
-    var val = input.value.toLowerCase().trim();
-    if (!val) { dd.classList.remove('active'); dd.innerHTML = ''; return; }
-    var matches = [];
-    for (var j = 0; j < peptides.length; j++) {
-      if (peptides[j].toLowerCase().indexOf(val) > -1) matches.push(peptides[j]);
-      if (matches.length >= 8) break;
-    }
-    if (!matches.length) { dd.classList.remove('active'); dd.innerHTML = ''; return; }
-    var html = '';
-    for (var k = 0; k < matches.length; k++) {
-      var idx = matches[k].toLowerCase().indexOf(val);
-      var label = idx > -1 ? matches[k].slice(0, idx) + '<span class="s-match">' + matches[k].slice(idx, idx + val.length) + '</span>' + matches[k].slice(idx + val.length) : escapeHtml(matches[k]);
-      html += '<div class="suggestion-item" onclick="pickSuggestion(\'' + escapeHtml(matches[k]) + '\',\'' + inputId + '\')">' + label + '</div>';
-    }
-    dd.innerHTML = html;
-    dd.classList.add('active');
+    clearTimeout(typeaheadTimer);
+    typeaheadTimer = setTimeout(function () {
+      var val = input.value.toLowerCase().trim();
+      if (!val) { dd.classList.remove('active'); dd.innerHTML = ''; return; }
+      var matches = [];
+      for (var j = 0; j < peptides.length; j++) {
+        if (peptides[j].toLowerCase().indexOf(val) > -1) matches.push(peptides[j]);
+        if (matches.length >= 8) break;
+      }
+      if (!matches.length) { dd.classList.remove('active'); dd.innerHTML = ''; return; }
+      var html = '';
+      for (var k = 0; k < matches.length; k++) {
+        var idx = matches[k].toLowerCase().indexOf(val);
+        var label = idx > -1 ? matches[k].slice(0, idx) + '<span class="s-match">' + matches[k].slice(idx, idx + val.length) + '</span>' + matches[k].slice(idx + val.length) : escapeHtml(matches[k]);
+        html += '<div class="suggestion-item" onclick="pickSuggestion(\'' + escapeHtml(matches[k]) + '\',\'' + inputId + '\')">' + label + '</div>';
+      }
+      dd.innerHTML = html;
+      dd.classList.add('active');
+    }, 150);
   });
 
   input.addEventListener('blur', function () { setTimeout(function () { dd.classList.remove('active'); }, 200); });
@@ -518,9 +522,51 @@ async function fetchSearch(term) {
   return response.json();
 }
 
-/* ─── Loading Spinner ─── */
+/* ─── Loading Skeleton (2A) ─── */
 function showLoading() {
-  return '<div class="loading-dots"><span></span><span></span><span></span><span></span><span></span></div>';
+  var skeletons = '';
+  for (var i = 0; i < 4; i++) {
+    skeletons += '<div class="skeleton-panel" style="animation-delay:' + (i * 0.08) + 's">' +
+      '<div class="skeleton-line skeleton-title"></div>' +
+      '<div class="skeleton-line" style="width:90%"></div>' +
+      '<div class="skeleton-line" style="width:75%"></div>' +
+      '<div class="skeleton-line" style="width:60%"></div>' +
+      '<div class="skeleton-metrics">' +
+        '<div class="skeleton-tag"></div>' +
+        '<div class="skeleton-tag"></div>' +
+        '<div class="skeleton-tag"></div>' +
+      '</div>' +
+    '</div>';
+  }
+  return skeletons;
+}
+
+/* ─── Staggered panel entry (2B) ─── */
+function applyStagger(root) {
+  var panels = root.querySelectorAll('.panel, .overview-card');
+  panels.forEach(function (p, i) {
+    p.style.setProperty('--stagger-i', i);
+    p.classList.add('stagger-in');
+  });
+}
+
+/* ─── 3D card tilt (2C) ─── */
+function init3DTilt(root) {
+  if (window.matchMedia('(hover: none)').matches) return; // skip touch devices
+  var panels = root.querySelectorAll('.panel');
+  panels.forEach(function (panel) {
+    panel.addEventListener('mousemove', function (e) {
+      var rect = panel.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      panel.style.transform = 'perspective(800px) rotateX(' + (-y * 6) + 'deg) rotateY(' + (x * 6) + 'deg) translateY(-2px)';
+      panel.style.boxShadow = '0 12px 40px rgba(217,56,56,0.12), 0 4px 16px rgba(0,0,0,0.3)';
+    });
+    panel.addEventListener('mouseleave', function () {
+      panel.style.transform = '';
+      panel.style.boxShadow = '';
+    });
+  });
 }
 
 /* ─── Main Search ─── */
@@ -538,6 +584,7 @@ async function searchPeptide() {
   resultsRoot.innerHTML = showLoading();
   setStatus('Loading research results…', 'loading');
   document.getElementById('search_button').disabled = true;
+  document.body.classList.add('is-loading'); // 4D: atmosphere loading state
 
   try {
     var primary = await fetchSearch(term);
@@ -553,6 +600,9 @@ async function searchPeptide() {
       resultsRoot.innerHTML = buildResponse(primary, term);
     }
 
+    applyStagger(resultsRoot); // 2B: staggered entry
+    init3DTilt(resultsRoot);   // 2C: 3D tilt
+
     document.getElementById('results_filter_wrap').style.display = 'block';
     setStatus('Results loaded successfully.', 'success');
     if (window.innerWidth < 480 && typeof openSheet === 'function') openSheet(term + (compare ? ' vs ' + compare : ''));
@@ -561,6 +611,7 @@ async function searchPeptide() {
     setStatus(error.message || 'Unable to load peptide research results.', 'error');
   } finally {
     document.getElementById('search_button').disabled = false;
+    document.body.classList.remove('is-loading'); // 4D: remove loading state
   }
 }
 
