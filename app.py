@@ -237,6 +237,13 @@ SNAPSHOT_LIBRARY = {
         "mechanism_pathway": "Liraglutide mimics the natural hormone GLP-1, which your gut releases when you eat. It tells your pancreas to release more insulin when sugar is high, slows down stomach emptying so you feel full longer, and signals your brain to reduce appetite. A fatty acid chain attached to the molecule keeps it active in the body for a full day.",
         "expected_body_outcomes": "People usually eat less and feel full sooner after meals. Blood sugar levels drop steadily, and weight loss of 5-10% is typical over several months. Some people experience nausea when starting, which often fades. It is injected once daily.",
         "clinical_context": "Liraglutide is FDA approved and has been prescribed since 2010 for diabetes and since 2014 for weight management. It has been studied in large, long-term trials including cardiovascular outcome studies. It is available by prescription only.",
+        "half_life": "~13h",
+        "bioavailability": "SC ~55%",
+        "peak_time": "8-12h",
+        "cycle_length": "Indefinite ongoing",
+        "pct_required": False,
+        "synergistic_compounds": ["semaglutide", "tirzepatide"],
+        "antagonistic_compounds": [],
     },
     "sermorelin": {
         "primary_effect": "Sermorelin stimulates the pituitary gland to release more growth hormone. It is used medically to diagnose and treat growth hormone deficiency in children.",
@@ -333,6 +340,162 @@ SNAPSHOT_LIBRARY = {
         "mechanism_pathway": "A long-acting analog of amylin, a hormone released by the pancreas after meals. Slows gastric emptying, promotes satiety signals, and suppresses glucagon. Works through a different mechanism than GLP-1 drugs.",
         "expected_body_outcomes": "Reduced appetite, slower digestion, earlier fullness, weight loss. In trials, combination with semaglutide (CagriSema) produced greater weight loss than either alone.",
         "clinical_context": "Cagrilintide is a long-acting amylin analog developed by Novo Nordisk that has completed Phase 2 clinical trials but is not yet FDA approved for medical use. It is being investigated primarily in combination with semaglutide (under the combination name CagriSema) for obesity and type 2 diabetes, with early trial results showing that the dual mechanism — amylin receptor activation combined with GLP-1 receptor activation — produces greater weight loss than either agent alone. As an investigational drug from a major pharmaceutical company, it has undergone more rigorous clinical testing than most research peptides, including formal dose-finding and safety studies in humans. However, until Phase 3 trials are completed and regulatory approval is obtained, access is limited to clinical trial participants, and the compound is not yet available as a prescription medication.",
+    },
+    "minoxidil": {
+        "primary_effect": "Vasodilator and potassium channel opener used topically and orally for androgenic alopecia (hair loss). FDA-approved topical treatment for male and female pattern baldness.",
+        "mechanism_pathway": "Opens K-ATP channels in vascular smooth muscle, causing vasodilation and increased blood flow to hair follicles. Prolongs the anagen (growth) phase of the hair cycle, enlarges miniaturised follicles, and may directly stimulate follicle cell proliferation.",
+        "expected_body_outcomes": "Slows or halts hair loss progression in ~80% of users; visible regrowth in ~40-60% of users with consistent twice-daily topical application over 3-6 months. Oral minoxidil (2.5-5mg) shows similar or superior efficacy with less frequent dosing.",
+        "clinical_context": "FDA-approved as Rogaine (OTC topical) for androgenic alopecia in both men and women since the late 1980s. Low-dose oral minoxidil is widely used off-label by dermatologists. Extensive 30+ year safety record. Must be used indefinitely to maintain results.",
+        "half_life": "~22h systemic; topical absorption ~2%",
+        "bioavailability": "Oral ~90%; topical ~2% systemic absorption",
+        "peak_time": "1-3h oral; topical local effect",
+        "cycle_length": "Indefinite — hair loss returns on cessation",
+        "pct_required": False,
+        "synergistic_compounds": ["finasteride", "ghk-cu", "ketoconazole"],
+        "antagonistic_compounds": [],
+    },
+    "finasteride": {
+        "primary_effect": "5-alpha reductase inhibitor that blocks conversion of testosterone to DHT. FDA-approved oral treatment for androgenic alopecia and benign prostatic hyperplasia.",
+        "mechanism_pathway": "Inhibits type II 5-alpha reductase enzyme, reducing scalp and serum DHT by ~70%. DHT is the primary androgen driving follicle miniaturisation in androgenic alopecia. Targets the hormonal root cause rather than just blood flow.",
+        "expected_body_outcomes": "Halts hair loss progression in ~85% of users. Visible regrowth in ~30-50% with consistent use. Results develop over 6-12 months. Hair loss resumes on discontinuation.",
+        "clinical_context": "FDA-approved for male androgenic alopecia (Propecia 1mg) and BPH (Proscar 5mg). Not FDA-approved in women of childbearing age due to teratogenicity risk. Post-finasteride syndrome (sexual side effects, cognitive effects) reported in ~2-3% of users. Large RCT evidence base.",
+        "half_life": "~6h",
+        "bioavailability": "Oral ~63%",
+        "peak_time": "1-2h",
+        "cycle_length": "Indefinite — ongoing use required",
+        "pct_required": False,
+        "synergistic_compounds": ["minoxidil", "ghk-cu", "ketoconazole"],
+        "antagonistic_compounds": [],
+    },
+    "nad+": {
+        "primary_effect": "NAD+ (nicotinamide adenine dinucleotide) is a critical coenzyme in cellular energy metabolism, DNA repair, and sirtuin activation. Used clinically via IV infusion for neurological support, addiction recovery, and longevity protocols.",
+        "mechanism_pathway": "Serves as electron carrier in oxidative phosphorylation (ATP production), activates sirtuins (SIRT1-7) which regulate gene expression and stress responses, and fuels PARP enzymes for DNA repair. Declines with age, which is linked to metabolic dysfunction and reduced cellular repair capacity.",
+        "expected_body_outcomes": "IV administration produces rapid NAD+ replenishment: improved energy, mental clarity, and reduced fatigue reported within hours. Long-term: improved mitochondrial function, potential anti-aging effects. Oral bioavailability is low due to gut degradation.",
+        "clinical_context": "IV NAD+ infusion is used in clinical settings for alcohol/opioid withdrawal support, chronic fatigue, and longevity protocols. Not FDA-approved as a standalone drug but administered legally in IV drip clinics. High cost ($200-800/session) limits accessibility. Oral precursors (NMN, NR) are more practical for chronic use.",
+        "half_life": "~1-2h IV",
+        "bioavailability": "IV direct (100%); oral very low (<5%)",
+        "peak_time": "Immediate IV",
+        "cycle_length": "Periodic IV sessions; daily oral precursors",
+        "pct_required": False,
+        "synergistic_compounds": ["nmn", "resveratrol", "pterostilbene"],
+        "antagonistic_compounds": [],
+    },
+    "nmn": {
+        "primary_effect": "NMN (nicotinamide mononucleotide) is a direct NAD+ precursor that raises intracellular NAD+ levels. Used for mitochondrial health, metabolic support, and anti-aging.",
+        "mechanism_pathway": "Converted to NMN-adenylyl via NMN adenylyltransferase, then to NAD+. This pathway bypasses the rate-limiting NAMPT step used by nicotinamide, potentially raising NAD+ more efficiently. Orally bioavailable at ~40-60%, especially in sublingual formulations.",
+        "expected_body_outcomes": "Human trials show 40-60% increase in blood NAD+ levels. Reported benefits include improved energy, better insulin sensitivity, and enhanced exercise recovery. Effects develop gradually over weeks of consistent use.",
+        "clinical_context": "Multiple human clinical trials published 2020-2024 confirm NMN raises blood NAD+. Doses of 250-1250mg/day appear safe. Long-term data extending beyond 12 months is limited. Sold as a supplement (not FDA-regulated as a drug). More practical and cost-effective than IV NAD+ for chronic use.",
+        "half_life": "~2h",
+        "bioavailability": "Oral ~40-60%; sublingual higher",
+        "peak_time": "1-2h",
+        "cycle_length": "Daily indefinite supplementation",
+        "pct_required": False,
+        "synergistic_compounds": ["nad+", "resveratrol", "tmg"],
+        "antagonistic_compounds": [],
+    },
+    "nac": {
+        "primary_effect": "N-acetyl cysteine (NAC) is a glutathione precursor and antioxidant. Used clinically for acetaminophen overdose, mucolytic support, and as a general antioxidant. Investigated for PCOS, OCD, addiction, and respiratory conditions.",
+        "mechanism_pathway": "Directly replenishes cysteine, the rate-limiting substrate for glutathione (GSH) synthesis. Also scavenges free radicals directly and reduces disulfide bonds in mucus glycoproteins (mucolytic action). Modulates glutamate signalling — relevant to addictive behaviour and OCD.",
+        "expected_body_outcomes": "Increased intracellular glutathione within hours. Reduced oxidative stress markers. Clinical applications include acetaminophen toxicity reversal (IV), mucus thinning in respiratory disease, and potential benefits in PCOS, OCD, and substance use disorders.",
+        "clinical_context": "IV NAC is FDA-approved for acetaminophen overdose treatment. Oral NAC is approved in several countries for mucolytic indications. Widely used off-label as an antioxidant supplement. Safety profile is excellent; GI upset at high doses. FDA proposed restrictions on NAC as a supplement (2020) but enforcement has been limited.",
+        "half_life": "~6h",
+        "bioavailability": "Oral ~10% (poor due to first-pass); IV direct",
+        "peak_time": "1-2h oral",
+        "cycle_length": "Daily supplementation; IV as needed",
+        "pct_required": False,
+        "synergistic_compounds": ["glutathione", "vitamin-c", "alpha-lipoic-acid"],
+        "antagonistic_compounds": [],
+    },
+    "berberine": {
+        "primary_effect": "AMPK activator and insulin sensitiser derived from plants. Studied for blood sugar regulation, lipid improvement, and metabolic syndrome. Often called 'natural metformin' due to overlapping AMPK mechanisms.",
+        "mechanism_pathway": "Activates AMP-activated protein kinase (AMPK), which increases glucose uptake in muscle and fat cells, reduces hepatic glucose production, and improves insulin sensitivity. Also modulates gut microbiome composition, which may contribute to metabolic benefits independently.",
+        "expected_body_outcomes": "Reduces fasting blood glucose, HbA1c, and LDL cholesterol in clinical trials. Weight loss of 2-5 lbs common. Effects comparable to metformin in some studies for blood sugar. GI side effects (nausea, diarrhoea) common at higher doses.",
+        "clinical_context": "Berberine has been studied in multiple Chinese RCTs for T2D and dyslipidemia with positive results. Not FDA-approved as a drug; sold as a supplement. Evidence quality varies — many trials are small and industry-funded. Potential drug interactions with CYP3A4 substrates and anticoagulants. GI tolerability is the main limitation.",
+        "half_life": "~4h",
+        "bioavailability": "Oral ~5% (very poor — enhanced by dihydroberberine form)",
+        "peak_time": "1-2h",
+        "cycle_length": "Daily ongoing; cycling optional",
+        "pct_required": False,
+        "synergistic_compounds": ["metformin", "nmn", "alpha-lipoic-acid"],
+        "antagonistic_compounds": [],
+    },
+    "metformin": {
+        "primary_effect": "First-line oral medication for type 2 diabetes and insulin resistance. Also investigated extensively for anti-aging and longevity (TAME trial). AMPK activator and mTOR modulator.",
+        "mechanism_pathway": "Activates AMPK by inhibiting mitochondrial complex I, which reduces ATP/ADP ratio and triggers AMPK. This lowers hepatic glucose output, improves peripheral insulin sensitivity, and may inhibit mTOR signalling — a mechanism relevant to longevity. Also modifies gut microbiome.",
+        "expected_body_outcomes": "Lowers fasting glucose and HbA1c. Modest weight loss or weight neutrality. In observational studies, metformin users show lower rates of cancer and cardiovascular disease. The TAME (Targeting Aging with Metformin) trial is investigating anti-aging effects in non-diabetics.",
+        "clinical_context": "FDA-approved oral antidiabetic agent with 60+ years of clinical use. Prescription-only. Very low cost (generic). Major safety caveat: lactic acidosis risk in renal impairment — contraindicated when eGFR <30. Vitamin B12 depletion with long-term use. Off-label longevity use is growing among physicians.",
+        "half_life": "~17h",
+        "bioavailability": "Oral ~50-60%",
+        "peak_time": "2-3h",
+        "cycle_length": "Indefinite ongoing (diabetic); intermittent for longevity protocols",
+        "pct_required": False,
+        "synergistic_compounds": ["berberine", "nmn", "rapamycin"],
+        "antagonistic_compounds": [],
+    },
+    "rapamycin": {
+        "primary_effect": "mTOR inhibitor with established immunosuppressant use and significant longevity research. Activates autophagy and extends lifespan in multiple animal models. Used intermittently in longevity medicine.",
+        "mechanism_pathway": "Inhibits mTORC1 (mechanistic target of rapamycin complex 1) by binding FKBP12. mTORC1 is a master regulator of cell growth and protein synthesis; its inhibition activates autophagy (cellular self-cleaning), reduces senescent cell accumulation, and shifts metabolism toward maintenance rather than growth.",
+        "expected_body_outcomes": "In animal models: consistent lifespan extension (up to 25% in mice even when started in middle age). Human longevity data limited to observational and small trials. Side effects at immunosuppressant doses include infections, impaired wound healing, and metabolic effects. Low-dose intermittent protocols (weekly) show fewer side effects.",
+        "clinical_context": "FDA-approved as an immunosuppressant (Rapamune) for organ transplant rejection and certain cancers. Used off-label at low doses (~1-6mg weekly) in longevity medicine — growing practice among anti-aging physicians. Not recommended for general use without medical supervision due to immunosuppression risk. PEARL trial and others investigating low-dose protocols.",
+        "half_life": "~62h",
+        "bioavailability": "Oral ~14%",
+        "peak_time": "1-2h",
+        "cycle_length": "Intermittent (weekly) for longevity; continuous for transplant",
+        "pct_required": False,
+        "synergistic_compounds": ["metformin", "nmn", "acarbose"],
+        "antagonistic_compounds": [],
+    },
+    "epithalon": {
+        "primary_effect": "Synthetic tetrapeptide (Ala-Glu-Asp-Gly) studied for telomere lengthening, pineal gland regulation, and anti-aging. Developed by the St. Petersburg Institute of Bioregulation.",
+        "mechanism_pathway": "Believed to activate telomerase enzyme, which elongates telomeric DNA — the protective caps on chromosomes that shorten with age. Also regulates the pineal gland's melatonin secretion cycle, potentially restoring youthful circadian rhythms in older adults.",
+        "expected_body_outcomes": "Studies report improved sleep, immune function, and antioxidant enzyme levels. Some data suggests reduced mortality in aging populations. Effects are subtle and develop over months. Primarily researched in elderly populations.",
+        "clinical_context": "Developed and studied mainly by Russian researchers (St. Petersburg Gerontology Institute). Published studies show promising anti-aging signals in animal and small human trials. Not FDA-approved; sold as a research chemical. Most available research is from a single research group, which limits independent validation.",
+        "half_life": "Unknown",
+        "bioavailability": "SC/IM injection; intranasal forms available",
+        "peak_time": "Unknown",
+        "cycle_length": "10-20 day courses, repeated 2-3x/year",
+        "pct_required": False,
+        "synergistic_compounds": ["nad+", "nmn", "dsip"],
+        "antagonistic_compounds": [],
+    },
+    "dihexa": {
+        "primary_effect": "HGF/MET agonist with potent cognitive enhancement properties. Among the most potent pro-cognitive compounds in preclinical studies — estimated 7 orders of magnitude more potent than BDNF in stimulating hippocampal synaptogenesis.",
+        "mechanism_pathway": "Potentiates hepatocyte growth factor (HGF) signalling through MET receptor, stimulating neurogenesis and synaptogenesis in the hippocampus. Crosses the blood-brain barrier easily. Stimulates formation of new dendritic spines and synaptic connections.",
+        "expected_body_outcomes": "Animal studies show dramatic improvements in memory, learning, and reversal of cognitive deficits. The compound was designed by Washington State University researchers for Alzheimer's treatment. Human data is essentially absent — no clinical trials published.",
+        "clinical_context": "Dihexa was developed at Washington State University as a research tool for neurodegenerative disease. It is one of the most potent pro-cognitive compounds ever tested in animal models. However, it has not entered clinical trials, and human safety and efficacy data are completely absent. It is sold as a research chemical with no established dosing protocol or safety profile.",
+        "half_life": "Long-acting (estimated days based on structure)",
+        "bioavailability": "Oral and topical both reported; CNS penetration high",
+        "peak_time": "Unknown",
+        "cycle_length": "No established protocol",
+        "pct_required": False,
+        "synergistic_compounds": ["semax", "selank", "noopept"],
+        "antagonistic_compounds": [],
+    },
+    "kisspeptin-10": {
+        "primary_effect": "GnRH stimulator that activates the reproductive hormonal axis. Triggers LH surge, increases testosterone and oestrogen. Studied for hypothalamic amenorrhea, infertility, and hypogonadism.",
+        "mechanism_pathway": "Binds KISS1R receptors on GnRH neurons in the hypothalamus, triggering a strong GnRH pulse which causes an LH surge from the pituitary. This LH surge stimulates testosterone production in men and ovulation in women. Acts upstream of GnRH in the HPG axis.",
+        "expected_body_outcomes": "Pulsatile injection triggers LH surges mimicking natural hormonal rhythms. Used to trigger ovulation in fertility protocols. In men, may restore suppressed testosterone axis. Research into its role in sexual motivation and bonding is ongoing.",
+        "clinical_context": "Kisspeptin-10 has been studied in human clinical trials for fertility treatment (hypothalamic amenorrhea, IVF trigger) with published results from Hammersmith Hospital (London). It represents a more physiological approach to ovulation induction than hCG. Not FDA-approved as a drug; research chemical status in most countries.",
+        "half_life": "~30min",
+        "bioavailability": "IV or SC injection",
+        "peak_time": "30-60min",
+        "cycle_length": "Used as single trigger dose in fertility protocols",
+        "pct_required": False,
+        "synergistic_compounds": ["gonadorelin", "hcg"],
+        "antagonistic_compounds": [],
+    },
+    "cortagen": {
+        "primary_effect": "Short tetrapeptide (Ala-Glu-Asp-Gly variant) studied for connective tissue support and cardiovascular health. Developed alongside epithalon by the St. Petersburg Gerontology Institute.",
+        "mechanism_pathway": "Proposed to regulate gene expression in connective tissue and cardiac cells, stimulating collagen synthesis and reducing inflammatory signalling. Exact molecular target not fully characterised in Western literature.",
+        "expected_body_outcomes": "Limited published research suggests potential benefits for cardiac and connective tissue function in aging. Most evidence from Russian publications and small studies.",
+        "clinical_context": "Cortagen is a bioregulatory peptide developed in Russia for cardiovascular and connective tissue applications. It has limited independently replicated research and is sold primarily as a research chemical outside Russia. Most studies are from the same institutional group that developed epithalon.",
+        "half_life": "Unknown",
+        "bioavailability": "SC injection",
+        "peak_time": "Unknown",
+        "cycle_length": "10 day courses",
+        "pct_required": False,
+        "synergistic_compounds": ["epithalon", "bpc-157"],
+        "antagonistic_compounds": [],
     },
 }
 
@@ -432,13 +595,13 @@ ORDER_CATALOG = [
 INTERACTION_MATRIX = {
     ("bpc-157", "tb-500"): {
         "type": "synergistic",
-        "note": "Commonly stacked for healing; both promote angiogenesis and tissue repair.",
-        "evidence": "Anecdotal community reports, limited formal study.",
+        "note": "Classic tissue repair stack — BPC-157 targets gut and tendon healing while TB-500 promotes systemic actin remodelling and angiogenesis. The most cited injury recovery peptide combination.",
+        "evidence": "Anecdotal community reports, animal studies.",
     },
     ("ghk-cu", "bpc-157"): {
         "type": "synergistic",
-        "note": "Both support tissue repair through different mechanisms.",
-        "evidence": "Theoretical synergy based on complementary mechanisms.",
+        "note": "Both support tissue repair via complementary mechanisms — GHK-Cu enhances collagen synthesis and angiogenesis via TGF-β, BPC-157 accelerates tendon/muscle healing via GH receptor upregulation and NO pathways.",
+        "evidence": "Theoretical + anecdotal community reports",
     },
     ("ghk-cu", "tb-500"): {
         "type": "synergistic",
@@ -447,8 +610,8 @@ INTERACTION_MATRIX = {
     },
     ("cjc-1295", "ipamorelin"): {
         "type": "synergistic",
-        "note": "Standard GHRH + GHRP stack for synergistic GH pulse.",
-        "evidence": "Well-documented in research peptide community.",
+        "note": "Classic GH peptide stack — CJC-1295 amplifies GH pulse amplitude while Ipamorelin triggers pulse frequency. Together produce sustained GH elevation without cortisol or prolactin spikes.",
+        "evidence": "Clinical studies + widespread community use",
     },
     ("cjc-1295", "ghrp-2"): {
         "type": "synergistic",
@@ -482,8 +645,8 @@ INTERACTION_MATRIX = {
     },
     ("semax", "selank"): {
         "type": "synergistic",
-        "note": "Focus + calm pairing. Semax enhances cognition, Selank reduces anxiety.",
-        "evidence": "Anecdotal community reports.",
+        "note": "Cognitive enhancement + anxiolytic pairing. Semax sharpens focus and BDNF expression; Selank reduces anxiety and modulates enkephalin without sedation. Complementary intranasal protocols used clinically in Russia.",
+        "evidence": "Anecdotal + Russian clinical data",
     },
     ("dsip", "selank"): {
         "type": "synergistic",
@@ -509,6 +672,211 @@ INTERACTION_MATRIX = {
         "type": "synergistic",
         "note": "CagriSema — under active clinical investigation for weight loss.",
         "evidence": "Phase 2 trials show greater weight loss than either alone.",
+    },
+    # ── Expanded entries ──
+    ("ghk-cu", "minoxidil"): {
+        "type": "complementary",
+        "note": "GHK-Cu stimulates collagen and follicle regeneration via TGF-β while minoxidil increases follicular blood flow via K-ATP channels. Different mechanisms provide additive benefit for androgenic alopecia.",
+        "evidence": "Mechanistic + limited clinical",
+    },
+    ("mk-677", "ipamorelin"): {
+        "type": "synergistic",
+        "note": "MK-677 provides sustained oral GH elevation; Ipamorelin adds pulsatile SC stimulation. Stacking amplifies total GH output but increases side effect risk (water retention, hunger, elevated fasting glucose).",
+        "evidence": "Anecdotal + mechanistic",
+    },
+    ("nad+", "nmn"): {
+        "type": "redundant",
+        "note": "NMN is a direct NAD+ precursor — combining oral NMN with IV NAD+ is redundant and costly. Choose one delivery method. IV NAD+ gives faster, higher peak; oral NMN is more practical for chronic supplementation.",
+        "evidence": "Pharmacokinetic data",
+    },
+    ("bpc-157", "nsaids"): {
+        "type": "caution",
+        "note": "NSAIDs (ibuprofen, naproxen) may blunt BPC-157 healing effects by inhibiting the COX pathway that BPC-157 partly modulates. Separate use by 4-6 hours if concurrent use is unavoidable.",
+        "evidence": "Animal studies",
+    },
+    ("pt-141", "erectile_dysfunction_drugs"): {
+        "type": "caution",
+        "note": "PT-141 (bremelanotide) combined with PDE5 inhibitors (sildenafil, tadalafil) may cause additive blood pressure reduction. Use with caution; monitor BP. Clinical pharmacology studies support this interaction.",
+        "evidence": "Clinical pharmacology",
+    },
+    ("finasteride", "minoxidil"): {
+        "type": "synergistic",
+        "note": "Gold-standard hair loss combination — finasteride addresses the androgenic root cause (DHT reduction) while minoxidil promotes follicular blood flow and prolongs anagen. Used together in clinical dermatology guidelines.",
+        "evidence": "Multiple RCTs + FDA approval data",
+    },
+    ("metformin", "nmn"): {
+        "type": "complementary",
+        "note": "Metformin activates AMPK and may increase NMN→NAD+ conversion efficiency. Combined longevity protocol in clinical use. Some evidence that metformin may blunt exercise-induced NAD+ rises — consider NMN on exercise days.",
+        "evidence": "Mechanistic + emerging longevity data",
+    },
+    ("rapamycin", "metformin"): {
+        "type": "synergistic",
+        "note": "Complementary longevity mechanisms — rapamycin inhibits mTORC1 while metformin activates AMPK/inhibits mTORC1 upstream. Combination used in ITP (Interventions Testing Program) studies. Both require prescription.",
+        "evidence": "Animal longevity studies (ITP) + mechanistic",
+    },
+    ("ipamorelin", "semaglutide"): {
+        "type": "complementary",
+        "note": "Ipamorelin preserves lean mass during GLP-1 induced weight loss by maintaining GH pulsatility. GLP-1 agonists cause both fat and lean mass loss — GH secretagogues may partially offset lean mass decline.",
+        "evidence": "Mechanistic + emerging community data",
+    },
+    ("thymosin-alpha-1", "bpc-157"): {
+        "type": "complementary",
+        "note": "Thymosin Alpha-1 supports immune regulation while BPC-157 provides tissue repair. Used together in recovery protocols, especially post-illness or post-surgical recovery.",
+        "evidence": "Mechanistic + anecdotal",
+    },
+    ("nad+", "rapamycin"): {
+        "type": "complementary",
+        "note": "NAD+ replenishment + mTOR inhibition targets two distinct longevity pathways. NAD+ supports mitochondrial function and DNA repair; rapamycin activates autophagy. Combination is used in some physician-supervised longevity protocols.",
+        "evidence": "Mechanistic + animal data",
+    },
+    ("berberine", "metformin"): {
+        "type": "caution",
+        "note": "Both activate AMPK and lower blood glucose — combining may cause additive hypoglycaemia. If used together, monitor fasting glucose carefully and consider dose reduction of one or both. Not typically combined in clinical practice.",
+        "evidence": "Pharmacological overlap",
+    },
+    ("mk-677", "ghk-cu"): {
+        "type": "complementary",
+        "note": "MK-677 raises systemic IGF-1 and GH (promoting hair follicle activity systemically) while GHK-Cu acts locally on collagen and follicle regeneration. Stack for hair regrowth and skin quality.",
+        "evidence": "Mechanistic + anecdotal",
+    },
+    ("nac", "ghk-cu"): {
+        "type": "complementary",
+        "note": "NAC increases intracellular glutathione (antioxidant defence); GHK-Cu promotes collagen synthesis and angiogenesis. Complementary wound healing and anti-aging combination; both support oxidative stress reduction.",
+        "evidence": "Mechanistic",
+    },
+}
+
+SPECIALTY_COMPARISONS = {
+    "hair_loss": {
+        "question_patterns": ["hair loss", "hair regrowth", "alopecia", "thinning hair", "bald", "hairline", "ghk-cu vs minoxidil", "minoxidil vs ghk", "finasteride vs", "hair growth", "androgenic alopecia"],
+        "title": "Hair Loss Treatment Comparison",
+        "treatments": [
+            {
+                "name": "GHK-Cu (Copper Peptide)",
+                "type": "Peptide",
+                "mechanism": "TGF-β activation, collagen synthesis, follicle stem cell stimulation, angiogenesis via VEGF",
+                "efficacy": "Moderate — ~30-40% improvement in hair density in small studies",
+                "evidence_tier": "C",
+                "safety": "High — minimal systemic effects when topical",
+                "cost": "Low-moderate ($30-80/month topical)",
+                "pros": ["Dual action: hair + skin quality", "Anti-inflammatory", "Promotes scalp vascularity", "No hormonal side effects"],
+                "cons": ["Limited large RCT data", "Injectable form is research use only", "Slower results (3-6 months)"],
+            },
+            {
+                "name": "Minoxidil",
+                "type": "Small molecule / vasodilator",
+                "mechanism": "K-ATP channel opening → increased follicular blood flow, prolonged anagen phase",
+                "efficacy": "Strong — FDA-approved, ~40-60% responders in trials",
+                "evidence_tier": "A",
+                "safety": "Moderate — systemic absorption risk; cardiac effects at high oral doses",
+                "cost": "Very low ($5-20/month)",
+                "pros": ["FDA-approved (topical)", "Extensive 30+ year safety data", "Fast onset (3-4 months)", "Oral form available"],
+                "cons": ["Does not address DHT root cause", "Shedding phase common", "Must use indefinitely", "Hypertrichosis risk"],
+            },
+            {
+                "name": "Finasteride",
+                "type": "5α-reductase inhibitor",
+                "mechanism": "Blocks conversion of testosterone to DHT — targets androgenic alopecia root cause",
+                "efficacy": "Strong — ~80% halt progression, ~30-50% regrowth in trials",
+                "evidence_tier": "A",
+                "safety": "Moderate — post-finasteride syndrome reported (sexual side effects in ~2-3%)",
+                "cost": "Very low ($5-15/month generic)",
+                "pros": ["Targets root cause (DHT)", "FDA-approved", "Strong RCT evidence", "Oral once-daily"],
+                "cons": ["Sexual side effects in small %, may persist", "Teratogenic — avoid in women of childbearing age", "Male-only FDA approval"],
+            },
+        ],
+        "recommendation": "For androgenic alopecia: Finasteride (addresses root cause) + Minoxidil (promotes regrowth) is the gold-standard combination backed by the most evidence. GHK-Cu can be added topically as an adjunct for scalp health and anti-inflammatory benefits without hormonal side effects. Consider GHK-Cu as primary only if hormonal agents are contraindicated.",
+        "clinical_notes": "All three can be used simultaneously. GHK-Cu + Minoxidil topically is a popular combination. Add finasteride for DHT-driven loss. Peptides like BPC-157 (experimental) may help with scalp inflammation as adjunct.",
+    },
+    "weight_loss_glp1": {
+        "question_patterns": ["semaglutide vs tirzepatide", "ozempic vs mounjaro", "weight loss peptide", "glp-1", "best for weight loss", "tirzepatide vs semaglutide", "ozempic or mounjaro", "wegovy vs zepbound"],
+        "title": "GLP-1 Agonist Comparison: Weight Loss",
+        "treatments": [
+            {
+                "name": "Semaglutide (Ozempic/Wegovy)",
+                "type": "GLP-1 receptor agonist",
+                "mechanism": "GLP-1 agonism → appetite suppression, delayed gastric emptying, insulin secretion",
+                "efficacy": "Strong — ~15% body weight reduction (STEP trials)",
+                "evidence_tier": "A",
+                "safety": "Good — nausea most common, rare pancreatitis risk",
+                "cost": "$800-1200/month brand; compounded ~$200-400",
+                "pros": ["FDA-approved for obesity (Wegovy)", "Extensive clinical data", "Cardiovascular benefit (SUSTAIN)", "Weekly SC injection"],
+                "cons": ["GI side effects common at initiation", "Cost without insurance", "Muscle loss risk without resistance training"],
+            },
+            {
+                "name": "Tirzepatide (Mounjaro/Zepbound)",
+                "type": "Dual GIP + GLP-1 receptor agonist",
+                "mechanism": "Dual incretin agonism — GIP adds to GLP-1 effects; may preserve lean mass better",
+                "efficacy": "Very strong — ~22% body weight reduction (SURMOUNT trials) — superior to semaglutide head-to-head",
+                "evidence_tier": "A",
+                "safety": "Good — similar GI side effects; possibly better tolerated than semaglutide",
+                "cost": "$1000-1300/month brand; compounded ~$250-450",
+                "pros": ["Greater weight loss than semaglutide in trials", "FDA-approved (Zepbound)", "May preserve more lean mass", "Weekly SC injection"],
+                "cons": ["Newer — less long-term cardiovascular data", "Similar GI side effects", "Cost"],
+            },
+        ],
+        "recommendation": "Tirzepatide produces greater absolute weight loss (~22% vs ~15%) and is now FDA-approved for obesity. If cost and access are equal, tirzepatide is the stronger efficacy choice. Semaglutide has longer-term cardiovascular outcome data. Both should be combined with lifestyle intervention. Peptides like CJC-1295/Ipamorelin may complement GLP-1 therapy by preserving lean mass during caloric restriction.",
+        "clinical_notes": "These are prescription medications. Compounded versions available at lower cost but require medical supervision. Neither should be combined with the other.",
+    },
+    "nad_longevity": {
+        "question_patterns": ["nad+ vs nmn", "nmn vs nad", "longevity", "anti-aging supplement", "mitochondria", "nad precursor", "anti aging", "antiaging", "nmn or nad"],
+        "title": "NAD+ Precursor Comparison",
+        "treatments": [
+            {
+                "name": "NMN (Nicotinamide Mononucleotide)",
+                "type": "NAD+ precursor",
+                "mechanism": "Converts directly to NAD+ via NMN adenylyltransferase; bypasses rate-limiting NAMPT step",
+                "efficacy": "Moderate — raises blood NAD+ ~40-60% in human trials",
+                "evidence_tier": "B",
+                "safety": "Excellent — no significant adverse events in trials up to 1250mg/day",
+                "cost": "$40-80/month",
+                "pros": ["Direct NAD+ precursor", "Good oral bioavailability (~40-60%)", "Well-tolerated", "Growing human trial data"],
+                "cons": ["Expensive vs niacin", "Long-term data limited", "Sublingual may work better than capsule"],
+            },
+            {
+                "name": "IV NAD+",
+                "type": "Direct NAD+ infusion",
+                "mechanism": "Bypasses all conversion steps — direct systemic NAD+ delivery at 100% bioavailability",
+                "efficacy": "Strong acute effect — immediate large NAD+ elevation",
+                "evidence_tier": "C",
+                "safety": "Good when administered correctly — chest tightness and flushing common if infused too fast",
+                "cost": "$200-800/session",
+                "pros": ["Highest bioavailability (100%)", "Rapid effect", "Used clinically for addiction/neurological support"],
+                "cons": ["Expensive", "Requires IV access/clinic", "Acute discomfort if infused rapidly", "No proven advantage over oral for chronic use"],
+            },
+        ],
+        "recommendation": "For chronic longevity supplementation, oral NMN (500-1000mg/day) is the practical choice — effective, safe, and affordable. IV NAD+ is useful for acute replenishment (post-illness, intensive protocol initiation) but has no proven advantage over sustained oral dosing. Combine with resveratrol or pterostilbene to activate sirtuins. Consider rapamycin (low-dose intermittent, prescription) for mTOR inhibition as a complementary longevity intervention.",
+        "clinical_notes": "The longevity evidence base is primarily animal studies and small human trials. Consult a longevity-focused physician before IV NAD+ therapy.",
+    },
+    "injury_recovery": {
+        "question_patterns": ["injury recovery", "tendon healing", "ligament repair", "muscle recovery", "bpc-157 vs tb-500", "tb500 vs bpc", "healing peptide", "tissue repair", "bpc vs tb"],
+        "title": "Peptide Injury Recovery Comparison",
+        "treatments": [
+            {
+                "name": "BPC-157 (Body Protection Compound)",
+                "type": "Peptide",
+                "mechanism": "Upregulates growth hormone receptors, promotes angiogenesis via VEGF, modulates NO synthesis, activates EGR-1 pathways",
+                "efficacy": "Strong in animal models; anecdotal human data very positive for gut/tendon/muscle",
+                "evidence_tier": "C",
+                "safety": "Excellent — no adverse effects in animal studies even at very high doses",
+                "cost": "$40-80/month",
+                "pros": ["Gut + systemic healing", "Oral works for GI/systemic", "Injectable for local tendon/muscle", "Anti-inflammatory", "Neuroprotective"],
+                "cons": ["No human RCTs published", "Research chemical only", "Theoretical angiogenesis concern in cancer context"],
+            },
+            {
+                "name": "TB-500 (Thymosin Beta-4)",
+                "type": "Peptide",
+                "mechanism": "Actin sequestration → cell migration and differentiation; promotes angiogenesis, reduces inflammation, activates satellite cells",
+                "efficacy": "Strong in animal models; strong anecdotal evidence for systemic tissue repair",
+                "evidence_tier": "C",
+                "safety": "Good — well tolerated in animal studies; human safety data limited",
+                "cost": "$60-100/month",
+                "pros": ["Systemic distribution (travels to injury site)", "Powerful angiogenesis", "Activates dormant stem cells", "Anti-inflammatory"],
+                "cons": ["Research chemical only", "Injectable primarily (SC/IM)", "Expensive vs BPC-157", "Limited human trial data"],
+            },
+        ],
+        "recommendation": "BPC-157 + TB-500 is the gold-standard research peptide stack for injury recovery. BPC-157 handles local tissue repair, gut healing, and nerve protection; TB-500 provides systemic repair and angiogenesis. Use together: BPC-157 250-500mcg SC near injury site once daily, TB-500 2-5mg SC twice weekly. Run 8-12 weeks for significant injuries. BPC-157 oral also works for systemic/gut effects.",
+        "clinical_notes": "Both are research chemicals — not FDA approved. Source purity is critical. Always use insulin syringes for SC injection. Combine with proper rest, nutrition (collagen + vitamin C), and progressive loading.",
     },
 }
 
@@ -695,6 +1063,215 @@ DOSAGE_REFERENCE = {
         "notes": "Start 0.25 mg. Nausea common.",
         "max_safe": "1 mg/day",
     },
+    "minoxidil": {
+        "typical_dose": "1ml 2% or 5% solution applied topically twice daily; or 2.5-5mg oral once daily",
+        "starting_dose": "1ml topical twice daily (2% or 5%); 1.25-2.5mg oral",
+        "effective_dose": "1ml 5% topical twice daily; 2.5-5mg oral",
+        "max_safe": "Topical: 2ml/day (10mg); oral: 5mg/day",
+        "route": "Topical (scalp) or oral",
+        "frequency": "Twice daily (topical); once daily (oral)",
+        "timing": "Morning and evening topical; bedtime oral",
+        "half_life": "~22h systemic",
+        "cycle_length": "Indefinite — discontinuation leads to hair loss recurrence within 3-6 months",
+        "pct_required": False,
+        "notes": "Topical application — part hair and apply to scalp, not hair shafts. Oral low-dose (2.5mg) is off-label but increasingly prescribed by dermatologists. Shedding phase common in weeks 2-8 — this is normal and indicates follicle cycling. Monitor BP with oral use.",
+        "country_status": {
+            "US": "OTC topical (Rogaine); oral is prescription",
+            "UK": "OTC topical; oral prescription (Regaine brand)",
+            "AU": "OTC topical; oral prescription",
+            "EU": "OTC topical in most countries",
+        },
+    },
+    "finasteride": {
+        "typical_dose": "1mg oral once daily (hair loss); 5mg oral once daily (BPH)",
+        "starting_dose": "1mg oral once daily",
+        "effective_dose": "1mg/day",
+        "max_safe": "5mg/day (BPH dosing); 1mg sufficient for hair loss",
+        "route": "Oral",
+        "frequency": "Once daily",
+        "timing": "Any time; consistent timing preferred",
+        "half_life": "~6h",
+        "cycle_length": "Indefinite — effects reverse on discontinuation",
+        "pct_required": False,
+        "notes": "Takes 3-6 months to show meaningful hair preservation. Do not crush or handle broken tablets (pregnant women must not handle). Sexual side effects in ~2-3% of users — discontinue if persistent post-finasteride syndrome suspected. Monitor PSA (finasteride reduces it by ~50%, masking BPH screening).",
+        "country_status": {
+            "US": "Prescription (Propecia 1mg, Proscar 5mg)",
+            "UK": "Prescription (Propecia/Proscar; generic available)",
+            "AU": "Prescription (schedule 4)",
+            "EU": "Prescription in most countries",
+        },
+    },
+    "nad+": {
+        "typical_dose": "500mg-1000mg IV infusion per session",
+        "starting_dose": "250-500mg IV",
+        "effective_dose": "500-1000mg IV; oral supplements ineffective as standalone",
+        "max_safe": "1000mg per IV session (infuse slowly over 2-4h)",
+        "route": "IV infusion (preferred); sublingual NAD+ powder (experimental)",
+        "frequency": "Acute: daily for 3-5 days (loading); maintenance 1-2x/month",
+        "timing": "Morning/midday IV sessions (avoid evening — stimulating)",
+        "half_life": "~1-2h IV",
+        "cycle_length": "Loading course then maintenance",
+        "pct_required": False,
+        "notes": "Must be infused slowly (1-4h IV) — rapid infusion causes chest tightness, nausea, flushing. Oral NAD+ is largely degraded before absorption — use NMN or NR as oral precursors instead. Administer under medical supervision for IV. Combine with saline to reduce discomfort.",
+        "country_status": {
+            "US": "Legal IV drip clinics; supplement form sold freely",
+            "UK": "Legal supplement; IV at clinics",
+            "AU": "Legal supplement; IV at clinics",
+            "EU": "Legal supplement; IV at clinics",
+        },
+    },
+    "nmn": {
+        "typical_dose": "500-1000mg oral daily",
+        "starting_dose": "250-500mg oral daily",
+        "effective_dose": "500-1000mg/day",
+        "max_safe": "1250mg/day (highest studied dose; no toxicity found)",
+        "route": "Oral capsule or sublingual powder",
+        "frequency": "Once daily",
+        "timing": "Morning with or without food; sublingual for faster absorption",
+        "half_life": "~2h",
+        "cycle_length": "Daily indefinite",
+        "pct_required": False,
+        "notes": "Sublingual/liposomal formulations may improve absorption. Store in dark, cool conditions — NMN degrades with heat and light. Combine with TMG (trimethylglycine) 500-1000mg to support methylation. Evidence strongest for morning dosing. Choose NMN over NR if higher NAD+ target desired.",
+        "country_status": {
+            "US": "Supplement (FDA proposed restrictions; enforcement limited)",
+            "UK": "Legal supplement",
+            "AU": "Legal supplement (TGA listed)",
+            "EU": "Novel food — approved in some EU countries",
+        },
+    },
+    "nac": {
+        "typical_dose": "600-1800mg oral daily in divided doses",
+        "starting_dose": "600mg once daily",
+        "effective_dose": "1200-1800mg/day for antioxidant use; 600mg/day maintenance",
+        "max_safe": "2400mg/day oral (GI tolerance limits higher doses)",
+        "route": "Oral; IV for acetaminophen overdose (medical only)",
+        "frequency": "Twice to three times daily",
+        "timing": "With meals to reduce GI irritation",
+        "half_life": "~6h",
+        "cycle_length": "Daily ongoing; cycle breaks not required",
+        "pct_required": False,
+        "notes": "Most cost-effective antioxidant supplement available. GI side effects (nausea, diarrhoea) at higher doses — take with food. IV acetaminophen overdose protocol is a specific medical use. May reduce efficacy of some medications — space 2h from antibiotics and anti-epileptics.",
+        "country_status": {
+            "US": "Supplement (OTC; FDA proposed removal from supplement category)",
+            "UK": "OTC supplement",
+            "AU": "OTC supplement (TGA listed)",
+            "EU": "OTC supplement in most countries",
+        },
+    },
+    "berberine": {
+        "typical_dose": "500mg oral three times daily with meals",
+        "starting_dose": "500mg once daily (titrate up to minimise GI side effects)",
+        "effective_dose": "1500mg/day (500mg TID)",
+        "max_safe": "2000mg/day",
+        "route": "Oral",
+        "frequency": "Three times daily with meals",
+        "timing": "With meals to reduce GI irritation and match glucose load",
+        "half_life": "~4h",
+        "cycle_length": "Cycling (8 weeks on, 2-4 weeks off) often recommended to prevent gut adaptation",
+        "pct_required": False,
+        "notes": "Poor oral bioavailability — dihydroberberine form absorbs 5x better. Take with meals. GI side effects common in first 1-2 weeks (constipation, diarrhoea, cramping) — titrate slowly. May interact with CYP3A4 substrates, cyclosporine, and warfarin. Monitor blood glucose if combining with metformin or insulin.",
+        "country_status": {
+            "US": "OTC supplement",
+            "UK": "OTC supplement",
+            "AU": "OTC supplement (TGA listed)",
+            "EU": "OTC supplement",
+        },
+    },
+    "metformin": {
+        "typical_dose": "500-2000mg oral daily in divided doses (T2D); 500-1000mg/day (longevity protocol)",
+        "starting_dose": "500mg once daily with dinner (titrate over 2-4 weeks)",
+        "effective_dose": "1000-2000mg/day for T2D; 500-1000mg/day for longevity",
+        "max_safe": "2550mg/day",
+        "route": "Oral (immediate release or extended release)",
+        "frequency": "Twice daily (IR); once daily (ER formulation)",
+        "timing": "With meals to reduce GI side effects",
+        "half_life": "~17h",
+        "cycle_length": "Indefinite for T2D; intermittent for longevity (some protocols skip on exercise days as metformin may blunt training adaptations)",
+        "pct_required": False,
+        "notes": "PRESCRIPTION ONLY — not a supplement. Contraindicated in renal impairment (eGFR <30). Check renal function at baseline and annually. GI side effects in first weeks (nausea, diarrhoea) — extended release formulation reduces these. Monitor vitamin B12 annually with long-term use (causes B12 malabsorption). Hold before contrast imaging procedures.",
+        "country_status": {
+            "US": "Prescription (generic widely available, very low cost)",
+            "UK": "Prescription (NHS)",
+            "AU": "Prescription (PBS subsidised)",
+            "EU": "Prescription",
+        },
+    },
+    "rapamycin": {
+        "typical_dose": "1-6mg oral once weekly (longevity protocol); transplant dosing is higher and continuous",
+        "starting_dose": "1mg once weekly",
+        "effective_dose": "2-6mg weekly (longevity); titrate to trough levels if monitored",
+        "max_safe": "Longevity: 6mg/week; transplant dosing managed by physician",
+        "route": "Oral",
+        "frequency": "Once weekly (longevity); daily for transplant",
+        "timing": "Fixed day of week; with high-fat meal increases absorption",
+        "half_life": "~62h",
+        "cycle_length": "Indefinite ongoing for longevity (with quarterly breaks optional); continuous for transplant",
+        "pct_required": False,
+        "notes": "PRESCRIPTION ONLY. Weekly low-dose protocol is off-label for longevity — not FDA-approved for this use. Immunosuppression risk even at low doses — avoid during active infections, vaccinations. Monitor blood levels (trough ~1-3ng/mL for longevity target). May impair wound healing. Avoid live vaccines. Grapefruit and St John's Wort significantly interact.",
+        "country_status": {
+            "US": "Prescription (Rapamune brand; generic sirolimus available)",
+            "UK": "Prescription",
+            "AU": "Prescription (schedule 4)",
+            "EU": "Prescription",
+        },
+    },
+    "epithalon": {
+        "typical_dose": "10mg total per course (1mg SC daily x10 days OR 10mg IV over course)",
+        "starting_dose": "1mg SC daily",
+        "effective_dose": "10-20mg per course",
+        "max_safe": "Not established; courses typically 10-20mg",
+        "route": "SC injection, IV, or intranasal (less common)",
+        "frequency": "Daily x10 days, repeated 2-3 times per year",
+        "timing": "Evening before sleep (aligns with pineal/melatonin function)",
+        "half_life": "Unknown",
+        "cycle_length": "10-20 day courses 2-3x/year",
+        "pct_required": False,
+        "notes": "Research chemical — no established clinical dosing protocol. Most protocols derived from Russian research group data. Intranasal formulations available but absorption data is limited. Store lyophilised powder in freezer; stable post-reconstitution 2 weeks at 4°C.",
+        "country_status": {
+            "US": "Research chemical",
+            "UK": "Research chemical; legal",
+            "AU": "Not TGA approved; grey area",
+            "EU": "Research chemical",
+        },
+    },
+    "dihexa": {
+        "typical_dose": "No established human dosing protocol — animal studies used 1-10mg/kg",
+        "starting_dose": "Not established for humans",
+        "effective_dose": "Unknown",
+        "max_safe": "Unknown",
+        "route": "Oral, transdermal, or nasal spray (all reported by users; none validated)",
+        "frequency": "Unknown — long half-life suggests infrequent dosing",
+        "timing": "Unknown",
+        "half_life": "Long-acting (structure suggests days)",
+        "cycle_length": "No established protocol",
+        "pct_required": False,
+        "notes": "CAUTION: No human clinical trial data exists. All dosing is extrapolated from animal studies and community anecdote. The compound is extraordinarily potent in preclinical models — extreme caution warranted. Transdermal (DMSO-based) or nasal delivery reported in research communities. Source purity is critical.",
+        "country_status": {
+            "US": "Research chemical",
+            "UK": "Research chemical",
+            "AU": "Research chemical",
+            "EU": "Research chemical",
+        },
+    },
+    "kisspeptin-10": {
+        "typical_dose": "1mcg/kg IV bolus (fertility trigger) or 3.2nmol/kg SC (research dosing)",
+        "starting_dose": "Not established for general use",
+        "effective_dose": "~0.3-1mcg/kg IV for LH surge induction",
+        "max_safe": "Not established outside clinical trials",
+        "route": "IV or SC injection",
+        "frequency": "Single dose as trigger in fertility protocols; pulsatile dosing in research",
+        "timing": "Timed to expected ovulation window (fertility); research-dependent",
+        "half_life": "~30min",
+        "cycle_length": "Single dose triggers; pulsatile research protocols",
+        "pct_required": False,
+        "notes": "Clinical use primarily as a fertility trigger agent. Research chemical for general use. Most current use is in hospital fertility settings (IVF, hypothalamic amenorrhea). Sold as research chemical in research settings with no established self-administration protocol.",
+        "country_status": {
+            "US": "Research chemical",
+            "UK": "Research chemical; clinical trials ongoing (Hammersmith Hospital)",
+            "AU": "Research chemical",
+            "EU": "Research chemical",
+        },
+    },
 }
 
 SAFETY_NOTES = {
@@ -773,6 +1350,177 @@ SAFETY_NOTES = {
             "FDA approved as Vyleesi for HSDD.",
             "Nausea in ~40% of users, flushing, headache.",
             "May increase blood pressure — avoid if uncontrolled hypertension.",
+            "Avoid combination with PDE5 inhibitors (sildenafil, tadalafil) — additive BP reduction risk.",
+            "Spontaneous yawning and darkening of skin/gums possible with repeat use.",
+        ],
+    },
+    "ghk-cu": {
+        "title": "GHK-Cu (Copper Peptide) Safety Profile",
+        "points": [
+            "Generally considered safe with low toxicity profile in published studies.",
+            "Topical formulations well-tolerated; rare cases of mild skin irritation or redness.",
+            "Copper accumulation possible with very high injectable doses — monitor serum copper with prolonged injectable use.",
+            "Not studied in pregnancy or lactation — avoid.",
+            "May interact with other copper-chelating agents (NAC at high doses, penicillamine).",
+            "Injectable form is research use only — not FDA approved.",
+            "Discolouration at injection sites possible (copper deposits).",
+        ],
+    },
+    "minoxidil": {
+        "title": "Minoxidil Safety Profile",
+        "points": [
+            "FDA-approved topical formulation — extensive 30+ year safety record.",
+            "Systemic absorption from topical use is ~2% — generally clinically insignificant.",
+            "Oral minoxidil: monitor blood pressure — vasodilation can cause hypotension.",
+            "Hypertrichosis (unwanted facial hair growth) reported in women with topical use.",
+            "Initial shedding phase (weeks 2-8) is expected — not a sign of treatment failure.",
+            "Cardiovascular effects (tachycardia, oedema) more common with oral formulation.",
+            "Must be used indefinitely — hair loss returns within 3-6 months of stopping.",
+        ],
+    },
+    "finasteride": {
+        "title": "Finasteride Safety Profile",
+        "points": [
+            "FDA-approved for male androgenic alopecia (1mg) and BPH (5mg).",
+            "Post-finasteride syndrome (PFS) reported in ~2-3%: sexual dysfunction, mood changes, cognitive effects — may persist after discontinuation.",
+            "Teratogenic — pregnant women must not handle crushed tablets; do not use in women of childbearing potential without strict contraception.",
+            "Reduces PSA by ~50% — inform any treating urologist (masks screening signal).",
+            "Rare cases of male breast cancer reported — any breast changes warrant evaluation.",
+            "Not approved for women in the US; use only under medical supervision.",
+        ],
+    },
+    "nad+": {
+        "title": "IV NAD+ Safety Profile",
+        "points": [
+            "Generally safe when infused slowly — rapid infusion causes chest tightness, nausea, flushing, palpitations.",
+            "Must be infused over 2-4 hours in a clinical setting — not for self-administration.",
+            "Oral NAD+ supplements have negligible bioavailability — use precursors (NMN, NR) for chronic dosing.",
+            "No major drug interactions established, but caution with PARP inhibitors (cancer drugs).",
+            "Theoretical concern: NAD+ supports both DNA repair and cancer cell survival — caution in oncology patients.",
+            "High cost and clinical setting requirement limit widespread use.",
+        ],
+    },
+    "nmn": {
+        "title": "NMN Safety Profile",
+        "points": [
+            "Human trials up to 1250mg/day show no significant adverse events.",
+            "Well-tolerated orally; mild GI discomfort at high doses in some users.",
+            "No major drug interactions currently established.",
+            "Long-term data beyond 12 months is limited — use with that caveat in mind.",
+            "Theoretical concern (shared with NAD+): elevated NAD+ may support proliferative signalling — exercise caution in cancer patients until more data available.",
+            "Store away from heat and light — product degrades rapidly if improperly stored.",
+        ],
+    },
+    "rapamycin": {
+        "title": "Rapamycin Safety Profile",
+        "points": [
+            "FDA-approved immunosuppressant — significant safety considerations even at low longevity doses.",
+            "Immunosuppression: increased infection risk, impaired vaccine response.",
+            "Impairs wound healing — hold before and after surgical procedures.",
+            "Metabolic effects: hyperlipidemia, hyperglycaemia at transplant doses (less common at low weekly dosing).",
+            "Must not be combined with strong CYP3A4 inhibitors (some antifungals, certain antibiotics, grapefruit) — dramatically raises blood levels.",
+            "Avoid live attenuated vaccines during use.",
+            "PRESCRIPTION ONLY — self-sourcing without medical oversight is strongly discouraged.",
+        ],
+    },
+    "metformin": {
+        "title": "Metformin Safety Profile",
+        "points": [
+            "FDA-approved with 60+ year safety record — one of the safest oral medications.",
+            "Lactic acidosis risk: rare but life-threatening — contraindicated if eGFR <30 or hepatic impairment.",
+            "GI side effects (nausea, diarrhoea, cramping) in first weeks — extended-release formulation reduces these.",
+            "Vitamin B12 malabsorption with long-term use — monitor B12 annually.",
+            "Hold before IV contrast procedures (risk of lactic acidosis).",
+            "Alcohol: avoid excessive intake (increases lactic acidosis risk).",
+            "PRESCRIPTION ONLY — not available OTC in most countries.",
+        ],
+    },
+    "semax": {
+        "title": "Semax Safety Profile",
+        "points": [
+            "Approved prescription medication in Russia — Russian safety data available.",
+            "Generally well-tolerated intranasally; irritation at nasal application site possible.",
+            "Stimulatory effects — avoid evening dosing if sleep disruption occurs.",
+            "Modulates dopamine and serotonin — caution with antidepressants, SSRIs, MAOIs.",
+            "Research chemical in US, UK, Australia — no FDA/MHRA/TGA oversight on product purity.",
+            "Long-term effects beyond Russian study timeframes not well characterised.",
+        ],
+    },
+    "selank": {
+        "title": "Selank Safety Profile",
+        "points": [
+            "Approved prescription medication in Russia — available safety data is more extensive than most research chemicals.",
+            "Generally well-tolerated; mild nasal irritation possible.",
+            "Anxiolytic without significant sedation — safe for daytime use.",
+            "Does not act on GABA receptors — lower dependence/tolerance risk than benzodiazepines.",
+            "Caution with other anxiolytic/sedative medications.",
+            "Research chemical in US, UK, Australia — purity not guaranteed.",
+        ],
+    },
+    "berberine": {
+        "title": "Berberine Safety Profile",
+        "points": [
+            "Generally well-tolerated at standard doses (500mg TID).",
+            "GI side effects (constipation, diarrhoea, nausea, cramping) common in first weeks — titrate slowly.",
+            "CYP3A4 inhibitor — interacts with cyclosporine, warfarin, statins, some antiretrovirals.",
+            "May potentiate blood glucose lowering effects of diabetes medications — monitor glucose.",
+            "Not recommended in pregnancy (may stimulate uterine contractions).",
+            "Poor bioavailability — dihydroberberine form more absorbable but less studied.",
+        ],
+    },
+    "tb-500": {
+        "title": "TB-500 (Thymosin Beta-4) Safety Profile",
+        "points": [
+            "No long-term human safety data published.",
+            "Animal studies show good general tolerability — no significant adverse events.",
+            "Theoretical oncological concern: angiogenesis promotion could support tumour vascularity.",
+            "Research chemical only — sterility of vials not guaranteed; filter before injection.",
+            "Injection site reactions (redness, swelling) possible.",
+            "Not FDA approved for any medical use.",
+        ],
+    },
+    "epithalon": {
+        "title": "Epithalon Safety Profile",
+        "points": [
+            "Limited independent safety data — most studies from a single Russian research group.",
+            "Generally reported as well-tolerated in published studies.",
+            "Research chemical with no FDA/EMA approval.",
+            "Long-term effects on telomerase activation not fully characterised.",
+            "Not studied in pregnancy, lactation, or active cancer — avoid in these populations.",
+            "Purity of commercial products variable — source from reputable suppliers.",
+        ],
+    },
+    "dihexa": {
+        "title": "Dihexa Safety Profile",
+        "points": [
+            "ZERO human clinical trial safety data available.",
+            "All safety inferences are extrapolated from preclinical animal data only.",
+            "Extraordinarily potent compound — unknown risks of over-stimulation of HGF/MET pathway.",
+            "MET receptor agonism: theoretical oncological risk (MET is a proto-oncogene).",
+            "No established dosing, no antidote, no clinical monitoring protocol.",
+            "Use represents a significant unknown risk — strong caution advised.",
+        ],
+    },
+    "nac": {
+        "title": "NAC (N-Acetyl Cysteine) Safety Profile",
+        "points": [
+            "Excellent safety record — used clinically for acetaminophen overdose and mucolytic therapy.",
+            "GI side effects (nausea, diarrhoea, vomiting) at high oral doses — take with food.",
+            "IV formulation carries risk of anaphylactoid reactions — medical administration only.",
+            "High-dose NAC may reduce platelet aggregation — caution with anticoagulants.",
+            "Theoretical concern: antioxidant supplementation may interfere with beneficial ROS signalling from exercise.",
+            "FDA proposed removing NAC from supplement category in 2020 — regulatory status evolving.",
+        ],
+    },
+    "kisspeptin-10": {
+        "title": "Kisspeptin-10 Safety Profile",
+        "points": [
+            "Safety data from clinical trials in fertility and endocrinology research (Hammersmith Hospital, London).",
+            "Generally well-tolerated in clinical trial settings.",
+            "Strong LH surge potential — not for use in hormone-sensitive conditions without medical supervision.",
+            "May interact with GnRH agonist/antagonist medications.",
+            "Research chemical for non-clinical use — purity concerns.",
+            "No data on long-term pulsatile self-administration.",
         ],
     },
 }
@@ -3380,7 +4128,7 @@ def normalize_term(term):
     return ALIASES.get(key, key)
 
 
-def fetch_json(url, headers=None, data=None, timeout=5):
+def fetch_json(url, headers=None, data=None, timeout=3):
     try:
         req = Request(
             url, data=data, headers=headers or {"User-Agent": "peptide-wiki/1.0"}
@@ -5052,6 +5800,50 @@ def api_ask():
         return jsonify({"error": "Please ask a question."}), 400
 
     q = question.lower().strip()
+
+    # ── Task 7: Accept and use conversation history for context ──
+    history = data.get("history") or []  # list of {"role": "user"|"assistant", "content": "..."}
+    context_text = " ".join([h.get("content", "") for h in history[-6:]])
+    combined_q = q + " " + context_text.lower()
+
+    # ── Task 6: Check SPECIALTY_COMPARISONS first ──
+    specialty_match = None
+    for comp_key, comp_data in SPECIALTY_COMPARISONS.items():
+        for pattern in comp_data["question_patterns"]:
+            if pattern in combined_q:
+                specialty_match = comp_data
+                break
+        if specialty_match:
+            break
+
+    if specialty_match:
+        answer_parts = []
+        answer_parts.append("**" + specialty_match["title"] + "**\n")
+        if specialty_match.get("clinical_notes"):
+            answer_parts.append(specialty_match["clinical_notes"] + "\n")
+        for tx in specialty_match["treatments"]:
+            answer_parts.append("\n**" + tx["name"] + "** (Tier " + tx["evidence_tier"] + ")")
+            answer_parts.append("Type: " + tx["type"])
+            answer_parts.append("Mechanism: " + tx["mechanism"])
+            answer_parts.append("Efficacy: " + tx["efficacy"])
+            answer_parts.append("Safety: " + tx["safety"])
+            answer_parts.append("Cost: " + tx["cost"])
+            pros_str = " | ".join(tx["pros"])
+            cons_str = " | ".join(tx["cons"])
+            answer_parts.append("Pros: " + pros_str)
+            answer_parts.append("Cons: " + cons_str)
+        answer_parts.append("\n**Recommendation**: " + specialty_match["recommendation"])
+        answer = "\n".join(answer_parts)
+        return jsonify({
+            "answer": answer,
+            "citations": [
+                {"peptide": t["name"].lower().split(" ")[0], "label": t["name"]}
+                for t in specialty_match["treatments"]
+            ],
+            "stacks": [],
+            "comparison_data": specialty_match,
+        }), 200
+
     stop_words = {
         "a",
         "an",
@@ -5173,7 +5965,8 @@ def api_ask():
         "used",
         "using",
     }
-    tokens = re.findall(r"[a-z]+", q)
+    # Use combined_q (question + last 3 history turns) for richer keyword matching
+    tokens = re.findall(r"[a-z]+", combined_q)
     tokens = [t for t in tokens if t not in stop_words and len(t) > 1]
     if not tokens:
         tokens = [q]
@@ -6784,6 +7577,32 @@ def ask_stream():
             yield f"data: {json.dumps({'error': str(e)[:100]})}\n\n"
 
     return Response(stream_with_context(generate()), mimetype="text/event-stream")
+
+
+def warm_evidence_cache():
+    """Pre-warm evidence cache for most common peptides at startup."""
+    top_peptides = [
+        "bpc-157", "tb-500", "semaglutide", "tirzepatide", "ipamorelin",
+        "cjc-1295", "mk-677", "ghk-cu", "thymosin-alpha-1", "pt-141",
+        "semax", "selank", "nad+", "epithalon", "ghrp-2", "ghrp-6",
+        "melanotan-2", "dihexa", "kisspeptin-10", "retatrutide",
+    ]
+    import threading
+
+    def _warm():
+        import time as _time
+        _time.sleep(5)  # Let server fully start first
+        for pep in top_peptides:
+            try:
+                fetch_peptide_evidence(pep)
+            except Exception:
+                pass
+
+    t = threading.Thread(target=_warm, daemon=True)
+    t.start()
+
+
+warm_evidence_cache()
 
 
 if __name__ == "__main__":
