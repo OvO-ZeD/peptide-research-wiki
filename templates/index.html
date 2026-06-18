@@ -34,6 +34,7 @@
 
     <nav class="bottom-nav">
       <div class="bottom-nav-inner">
+        <div class="bottom-nav-pill" id="nav_pill"></div>
         <a href="/" class="bottom-nav-btn active">
           <div class="bn-icon-wrap">
             <svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="7"/><line x1="15.5" y1="15.5" x2="21" y2="21"/></svg>
@@ -210,6 +211,22 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js');
     }
+
+    // ─── Sliding nav pill (4A) ───
+    (function() {
+      var pill = document.getElementById('nav_pill');
+      if (!pill) return;
+      var active = document.querySelector('.bottom-nav-btn.active');
+      if (!active) return;
+      function setPill(el) {
+        pill.style.left = el.offsetLeft + 'px';
+        pill.style.width = el.offsetWidth + 'px';
+      }
+      setPill(active);
+      document.querySelectorAll('.bottom-nav-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() { setPill(btn); });
+      });
+    })();
   </script>
 <footer class="site-footer" style="text-align:center;padding:12px 0;font-size:12px;color:#666;">
   <span class="version-badge">{{ version }}</span>
