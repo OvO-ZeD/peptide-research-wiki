@@ -3380,14 +3380,14 @@ def normalize_term(term):
     return ALIASES.get(key, key)
 
 
-def fetch_json(url, headers=None, data=None, timeout=8):
+def fetch_json(url, headers=None, data=None, timeout=5):
     try:
         req = Request(
             url, data=data, headers=headers or {"User-Agent": "peptide-wiki/1.0"}
         )
         with urlopen(req, timeout=timeout) as response:
             return json.loads(response.read().decode("utf-8"))
-    except (URLError, HTTPError, TimeoutError, json.JSONDecodeError):
+    except Exception:
         return None
 
 
